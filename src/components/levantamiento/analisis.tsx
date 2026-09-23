@@ -158,6 +158,39 @@ export function VistaDiagnostico({
         </div>
       </section>
 
+      {r.modulos_a_medida?.length ? (
+        <section className="space-y-3">
+          <Titulo>Desarrollos a medida</Titulo>
+          <p className="text-sm text-tenue">
+            Necesidades que el catálogo no cubre, cotizadas como módulos propios.
+          </p>
+          <div className="grid gap-3 md:grid-cols-2">
+            {r.modulos_a_medida.map((m) => (
+              <div
+                key={m.codigo}
+                className="rounded-2xl border border-dashed border-aviso/50 bg-aviso/5 p-4"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <p className="font-semibold">{m.nombre}</p>
+                  <span className="text-sm font-semibold tabular-nums">
+                    {formatoUSD(m.precio_setup)}
+                  </span>
+                </div>
+                <p className="mt-1 text-sm">{m.descripcion}</p>
+                <p className="mt-2 text-xs text-tenue">
+                  <strong>Por qué:</strong> {m.necesidad}
+                </p>
+                <ul className="mt-2 space-y-0.5 text-xs">
+                  {m.entregables.map((e) => (
+                    <li key={e}>• {e}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <section className="grid gap-5 lg:grid-cols-2">
         <div className="space-y-3">
           <Titulo>Arquitectura</Titulo>

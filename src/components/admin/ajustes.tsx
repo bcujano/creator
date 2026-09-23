@@ -252,6 +252,18 @@ export function EditorAjustes({ inicial, estado }: { inicial: Ajustes; estado: E
           <Etiqueta>Simulador: cuota base por volumen</Etiqueta>
           <Campo type="number" {...campo('precios', 'modelo_volumen_base', 'numero')} />
         </div>
+        <div>
+          <Etiqueta>Tope de un módulo a medida (implementación)</Etiqueta>
+          <Campo type="number" {...campo('precios', 'a_medida_tope', 'numero')} />
+          <p className="mt-1 text-xs text-tenue">
+            La IA nunca propone más; el sistema lo hace cumplir.
+          </p>
+        </div>
+        <div>
+          <Etiqueta>Costo propio de un desarrollo a medida (%)</Etiqueta>
+          <Campo type="number" {...campo('precios', 'a_medida_costo_pct', 'numero')} />
+          <p className="mt-1 text-xs text-tenue">Para calcular tu margen.</p>
+        </div>
       </Seccion>
 
       <Seccion

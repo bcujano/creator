@@ -89,7 +89,7 @@ export async function ejecutarAnalisis(levantamientoId: string) {
       proveedor: r.proveedor,
     })
     const mapa = await mapaCatalogo()
-    const datos = propuestaDesdeAnalisis(r.datos, mapa)
+    const datos = propuestaDesdeAnalisis(r.datos, mapa, ajustes.precios.a_medida_tope)
     const { propuesta } = await guardarPropuesta(
       levantamientoId,
       datos,

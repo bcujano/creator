@@ -1,7 +1,7 @@
 import { AJUSTES_DEFECTO } from '../src/lib/ajustes-defecto'
 import { normalizarAnalisis } from '../src/lib/analisis'
 import { textos } from '../src/lib/i18n'
-import { calcularPaquete } from '../src/lib/precios'
+import { calcularPaquete, resolverItem } from '../src/lib/precios'
 import type { DatosPropuesta, ItemCatalogo } from '../src/lib/tipos'
 import type { Documento } from '../src/server/documento'
 import type { ResultadoIA } from '../src/server/ia/esquema'
@@ -333,6 +333,18 @@ const BRUTO: ResultadoIA = {
       entregables: ['Pipeline de presupuestos', 'Reportes'],
     },
   ],
+  modulos_a_medida: [
+    {
+      codigo: 'MEDIDA_DENTALINK',
+      nombre: 'Sincronización de agenda con Dentalink',
+      descripcion: 'Conecta la agenda del CRM con Dentalink para no digitar dos veces.',
+      necesidad: 'Doble registro entre Excel y Dentalink.',
+      entregables: ['Conector de citas en ambos sentidos', 'Registro de errores de sincronización'],
+      precio_setup: 1500,
+      precio_mensual: 0,
+      semanas: 2,
+    },
+  ],
   paquetes: [
     {
       nivel: 'esencial',
@@ -354,7 +366,7 @@ const BRUTO: ResultadoIA = {
       nivel: 'premium',
       nombre: 'Clínica inteligente',
       propuesta_valor: 'Todo lo anterior más llamadas con IA.',
-      codigos: ['IAGENTE_WA', 'CRM_OPERATIVO', 'LLAMADAS', 'LEVANTAMIENTO'],
+      codigos: ['IAGENTE_WA', 'CRM_OPERATIVO', 'LLAMADAS', 'LEVANTAMIENTO', 'MEDIDA_DENTALINK'],
       usuarios_estimados: 12,
       por_que: '',
     },
@@ -371,7 +383,23 @@ export function documentoDePrueba(idioma: 'es' | 'en' = 'es'): Documento {
       nivel: p.nivel,
       nombre: p.nombre,
       propuesta_valor: p.propuesta_valor,
-      lineas: p.codigos.map((codigo) => ({ codigo, cantidad: 1 })),
+      lineas: p.codigos.map((codigo) => {
+        const m = BRUTO.modulos_a_medida.find((x) => x.codigo === codigo)
+        return {
+          codigo,
+          cantidad: 1,
+          a_medida: m
+            ? {
+                nombre: m.nombre,
+                descripcion: m.descripcion,
+                entregables: m.entregables,
+                precio_setup: m.precio_setup,
+                precio_mensual: 0,
+                semanas: m.semanas,
+              }
+            : null,
+        }
+      }),
       usuarios: p.usuarios_estimados,
       volumen: (p.nivel === 'premium' ? { LLAMADAS: 400 } : {}) as Record<string, number>,
       descuento_setup_pct: p.nivel === 'premium' ? 10 : 0,
@@ -427,12 +455,13 @@ export function documentoDePrueba(idioma: 'es' | 'en' = 'es'): Documento {
       definicion,
       calculo: calcularPaquete(definicion, CATALOGO, ajustes.precios, idioma),
       items: definicion.lineas.map((l) => {
-        const i = CATALOGO.get(l.codigo) as ItemCatalogo
+        const i = resolverItem(l, CATALOGO, ajustes.precios) as ItemCatalogo
         return {
           codigo: i.codigo,
           nombre: i.nombre_es,
           descripcion: i.descripcion_es,
           caracteristicas: i.caracteristicas_es,
+          a_medida: i.categoria === 'a_medida',
         }
       }),
       recomendado: definicion.nivel === 'recomendado',

@@ -58,6 +58,10 @@ export type ParametrosPrecio = {
   modelo_por_usuario: number
   /** Cuota base si se cobrara solo por volumen (simulador). */
   modelo_volumen_base: number
+  /** Precio máximo de implementación de un módulo a medida. */
+  a_medida_tope: number
+  /** Costo propio estimado de un desarrollo a medida, como % de su precio. */
+  a_medida_costo_pct: number
 }
 
 export type AjustesIA = {
@@ -165,9 +169,21 @@ export type Insumo = {
 
 export type NivelPaquete = 'esencial' | 'recomendado' | 'premium'
 
+/** Desarrollo que no está en el catálogo y se cotiza para este cliente. */
+export type ModuloAMedida = {
+  nombre: string
+  descripcion: string
+  entregables: string[]
+  precio_setup: number
+  precio_mensual: number
+  semanas: number
+}
+
 export type LineaPropuesta = {
   codigo: string
   cantidad: number
+  /** Si existe, la línea es un desarrollo a medida y no se busca en el catálogo. */
+  a_medida?: ModuloAMedida | null
   /** Si se define, reemplaza el precio del catálogo solo en esta propuesta. */
   precio_setup?: number | null
   precio_mensual?: number | null

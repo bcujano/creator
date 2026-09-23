@@ -1,7 +1,7 @@
 import 'server-only'
 import { normalizarAnalisis } from '@/lib/analisis'
 import { fechaLarga, textos } from '@/lib/i18n'
-import { calcularPaquete, type PaqueteCalculado } from '@/lib/precios'
+import { calcularPaquete, type PaqueteCalculado, resolverItem } from '@/lib/precios'
 import type {
   Ajustes,
   Cliente,
@@ -32,6 +32,7 @@ export type ItemVisible = {
   nombre: string
   descripcion: string
   caracteristicas: string[]
+  a_medida: boolean
 }
 
 export type PaqueteDocumento = {
@@ -73,6 +74,7 @@ function itemVisible(item: ItemCatalogo, idioma: Idioma): ItemVisible {
     nombre: idioma === 'en' ? item.nombre_en : item.nombre_es,
     descripcion: idioma === 'en' ? item.descripcion_en : item.descripcion_es,
     caracteristicas: idioma === 'en' ? item.caracteristicas_en : item.caracteristicas_es,
+    a_medida: item.categoria === 'a_medida',
   }
 }
 
@@ -92,7 +94,7 @@ async function armar(propuesta: FilaPropuesta, idiomaForzado?: Idioma): Promise<
       definicion,
       calculo: calcularPaquete(definicion, catalogo, ajustes.precios, idioma),
       items: definicion.lineas
-        .map((l) => catalogo.get(l.codigo))
+        .map((l) => resolverItem(l, catalogo, ajustes.precios))
         .filter((i): i is ItemCatalogo => Boolean(i))
         .map((i) => itemVisible(i, idioma)),
       recomendado: definicion.nivel === propuesta.datos.seleccionado,

@@ -69,7 +69,12 @@ Cómo trabajas:
   · Se permite como máximo UN factor "supuesto" por cálculo (típicamente un porcentaje), conservador, y en evidencia explica por qué es razonable.
   · Es preferible dejar una cifra sin cuantificar que presentar un número sin respaldo.
   · Porcentajes como fracción (20% = 0.2).
-- Soluciones: usa SOLO códigos del catálogo. Si algo necesario no está en el catálogo, descríbelo igual y marca a_medida = true.
+- Soluciones: primero el catálogo. Si el diagnóstico revela una necesidad que NINGÚN producto del catálogo cubre, créala en modulos_a_medida:
+  · Es un desarrollo acotado que se puede entregar por hasta $${ajustes.precios.a_medida_tope} de implementación (sin IVA): una integración puntual, un reporte o tablero específico, una automatización de un proceso propio del cliente, un formulario o flujo especial. Si lo que se necesita es más grande que eso, divídelo o no lo propongas.
+  · Explica qué es y qué problema resuelve en palabras del dueño, y lista entregables concretos y verificables.
+  · Pon un precio realista dentro del tope (no siempre el máximo) y precio_mensual 0 salvo que requiera un servicio que genere costo mensual.
+  · No crees a medida algo que el catálogo ya cubre. En la solución correspondiente marca a_medida = true y usa su código.
+  · Incluye su código en los paquetes donde tenga sentido (normalmente recomendado y premium).
 - Si los procesos no están documentados o la operación depende de personas, considera el LEVANTAMIENTO documental como primer paso.
 - Paquetes (exactamente tres):
   · esencial: ataca el dolor más urgente con la menor inversión.
@@ -157,16 +162,37 @@ Dame de 3 a 5 preguntas y los dolores que sospechas.`,
 export function propuestaDesdeAnalisis(
   resultado: ResultadoIA,
   catalogo: Map<string, ItemCatalogo>,
+  topeAMedida: number,
 ): DatosPropuesta {
   const niveles: NivelPaquete[] = ['esencial', 'recomendado', 'premium']
+  // Los módulos a medida viajan dentro de la línea: no dependen del catálogo.
+  const aMedida = new Map(
+    (resultado.modulos_a_medida ?? []).map((m) => [
+      m.codigo,
+      {
+        nombre: m.nombre,
+        descripcion: m.descripcion,
+        entregables: m.entregables,
+        precio_setup: Math.min(Math.max(0, Math.round(m.precio_setup)), topeAMedida),
+        precio_mensual: Math.max(0, Math.round(m.precio_mensual)),
+        semanas: Math.max(1, Math.round(m.semanas)),
+      },
+    ]),
+  )
   const paquetes = niveles.map((nivel) => {
     const sugerido = resultado.paquetes.find((p) => p.nivel === nivel)
-    const codigos = [...new Set(sugerido?.codigos ?? [])].filter((c) => catalogo.get(c)?.activo)
+    const codigos = [...new Set(sugerido?.codigos ?? [])].filter(
+      (c) => catalogo.get(c)?.activo || aMedida.has(c),
+    )
     return {
       nivel,
       nombre: sugerido?.nombre ?? nivel,
       propuesta_valor: sugerido?.propuesta_valor ?? '',
-      lineas: codigos.map((codigo) => ({ codigo, cantidad: 1 })),
+      lineas: codigos.map((codigo) => ({
+        codigo,
+        cantidad: 1,
+        a_medida: aMedida.get(codigo) ?? null,
+      })),
       usuarios: Math.max(1, Math.round(sugerido?.usuarios_estimados ?? 3)),
       volumen: {},
       descuento_setup_pct: 0,

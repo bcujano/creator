@@ -3,8 +3,18 @@ import { z } from 'zod'
 import { type Ctx, privada } from '@/server/http'
 import { guardarPropuesta } from '@/server/servicios'
 
+const AMedida = z.object({
+  nombre: z.string().trim().min(1).max(200),
+  descripcion: z.string().max(2000),
+  entregables: z.array(z.string().max(300)).max(20),
+  precio_setup: z.number().min(0),
+  precio_mensual: z.number().min(0),
+  semanas: z.number().min(0).max(52),
+})
+
 const Linea = z.object({
   codigo: z.string().min(1),
+  a_medida: AMedida.nullable().optional(),
   cantidad: z.number().int().min(1).max(999),
   precio_setup: z.number().min(0).nullable().optional(),
   precio_mensual: z.number().min(0).nullable().optional(),

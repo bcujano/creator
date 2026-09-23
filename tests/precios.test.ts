@@ -11,6 +11,8 @@ const parametros: ParametrosPrecio = {
   anticipo_pct: 50,
   modelo_por_usuario: 45,
   modelo_volumen_base: 120,
+  a_medida_tope: 900,
+  a_medida_costo_pct: 35,
 }
 
 function item(parcial: Partial<ItemCatalogo> & Pick<ItemCatalogo, 'codigo'>): ItemCatalogo {

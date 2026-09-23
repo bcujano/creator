@@ -327,6 +327,11 @@ function construir(doc: DocumentoPublico): Diapositiva[] {
                   <li key={it.codigo} className="flex gap-2">
                     <span className="text-acento">✓</span>
                     {it.nombre}
+                    {it.a_medida ? (
+                      <span className="ml-1 rounded bg-aviso/12 px-1 text-[11px] text-aviso">
+                        {doc.idioma === 'en' ? 'custom' : 'a medida'}
+                      </span>
+                    ) : null}
                   </li>
                 ))}
               </ul>

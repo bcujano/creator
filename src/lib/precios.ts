@@ -1,4 +1,10 @@
-import type { Idioma, ItemCatalogo, PaquetePropuesta, ParametrosPrecio } from './tipos'
+import type {
+  Idioma,
+  ItemCatalogo,
+  LineaPropuesta,
+  PaquetePropuesta,
+  ParametrosPrecio,
+} from './tipos'
 
 /**
  * Motor de precios. Es la única fuente de verdad de cuánto cuesta una
@@ -19,6 +25,7 @@ export type LineaCalculada = {
   costo_mensual: number
   /** Código del paquete que ya incluye esta línea (entonces va a $0). */
   incluido_en: string | null
+  a_medida: boolean
   volumen: {
     unidad: string
     incluido: number
@@ -61,6 +68,53 @@ export function nombreItem(item: Pick<ItemCatalogo, 'nombre_es' | 'nombre_en'>, 
   return idioma === 'en' ? item.nombre_en : item.nombre_es
 }
 
+/**
+ * Un módulo a medida se comporta como un ítem de catálogo armado al vuelo.
+ * El precio de implementación nunca pasa del tope configurado.
+ */
+export function itemAMedida(
+  linea: LineaPropuesta,
+  parametros: ParametrosPrecio,
+): ItemCatalogo | undefined {
+  const m = linea.a_medida
+  if (!m) return undefined
+  const setup = Math.min(Math.max(0, m.precio_setup), parametros.a_medida_tope)
+  const mensual = Math.max(0, m.precio_mensual)
+  return {
+    id: linea.codigo,
+    codigo: linea.codigo,
+    tipo: mensual > 0 ? 'modulo' : 'servicio',
+    categoria: 'a_medida',
+    nombre_es: m.nombre,
+    nombre_en: m.nombre,
+    descripcion_es: m.descripcion,
+    descripcion_en: m.descripcion,
+    caracteristicas_es: m.entregables,
+    caracteristicas_en: m.entregables,
+    resuelve: [],
+    incluye: [],
+    precio_setup: setup,
+    precio_mensual: mensual,
+    costo_setup: redondear((setup * parametros.a_medida_costo_pct) / 100),
+    costo_mensual: redondear((mensual * parametros.a_medida_costo_pct) / 100),
+    usuarios_incluidos: 0,
+    volumen: null,
+    semanas: Math.max(0, Math.round(m.semanas)),
+    estado: 'listo',
+    activo: true,
+    orden: 999,
+  }
+}
+
+/** El ítem de una línea: del catálogo o, si es a medida, armado desde la línea. */
+export function resolverItem(
+  linea: LineaPropuesta,
+  catalogo: Map<string, ItemCatalogo>,
+  parametros: ParametrosPrecio,
+) {
+  return linea.a_medida ? itemAMedida(linea, parametros) : catalogo.get(linea.codigo)
+}
+
 export function calcularPaquete(
   paquete: PaquetePropuesta,
   catalogo: Map<string, ItemCatalogo>,
@@ -70,7 +124,7 @@ export function calcularPaquete(
   // Qué módulos ya vienen dentro de algún paquete de esta misma propuesta.
   const incluidoPor = new Map<string, string>()
   for (const linea of paquete.lineas) {
-    const item = catalogo.get(linea.codigo)
+    const item = resolverItem(linea, catalogo, parametros)
     if (item?.tipo === 'paquete') {
       for (const codigo of item.incluye)
         if (!incluidoPor.has(codigo)) incluidoPor.set(codigo, item.codigo)
@@ -78,7 +132,7 @@ export function calcularPaquete(
   }
 
   const lineas: LineaCalculada[] = paquete.lineas.map((linea) => {
-    const item = catalogo.get(linea.codigo)
+    const item = resolverItem(linea, catalogo, parametros)
     const cantidad = Math.max(1, Math.round(linea.cantidad || 1))
     if (!item) {
       return {
@@ -91,13 +145,17 @@ export function calcularPaquete(
         costo_setup: 0,
         costo_mensual: 0,
         incluido_en: null,
+        a_medida: false,
         volumen: null,
         desconocido: true,
       }
     }
 
     const incluido_en = incluidoPor.get(item.codigo) ?? null
-    const precioSetup = linea.precio_setup ?? item.precio_setup
+    // El tope de un desarrollo a medida también aplica al negociar el precio.
+    const precioSetup = linea.a_medida
+      ? Math.min(linea.precio_setup ?? item.precio_setup, parametros.a_medida_tope)
+      : (linea.precio_setup ?? item.precio_setup)
     const precioMensual = linea.precio_mensual ?? item.precio_mensual
 
     let volumen: LineaCalculada['volumen'] = null
@@ -126,13 +184,14 @@ export function calcularPaquete(
       costo_setup: incluido_en ? 0 : redondear(item.costo_setup * cantidad),
       costo_mensual: incluido_en ? 0 : redondear(item.costo_mensual * cantidad),
       incluido_en,
+      a_medida: Boolean(linea.a_medida),
       volumen,
       desconocido: false,
     }
   })
 
   const items = paquete.lineas
-    .map((l) => catalogo.get(l.codigo))
+    .map((l) => resolverItem(l, catalogo, parametros))
     .filter((i): i is ItemCatalogo => Boolean(i))
 
   // Usuarios: los incluye el paquete más grande; los módulos sueltos no cobran por usuario.

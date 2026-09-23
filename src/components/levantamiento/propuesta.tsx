@@ -22,12 +22,15 @@ import type {
   DatosPropuesta,
   Idioma,
   ItemCatalogo,
+  ModuloAMedida,
   NivelPaquete,
   PaquetePropuesta,
 } from '@/lib/tipos'
 import { Area, Aviso, api, Boton, cx, Etiqueta, Insignia, Selector, Vacio } from '../ui'
 import { CierreTrato } from './cierre'
 import type { PropsEspacio } from './espacio'
+
+const SALTO = String.fromCharCode(10)
 
 const NIVELES: { nivel: NivelPaquete; texto: string }[] = [
   { nivel: 'esencial', texto: 'Esencial' },
@@ -138,6 +141,115 @@ function PrecioNegociable({
   )
 }
 
+/**
+ * Desarrollo a medida: lo que el catálogo no cubre. Se explica qué es y qué
+ * se entrega; el precio de implementación no puede pasar del tope.
+ */
+function EditorAMedida({
+  modulo,
+  tope,
+  onChange,
+  onQuitar,
+}: {
+  modulo: ModuloAMedida
+  tope: number
+  onChange: (m: ModuloAMedida) => void
+  onQuitar: () => void
+}) {
+  const [abierto, setAbierto] = useState(!modulo.descripcion)
+  const excede = modulo.precio_setup > tope
+  return (
+    <div className="rounded-xl border border-dashed border-aviso/50 bg-aviso/5 p-3">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <Insignia tono="aviso">A medida</Insignia>
+          <input
+            value={modulo.nombre}
+            onChange={(e) => onChange({ ...modulo, nombre: e.target.value })}
+            aria-label="Nombre del módulo a medida"
+            className="anillo-foco mt-1 w-full rounded-md bg-transparent text-sm font-semibold"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={onQuitar}
+          className="rounded-md p-1.5 text-tenue hover:bg-peligro/10 hover:text-peligro"
+          title="Quitar"
+        >
+          <Trash2 className="size-4" />
+        </button>
+      </div>
+      <div className="mt-2 grid grid-cols-3 gap-2">
+        <div>
+          <span className="text-[11px] text-tenue">Setup (máx. {formatoUSD(tope)})</span>
+          <Numero
+            valor={modulo.precio_setup}
+            onChange={(v) => onChange({ ...modulo, precio_setup: Math.max(0, v ?? 0) })}
+            className={excede ? 'border-peligro text-peligro' : undefined}
+          />
+        </div>
+        <div>
+          <span className="text-[11px] text-tenue">Mensual</span>
+          <Numero
+            valor={modulo.precio_mensual}
+            onChange={(v) => onChange({ ...modulo, precio_mensual: Math.max(0, v ?? 0) })}
+          />
+        </div>
+        <div>
+          <span className="text-[11px] text-tenue">Semanas</span>
+          <Numero
+            valor={modulo.semanas}
+            onChange={(v) => onChange({ ...modulo, semanas: Math.max(0, v ?? 0) })}
+          />
+        </div>
+      </div>
+      {excede ? (
+        <p className="mt-1 text-[11px] text-peligro">Se cobrará el tope de {formatoUSD(tope)}.</p>
+      ) : null}
+      <button
+        type="button"
+        onClick={() => setAbierto(!abierto)}
+        className="mt-2 text-xs font-semibold text-marca"
+      >
+        {abierto ? 'Ocultar detalle' : 'Qué es y qué se entrega'}
+      </button>
+      {abierto ? (
+        <div className="mt-2 space-y-2">
+          <textarea
+            value={modulo.descripcion}
+            onChange={(e) => onChange({ ...modulo, descripcion: e.target.value })}
+            placeholder="Qué es y qué problema resuelve, en palabras del cliente"
+            rows={3}
+            aria-label="Descripción del módulo a medida"
+            className="anillo-foco w-full rounded-lg border border-borde bg-superficie px-2.5 py-2 text-sm"
+          />
+          <textarea
+            value={modulo.entregables.join(SALTO)}
+            onChange={(e) =>
+              onChange({
+                ...modulo,
+                entregables: e.target.value.split(SALTO).map((x) => x.trimStart()),
+              })
+            }
+            onBlur={() =>
+              onChange({
+                ...modulo,
+                entregables: modulo.entregables.map((x) => x.trim()).filter(Boolean),
+              })
+            }
+            placeholder="Entregables, uno por línea"
+            rows={3}
+            aria-label="Entregables del módulo a medida"
+            className="anillo-foco w-full rounded-lg border border-borde bg-superficie px-2.5 py-2 text-sm"
+          />
+        </div>
+      ) : modulo.descripcion ? (
+        <p className="mt-1 line-clamp-2 text-xs text-tenue">{modulo.descripcion}</p>
+      ) : null}
+    </div>
+  )
+}
+
 function EditorPaquete({
   paquete,
   calculo,
@@ -146,6 +258,7 @@ function EditorPaquete({
   onChange,
   onElegir,
   margenMinimo,
+  topeAMedida,
 }: {
   paquete: PaquetePropuesta
   calculo: PaqueteCalculado
@@ -154,6 +267,7 @@ function EditorPaquete({
   onChange: (p: PaquetePropuesta) => void
   onElegir: () => void
   margenMinimo: number
+  topeAMedida: number
 }) {
   const mapa = new Map(catalogo.map((c) => [c.codigo, c]))
   const disponibles = catalogo.filter(
@@ -207,6 +321,21 @@ function EditorPaquete({
 
       <div className="mt-3 space-y-2">
         {paquete.lineas.map((l, i) => {
+          if (l.a_medida) {
+            return (
+              <EditorAMedida
+                key={l.codigo}
+                modulo={l.a_medida}
+                tope={topeAMedida}
+                onChange={(m) =>
+                  linea(i, { a_medida: m, precio_setup: null, precio_mensual: null })
+                }
+                onQuitar={() =>
+                  onChange({ ...paquete, lineas: paquete.lineas.filter((_, j) => j !== i) })
+                }
+              />
+            )
+          }
           const item = mapa.get(l.codigo)
           const calc = calculo.lineas[i]
           return (
@@ -292,6 +421,32 @@ function EditorPaquete({
             </optgroup>
           ))}
         </Selector>
+        <button
+          type="button"
+          onClick={() =>
+            onChange({
+              ...paquete,
+              lineas: [
+                ...paquete.lineas,
+                {
+                  codigo: `MEDIDA_${Date.now().toString(36).toUpperCase()}`,
+                  cantidad: 1,
+                  a_medida: {
+                    nombre: 'Módulo a medida',
+                    descripcion: '',
+                    entregables: [],
+                    precio_setup: topeAMedida,
+                    precio_mensual: 0,
+                    semanas: 2,
+                  },
+                },
+              ],
+            })
+          }
+          className="inline-flex items-center gap-1 text-xs font-semibold text-marca"
+        >
+          <Plus className="size-3.5" /> Módulo a medida
+        </button>
       </div>
 
       <div className="mt-3 grid grid-cols-3 gap-2">
@@ -578,6 +733,7 @@ export function EditorPropuesta({
             catalogo={catalogo}
             seleccionado={p.nivel === datos.seleccionado}
             margenMinimo={ajustes.precios.margen_minimo_mensual}
+            topeAMedida={ajustes.precios.a_medida_tope}
             onElegir={() => cambiar({ ...datos, seleccionado: p.nivel })}
             onChange={(nuevo) =>
               cambiar({ ...datos, paquetes: datos.paquetes.map((x, j) => (j === i ? nuevo : x)) })

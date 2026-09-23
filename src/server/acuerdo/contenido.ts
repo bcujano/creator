@@ -149,7 +149,12 @@ export function construirAcuerdo(doc: Documento, legal: DatosLegales, hoy = new 
       tipo: 'parrafo',
       texto: `EL PROVEEDOR se obliga a diseñar, configurar, implementar y poner en marcha para EL CLIENTE la solución «${paquete.definicion.nombre}», y a prestar el servicio mensual de soporte y mantenimiento descrito en este acuerdo. La solución comprende:`,
     },
-    { tipo: 'vinetas', items: paquete.items.map((i) => `${i.nombre}: ${i.descripcion}`) },
+    {
+      tipo: 'vinetas',
+      items: paquete.items.map(
+        (i) => `${i.nombre}${i.a_medida ? ' (desarrollo a medida)' : ''}: ${i.descripcion}`,
+      ),
+    },
 
     clausula('ALCANCE Y ENTREGABLES'),
     { tipo: 'parrafo', texto: 'El alcance incluye las siguientes funcionalidades:' },

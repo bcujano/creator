@@ -128,13 +128,33 @@ export const EsquemaAnalisis = z.object({
       entregables: z.array(z.string()),
     }),
   ),
+  modulos_a_medida: z
+    .array(
+      z.object({
+        codigo: z.string().describe('Identificador corto en mayúsculas, p. ej. MEDIDA_INVENTARIO.'),
+        nombre: z.string(),
+        descripcion: z
+          .string()
+          .describe('Qué es y qué problema resuelve, en lenguaje del dueño del negocio.'),
+        necesidad: z.string().describe('Qué necesidad del diagnóstico no cubre el catálogo.'),
+        entregables: z.array(z.string()).describe('Entregables concretos y verificables.'),
+        precio_setup: z
+          .number()
+          .describe('Implementación en USD, sin IVA. No puede pasar del tope.'),
+        precio_mensual: z.number().describe('Mensualidad adicional en USD; 0 si no requiere.'),
+        semanas: z.number(),
+      }),
+    )
+    .describe('Solo para necesidades que el catálogo no cubre. Vacío si todo está en el catálogo.'),
   paquetes: z
     .array(
       z.object({
         nivel: z.enum(['esencial', 'recomendado', 'premium']),
         nombre: z.string(),
         propuesta_valor: z.string(),
-        codigos: z.array(z.string()),
+        codigos: z
+          .array(z.string())
+          .describe('Códigos del catálogo y de modulos_a_medida que incluye este paquete.'),
         usuarios_estimados: z.number(),
         por_que: z.string(),
       }),
