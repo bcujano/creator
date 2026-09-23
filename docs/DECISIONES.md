@@ -37,3 +37,6 @@ Aprobados por el usuario el 23/09/2026: iAgente WhatsApp $2.500+$190/mes; CRM B�
 
 ### 12. Estructura de carpetas por funci처n
 `components/{ui,comun,cliente,presentacion,levantamiento,admin}`, `server/{ia,exportar,acuerdo}`, `lib` puro, `tests/fixtures`. CI (tipos, lint, pruebas) en GitHub Actions; Vercel hace el build.
+
+### 13. Valoraci처n de m처dulos a medida grandes: pospuesta
+El 23/09/2026 se presentaron tres esquemas (ver ESTADO, pendiente 1) con recomendaci처n del nivel "proyecto" por entregables. Byron lo dej처 pendiente para priorizar la revisi처n del acuerdo de DKB Courier. Mientras tanto sigue la tabla $300/$600/$900 con tope.

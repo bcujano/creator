@@ -11,4 +11,9 @@
 7. **Módulos a medida** (`5b39aff`, `2cd3ca2`): primero con precio de la IA; luego redefinidos a pedido del usuario: solo herramientas nuevas, nombres claros, precio por tabla de complejidad.
 8. **Orden y documentación**: estructura por función, CI, `CLAUDE.md` y `docs/`.
 
+## 23 de septiembre de 2026 — segunda sesión
+
+1. **A medida grandes:** tres esquemas de valoración con el caso de rutas (A mensualidad, B proyecto por entregables, C partir módulos). Pospuesto por Byron; queda como pendiente 1.
+2. **Revisión del acuerdo ACU-2026-0012 (DKB Courier)**, editado a mano con los valores negociados; se detectaron inconsistencias y necesidades del cierre (pendiente 6).
+
 Pendientes: ver `docs/ESTADO.md`.

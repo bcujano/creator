@@ -31,12 +31,17 @@ Verificación: `pnpm check` → **45 pruebas** en verde (precios, cifras, pagos,
 
 ## Pendientes (en orden)
 
-1. **⭐ IMPORTANTE — Valorar bien los módulos a medida complejos.** El tope de $900 se queda corto para desarrollos grandes (ej.: sistema de planificación de rutas + app de choferes + avisos, propuesto para una distribuidora). Hay que decidir con Byron: ¿mantener $900 como gancho y cobrar el resto por mensualidad/fase 2, subir la tabla de "compleja", o agregar un nivel "proyecto" que se cotice aparte (quizá con horas estimadas)? Tabla actual en Ajustes → Precios (`a_medida_simple/media/tope`). La lógica está en `lib/precios.ts#precioAMedida` y el criterio de la IA en `server/ia/analizar.ts` (sección "Módulos a medida").
+1. **⭐ IMPORTANTE (en espera de decisión de Byron) — Valorar bien los módulos a medida grandes.** Hoy un sistema como el de rutas de la distribuidora (6 entregables, 6 semanas) sale a $900 por el tope. Propuestas presentadas el 23/09/2026:
+   - **A · $900 + mensualidad** de operación ($120/mes en complejos): rutas = $1.620 al plazo mínimo, $2.340 el primer año.
+   - **B · Nivel "proyecto" por entregables (recomendado):** simple/media/compleja se mantienen; si hay ≥3 piezas nuevas o >4 semanas, la IA da talla a cada entregable (S 8 h, M 16 h, L 32 h) y el código multiplica por $30/h (tarifa implícita de la tabla actual); tope $6.000, sobre eso se cotiza aparte. Rutas = 112 h → $3.360 + IVA.
+   - **C · Partir en varios módulos de tabla:** rutas = $900 + $900 + $600 = $2.400.
+   Al decidir: `lib/precios.ts#precioAMedida`, `ParametrosPrecio` (+ Ajustes), `server/ia/esquema.ts` (talla por entregable), `server/ia/analizar.ts`, pruebas en `tests/a-medida.test.ts`.
 2. **Probar el primer "Enviar al CRM" real** y confirmar que el lead y la actividad aparecen bien en crm-321 (ver `docs/OPERACION.md` → CRM).
 3. **Revisión legal del acuerdo** por el abogado de Byron antes del primer cliente real (`server/acuerdo/contenido.ts`). Aplicar sus cambios ahí; valen para todos.
 4. **Costos mensuales del catálogo** son estimados (sobre todo voz Retell/Twilio y WhatsApp). Ajustar con facturas reales en Catálogo.
 5. **Opcional ofrecido, sin respuesta:** agregar automáticamente las preguntas "por cuantificar" del diagnóstico como preguntas de seguimiento en la Entrevista.
-6. **Opcional:** si se pasa a Vercel Pro, subir `maxDuration` de `api/levantamientos/[id]/analizar` y permitir esfuerzo `high`.
+6. **Cierre más flexible (visto en el acuerdo de DKB Courier, ACU-2026-0012):** se negoció la implementación en 7 cuotas mensuales de $600 y precios "IVA incluido", y hubo que ajustar el Word a mano. El cierre solo admite 1–4 desembolsos por % y siempre suma IVA. Evaluar: cuotas mensuales con fechas, opción "precio final con IVA incluido" y plazo mínimo por acuerdo (DKB: 12 meses).
+7. **Opcional:** si se pasa a Vercel Pro, subir `maxDuration` de `api/levantamientos/[id]/analizar` y permitir esfuerzo `high`.
 
 ## Datos de producción (no secretos)
 
