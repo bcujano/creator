@@ -75,11 +75,16 @@ export function CierreTrato({
   const errorPagos = validarPagos(pagos)
   const conMontos = montosPagos(pagos, elegido?.setup.total ?? 0)
 
+  // Se comparan valores, no texto: la base guarda las claves de cada desembolso en otro orden.
+  const firmaPagos = (lista: Desembolso[]) =>
+    lista.map((p) => `${p.concepto.trim()}|${Number(p.pct)}`).join(';')
   const cierreSucio =
     !propuesta.cierre ||
     propuesta.cierre.paquete !== paquete ||
-    JSON.stringify(propuesta.cierre.pagos) !== JSON.stringify(pagos)
-  const datosSucios = CAMPOS.some((c) => (datos[c.clave] ?? '') !== String(cliente[c.clave] ?? ''))
+    firmaPagos(propuesta.cierre.pagos) !== firmaPagos(pagos)
+  const datosSucios = CAMPOS.some(
+    (c) => (datos[c.clave] ?? '').trim() !== String(cliente[c.clave] ?? '').trim(),
+  )
   const sucio = cierreSucio || datosSucios
   // La razón social puede quedar vacía: se usa el nombre comercial.
   const faltan = CAMPOS.filter(
