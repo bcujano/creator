@@ -43,3 +43,10 @@ El 23/09/2026 se presentaron tres esquemas (ver ESTADO, pendiente 1) con recomen
 
 ### 14. Numeración de propuestas desde la 127
 El acuerdo de DKB Courier se firmó como N.º 127. Migración `0006`: su propuesta pasó de `AIU-2026-0012` a `AIU-2026-0127` (queda en `eventos`) y la secuencia sigue desde ahí: la próxima es `AIU-2026-0128`. El acuerdo toma el mismo número con prefijo `ACU-`.
+
+### 15. Un número por negociación
+Antes cada versión guardada tomaba un número nuevo de la serie (DKB: v1 = 0011, v2 = 0012). Desde la migración `0007`, las versiones de un mismo levantamiento comparten número (`AIU-2026-0127` v2, v3…) y solo la primera toma uno nuevo. Motivo: el acuerdo cita "propuesta N.º X, versión Y" y la serie no debe saltar por guardar cambios.
+
+### 16. Presentación descargable en PDF
+Pedido de Byron: enviar la presentación como valor agregado después de la reunión y junto al contrato. Es un PDF horizontal hecho con react-pdf a partir del mismo `Documento` (no una captura de la pantalla del iPad), así funciona desde el servidor y en el enlace público. Si hay cierre, marca el paquete "Elegido" y agrega "Lo acordado". Para que coincida con un contrato negociado, lo negociado se guarda como nueva versión de la propuesta.
+

@@ -522,7 +522,16 @@ export async function generarPresentacion(doc: Documento): Promise<Buffer> {
               <Text style={{ fontSize: 15, fontFamily: 'Helvetica-Bold', marginTop: 4 }}>
                 {p.definicion.nombre}
               </Text>
-              <Text style={{ fontSize: 9, color: TENUE, marginTop: 4, height: 50 }}>
+              <Text
+                style={{
+                  fontSize: 8.5,
+                  color: TENUE,
+                  marginTop: 4,
+                  height: 62,
+                  maxLines: 6,
+                  textOverflow: 'ellipsis',
+                }}
+              >
                 {p.definicion.propuesta_valor}
               </Text>
               <Text style={{ fontSize: 22, fontFamily: 'Helvetica-Bold', color: c.primario }}>

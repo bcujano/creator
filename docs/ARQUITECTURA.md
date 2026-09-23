@@ -34,11 +34,11 @@ src/
     documento.ts              Arma el documento único para todas las salidas
     publico.ts                Versión sin datos internos para el cliente
     ia/{motor,esquema,analizar}.ts
-    exportar/{pdf,docx,pptx,xlsx,markdown,comun,index}
+    exportar/{presentacion,pdf,docx,pptx,xlsx,markdown,comun,index}
     acuerdo/{contenido,pdf,docx,letras}
     extraer.ts, almacen.ts, subidas.ts, crm.ts, http.ts
   proxy.ts                    Protección de rutas (Next 16)
-supabase/migrations/          SQL append-only (0001–0005)
+supabase/migrations/          SQL append-only (0001–0007)
 scripts/                      db-migrate, crear-admin
 tests/                        Vitest; fixtures/ con un caso completo (Clínica Sonrisa)
 docs/                         Estado, arquitectura, decisiones, operación, historial
@@ -76,7 +76,7 @@ Nueva reunión ─► Entrevista (iPad) ◄── pulso cada 5 s ── Formular
 | `levantamientos` | Reunión: `respuestas` (consultor), `respuestas_cliente`, `token_cliente`, estado |
 | `insumos` | Material: texto extraído + archivo en Storage (bucket privado `insumos`) |
 | `analisis` | Versión inmutable: entrada congelada, resultado normalizado, uso de tokens |
-| `propuestas` | Versión inmutable: `datos` (paquetes/líneas), `totales` congelados, `cierre` (mutable), `token_publico`, número AIU-AAAA-NNNN |
+| `propuestas` | Versión inmutable: `datos` (paquetes/líneas), `totales` congelados, `cierre` (mutable), `token_publico`, número AIU-AAAA-NNNN (compartido por todas las versiones de un levantamiento) |
 | `eventos` | Bitácora de todo |
 | `crm_envios` | Cada llamada al CRM con solicitud y respuesta |
 
@@ -86,7 +86,7 @@ Storage: `insumos` (privado, subida directa con URL firmada), `marca` (público,
 
 - **Motor de precios** (`lib/precios.ts`): líneas del catálogo o a medida (`itemAMedida`), módulos incluidos en paquetes a $0, usuarios extra, excedentes de volumen, descuentos, IVA, costo y margen, simulador de modelos de cobro.
 - **Cifras** (`lib/analisis.ts`): `calcular()` multiplica factores y aplica las reglas anti-invención; `normalizarAnalisis()` es idempotente y tolera análisis antiguos.
-- **Pagos** (`lib/pagos.ts`): `cierreEfectivo`, `validarPagos` (1–4, suma 100%), `montosPagos` (el último absorbe el redondeo).
+- **Pagos** (`lib/pagos.ts`): `cierreEfectivo`, `validarPagos` (1–12, suma 100%), `pctVisible`, `montosPagos` (el último absorbe el redondeo).
 - **IA** (`server/ia/`): `esquema.ts` (zod, sin opcionales para servir a ambos proveedores), `analizar.ts` (prompts: reglas de cifras, dolores ocultos, módulos a medida, presupuesto del cliente), `motor.ts` (streaming, esfuerzo adaptativo, fallback por gramática grande, respaldo OpenAI).
 - **Salidas**: `server/documento.ts` → exportadores y presentación; `server/publico.ts` filtra costos, márgenes y notas internas.
 
