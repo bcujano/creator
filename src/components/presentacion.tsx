@@ -12,8 +12,10 @@ import {
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { etiquetaConfianza, formula } from '@/lib/analisis'
 import { formatoUSD } from '@/lib/precios'
 import type { DocumentoPublico } from '@/server/publico'
+import { CifraConCuenta } from './cifra'
 import { cx } from './ui'
 
 type Diapositiva = { id: string; contenido: ReactNode; oscura?: boolean }
@@ -162,11 +164,7 @@ function construir(doc: DocumentoPublico): Diapositiva[] {
                   </span>
                   <p className="mt-3 text-lg font-semibold leading-snug">{x.titulo}</p>
                   <p className="mt-2 text-sm leading-relaxed text-tenue">{x.descripcion}</p>
-                  {x.impacto_mensual_usd ? (
-                    <p className="mt-3 font-titulo text-xl font-bold text-peligro">
-                      ≈ {usd(x.impacto_mensual_usd, doc)} / {mes}
-                    </p>
-                  ) : null}
+                  <CifraConCuenta cifra={x.impacto} idioma={doc.idioma} sufijo={`/ ${mes}`} />
                 </div>
               ))}
             </div>
@@ -245,19 +243,45 @@ function construir(doc: DocumentoPublico): Diapositiva[] {
           </div>
           <div className="grid content-center gap-3">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-marca">{t.roi}</p>
-            {[
-              [usd(a.roi.ahorro_mensual_usd, doc), t.ahorro_mes],
-              [usd(a.roi.ingreso_adicional_mensual_usd, doc), t.ingreso_mes],
-              [String(Math.round(a.roi.horas_ahorradas_mes)), t.horas_mes],
-              ...(doc.recuperacion_meses
-                ? [[`${doc.recuperacion_meses} ${t.meses}`, t.recuperacion]]
-                : []),
-            ].map(([v, n]) => (
-              <div key={n} className="rounded-3xl bg-marca/8 px-5 py-4">
-                <p className="font-titulo text-3xl font-bold text-marca">{v}</p>
-                <p className="text-sm text-tenue">{n}</p>
+            {a.roi.componentes
+              .filter((c) => c.calculo.valor !== null)
+              .map((c) => (
+                <div key={c.concepto} className="rounded-3xl bg-marca/8 px-5 py-4">
+                  <p className="font-titulo text-3xl font-bold text-marca">
+                    {usd(c.calculo.valor ?? 0, doc)}{' '}
+                    <span className="text-base font-semibold">/ {mes}</span>
+                  </p>
+                  <p className="text-sm font-medium">{c.concepto}</p>
+                  <p className="mt-1 text-xs text-tenue">= {formula(c.calculo, doc.idioma)}</p>
+                  <p className="text-[11px] text-tenue">
+                    {etiquetaConfianza(c.calculo, doc.idioma)}
+                  </p>
+                </div>
+              ))}
+            {a.roi.horas.valor !== null ? (
+              <div className="rounded-3xl bg-marca/8 px-5 py-4">
+                <p className="font-titulo text-3xl font-bold text-marca">
+                  {Math.round(a.roi.horas.valor)} h
+                </p>
+                <p className="text-sm font-medium">{t.horas_mes}</p>
+                <p className="mt-1 text-xs text-tenue">= {formula(a.roi.horas, doc.idioma)}</p>
               </div>
-            ))}
+            ) : null}
+            {doc.recuperacion_meses ? (
+              <div className="rounded-3xl bg-marca/8 px-5 py-4">
+                <p className="font-titulo text-3xl font-bold text-marca">
+                  {doc.recuperacion_meses} {t.meses}
+                </p>
+                <p className="text-sm text-tenue">{t.recuperacion}</p>
+              </div>
+            ) : null}
+            {a.roi.componentes.every((c) => c.calculo.valor === null) ? (
+              <p className="text-sm text-tenue">
+                {doc.idioma === 'en'
+                  ? 'We will quantify the return together once we confirm a few figures.'
+                  : 'Cuantificaremos el retorno juntos al confirmar algunos datos.'}
+              </p>
+            ) : null}
           </div>
         </div>
       ),

@@ -1,4 +1,5 @@
 import 'server-only'
+import { normalizarAnalisis } from '@/lib/analisis'
 import type { DatosPropuesta, Idioma } from '@/lib/tipos'
 import { enviarAlCrm } from './crm'
 import {
@@ -75,7 +76,7 @@ export async function ejecutarAnalisis(levantamientoId: string) {
   try {
     const r = await analizar(ajustes, levantamiento, entrada)
     await cerrarAnalisis(fila.id, {
-      resultado: r.datos,
+      resultado: normalizarAnalisis(r.datos),
       uso: r.uso,
       estado: 'listo',
       modelo: r.modelo,

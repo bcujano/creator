@@ -18,7 +18,15 @@ import {
   WidthType,
 } from 'docx'
 import type { Documento } from '../documento'
-import { cargarLogo, etiquetaVeredicto, filasPaquete, hex, usd } from './comun'
+import {
+  cargarLogo,
+  etiquetaVeredicto,
+  filasPaquete,
+  hex,
+  lineaCifra,
+  lineasRoi,
+  usd,
+} from './comun'
 
 const FUENTE = 'Calibri'
 
@@ -194,9 +202,7 @@ export async function generarDocx(doc: Documento): Promise<Buffer> {
             ...lista.flatMap((d) => [
               p(`${d.titulo} (${t[d.severidad]})`, { negrita: true }),
               p(d.descripcion),
-              ...(d.impacto_mensual_usd
-                ? [p(`${t.impacto_mes}: ${usd(d.impacto_mensual_usd, doc)}`, { color: '626A7D' })]
-                : []),
+              p(`${t.impacto_mes}: ${lineaCifra(d.impacto, doc)}`, { color: '626A7D' }),
               p(`${t.costo_no_actuar}: ${d.costo_de_no_actuar}`, { color: '626A7D', tamano: 19 }),
             ]),
           ]
@@ -225,12 +231,7 @@ export async function generarDocx(doc: Documento): Promise<Buffer> {
         h(t.riesgos, 2, primario),
         ...a.viabilidad.riesgos.map((r) => vineta(`${r.riesgo} → ${r.mitigacion}`)),
         h(t.roi, 2, primario),
-        vineta(`${t.ahorro_mes}: ${usd(a.roi.ahorro_mensual_usd, doc)}`),
-        vineta(`${t.ingreso_mes}: ${usd(a.roi.ingreso_adicional_mensual_usd, doc)}`),
-        vineta(`${t.horas_mes}: ${Math.round(a.roi.horas_ahorradas_mes)}`),
-        ...(doc.recuperacion_meses
-          ? [vineta(`${t.recuperacion}: ${doc.recuperacion_meses} ${t.meses}`)]
-          : []),
+        ...lineasRoi(doc).map(vineta),
         p(a.roi.explicacion, { color: '626A7D', tamano: 19, cursiva: true }),
         new Paragraph({ children: [new PageBreak()] }),
       ]

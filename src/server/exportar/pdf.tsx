@@ -11,7 +11,15 @@ import {
 } from '@react-pdf/renderer'
 import type { ReactNode } from 'react'
 import type { Documento } from '../documento'
-import { cargarLogo, etiquetaVeredicto, filasPaquete, type Logo, usd } from './comun'
+import {
+  cargarLogo,
+  etiquetaVeredicto,
+  filasPaquete,
+  type Logo,
+  lineaCifra,
+  lineasRoi,
+  usd,
+} from './comun'
 
 // Sin cortar palabras con guion: en español y en documentos formales se ve mal.
 Font.registerHyphenationCallback((palabra) => [palabra])
@@ -231,11 +239,9 @@ function Diagnostico({ doc, e }: { doc: Documento; e: E }) {
                   </Text>
                   <Text style={{ fontFamily: 'Helvetica-Bold', marginBottom: 2 }}>{d.titulo}</Text>
                   <Text>{d.descripcion}</Text>
-                  {d.impacto_mensual_usd ? (
-                    <Text style={[e.tenue, { marginTop: 3 }]}>
-                      {t.impacto_mes}: {usd(d.impacto_mensual_usd, doc)}
-                    </Text>
-                  ) : null}
+                  <Text style={[e.tenue, { marginTop: 3 }]}>
+                    {t.impacto_mes}: {lineaCifra(d.impacto, doc)}
+                  </Text>
                   <Text style={[e.tenue, { marginTop: 2, fontSize: 9 }]}>
                     {t.costo_no_actuar}: {d.costo_de_no_actuar}
                   </Text>
@@ -296,28 +302,7 @@ function Diagnostico({ doc, e }: { doc: Documento; e: E }) {
         <Text style={e.h2}>{t.riesgos}</Text>
         <Vinetas items={a.viabilidad.riesgos.map((r) => `${r.riesgo} → ${r.mitigacion}`)} e={e} />
         <Text style={e.h2}>{t.roi}</Text>
-        <View style={e.kpis}>
-          <View style={e.kpi}>
-            <Text style={e.kpiValor}>{usd(a.roi.ahorro_mensual_usd, doc)}</Text>
-            <Text style={e.kpiNombre}>{t.ahorro_mes}</Text>
-          </View>
-          <View style={e.kpi}>
-            <Text style={e.kpiValor}>{usd(a.roi.ingreso_adicional_mensual_usd, doc)}</Text>
-            <Text style={e.kpiNombre}>{t.ingreso_mes}</Text>
-          </View>
-          <View style={e.kpi}>
-            <Text style={e.kpiValor}>{Math.round(a.roi.horas_ahorradas_mes)}</Text>
-            <Text style={e.kpiNombre}>{t.horas_mes}</Text>
-          </View>
-          {doc.recuperacion_meses ? (
-            <View style={e.kpi}>
-              <Text style={e.kpiValor}>
-                {doc.recuperacion_meses} {t.meses}
-              </Text>
-              <Text style={e.kpiNombre}>{t.recuperacion}</Text>
-            </View>
-          ) : null}
-        </View>
+        <Vinetas items={lineasRoi(doc)} e={e} />
         <Text style={[e.tenue, { fontSize: 9 }]}>{a.roi.explicacion}</Text>
       </Seccion>
     </>

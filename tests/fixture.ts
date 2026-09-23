@@ -1,9 +1,10 @@
 import { AJUSTES_DEFECTO } from '../src/lib/ajustes-defecto'
+import { normalizarAnalisis } from '../src/lib/analisis'
 import { textos } from '../src/lib/i18n'
 import { calcularPaquete } from '../src/lib/precios'
 import type { DatosPropuesta, ItemCatalogo } from '../src/lib/tipos'
 import type { Documento } from '../src/server/documento'
-import type { ResultadoAnalisis } from '../src/server/ia/esquema'
+import type { ResultadoIA } from '../src/server/ia/esquema'
 
 /** Un caso realista para probar las salidas sin base de datos ni IA. */
 
@@ -95,7 +96,7 @@ export const CATALOGO = new Map(
   ].map((i) => [i.codigo, i]),
 )
 
-export const ANALISIS: ResultadoAnalisis = {
+const BRUTO: ResultadoIA = {
   resumen_ejecutivo:
     'Clínica Sonrisa atiende 600 pacientes al mes y pierde citas por mensajes sin responder fuera de horario. Proponemos un agente de WhatsApp que agenda 24/7, recordatorios automáticos y un CRM que ordene el seguimiento de tratamientos.',
   negocio: {
@@ -140,7 +141,32 @@ export const ANALISIS: ResultadoAnalisis = {
       area: 'Atención',
       severidad: 'alta',
       evidencia: 'La dueña dijo que “en la noche nadie contesta”.',
-      impacto_mensual_usd: 1700,
+      impacto: {
+        factores: [
+          {
+            concepto: 'mensajes nocturnos al mes',
+            valor: 200,
+            unidad: 'cantidad',
+            fuente: 'cliente',
+            evidencia: '“unos 200 mensajes llegan de noche”',
+          },
+          {
+            concepto: 'que no vuelve a escribir',
+            valor: 0.1,
+            unidad: 'porcentaje',
+            fuente: 'supuesto',
+            evidencia: 'Supuesto conservador: 1 de cada 10 agenda con otra clínica.',
+          },
+          {
+            concepto: 'ticket promedio',
+            valor: 85,
+            unidad: 'usd',
+            fuente: 'cliente',
+            evidencia: '“ticket promedio $85”',
+          },
+        ],
+        pregunta_para_cuantificar: null,
+      },
       costo_de_no_actuar: 'Los pacientes agendan con la competencia.',
     },
     {
@@ -150,7 +176,25 @@ export const ANALISIS: ResultadoAnalisis = {
       area: 'Ventas',
       severidad: 'alta',
       evidencia: 'No hay registro de presupuestos entregados.',
-      impacto_mensual_usd: 2400,
+      impacto: {
+        factores: [
+          {
+            concepto: 'presupuestos de ortodoncia sin respuesta al mes',
+            valor: 4,
+            unidad: 'cantidad',
+            fuente: 'consultor',
+            evidencia: 'Vi 4 presupuestos impresos del mes sin seguimiento.',
+          },
+          {
+            concepto: 'por tratamiento',
+            valor: 600,
+            unidad: 'usd',
+            fuente: 'supuesto',
+            evidencia: 'Valor de mercado.',
+          },
+        ],
+        pregunta_para_cuantificar: '¿Cuánto cuesta en promedio un tratamiento de ortodoncia?',
+      },
       costo_de_no_actuar: 'Tratamientos de alto valor que se enfrían.',
     },
     {
@@ -160,7 +204,10 @@ export const ANALISIS: ResultadoAnalisis = {
       area: 'Operación',
       severidad: 'media',
       evidencia: '“Si falta Carla, se cae todo.”',
-      impacto_mensual_usd: null,
+      impacto: {
+        factores: [],
+        pregunta_para_cuantificar: '¿Cuántos días al año falta la recepcionista?',
+      },
       costo_de_no_actuar: 'Riesgo operativo en vacaciones o renuncia.',
     },
   ],
@@ -225,9 +272,50 @@ export const ANALISIS: ResultadoAnalisis = {
     supuestos: ['10% de conversaciones nocturnas se convierten en cita'],
   },
   roi: {
-    ahorro_mensual_usd: 450,
-    ingreso_adicional_mensual_usd: 1900,
-    horas_ahorradas_mes: 60,
+    componentes: [
+      {
+        concepto: 'Citas recuperadas de mensajes nocturnos',
+        tipo: 'ingreso',
+        calculo: {
+          factores: [
+            {
+              concepto: 'citas recuperadas al mes',
+              valor: 20,
+              unidad: 'cantidad',
+              fuente: 'supuesto',
+              evidencia: 'Conservador.',
+            },
+            {
+              concepto: 'ticket promedio',
+              valor: 85,
+              unidad: 'usd',
+              fuente: 'cliente',
+              evidencia: '“ticket promedio $85”',
+            },
+          ],
+          pregunta_para_cuantificar: null,
+        },
+      },
+    ],
+    horas_liberadas: {
+      factores: [
+        {
+          concepto: 'horas diarias de recepción en WhatsApp',
+          valor: 2,
+          unidad: 'horas',
+          fuente: 'cliente',
+          evidencia: '“paso unas 2 horas diarias contestando”',
+        },
+        {
+          concepto: 'días hábiles',
+          valor: 22,
+          unidad: 'cantidad',
+          fuente: 'consultor',
+          evidencia: 'Atienden de lunes a viernes.',
+        },
+      ],
+      pregunta_para_cuantificar: null,
+    },
     explicacion:
       '20 citas extra × $85 + presupuestos recuperados; 2 h diarias de recepción liberadas.',
   },
@@ -274,6 +362,8 @@ export const ANALISIS: ResultadoAnalisis = {
   preguntas_pendientes: ['¿Cuántos presupuestos de ortodoncia entregan al mes?'],
   siguiente_paso: 'Firmar el anticipo esta semana para tener el agente atendiendo en 3 semanas.',
 }
+
+export const ANALISIS = normalizarAnalisis(BRUTO)
 
 export function documentoDePrueba(idioma: 'es' | 'en' = 'es'): Documento {
   const datos: DatosPropuesta = {

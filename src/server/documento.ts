@@ -1,4 +1,5 @@
 import 'server-only'
+import { normalizarAnalisis } from '@/lib/analisis'
 import { fechaLarga, textos } from '@/lib/i18n'
 import { calcularPaquete, type PaqueteCalculado } from '@/lib/precios'
 import type {
@@ -97,9 +98,10 @@ async function armar(propuesta: FilaPropuesta, idiomaForzado?: Idioma): Promise<
       recomendado: definicion.nivel === propuesta.datos.seleccionado,
     }))
 
-  const resultado = (
-    analisis?.estado === 'listo' ? analisis.resultado : null
-  ) as ResultadoAnalisis | null
+  const resultado: ResultadoAnalisis | null =
+    analisis?.estado === 'listo' && analisis.resultado
+      ? normalizarAnalisis(analisis.resultado)
+      : null
   const elegido = paquetes.find((p) => p.recomendado) ?? paquetes[0]
   const beneficio = resultado
     ? resultado.roi.ahorro_mensual_usd + resultado.roi.ingreso_adicional_mensual_usd

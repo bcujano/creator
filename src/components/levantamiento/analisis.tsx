@@ -3,8 +3,9 @@
 import { AlertTriangle, Brain, CheckCircle2, Eye, EyeOff, HelpCircle, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { normalizarAnalisis, type ResultadoAnalisis } from '@/lib/analisis'
 import { formatoUSD } from '@/lib/precios'
-import type { ResultadoAnalisis } from '@/server/ia/esquema'
+import { CifraConCuenta } from '../cifra'
 import { Aviso, api, Boton, cx, Insignia, Selector, Vacio } from '../ui'
 import type { PropsEspacio } from './espacio'
 
@@ -58,7 +59,7 @@ export function VistaDiagnostico({
             n: `Madurez digital · ${r.madurez_digital.nivel}`,
           },
           { v: String(r.dolores.length), n: `Dolores (${ocultos.length} ocultos)` },
-          { v: impactoTotal ? formatoUSD(impactoTotal) : '—', n: 'Impacto estimado al mes' },
+          { v: impactoTotal ? formatoUSD(impactoTotal) : '—', n: 'Impacto cuantificado al mes' },
           {
             v: formatoUSD(r.roi.ahorro_mensual_usd + r.roi.ingreso_adicional_mensual_usd),
             n: 'Beneficio mensual estimado',
@@ -124,11 +125,7 @@ export function VistaDiagnostico({
                   <p className="mt-2 text-xs text-tenue">
                     <strong>Evidencia:</strong> {d.evidencia}
                   </p>
-                  {d.impacto_mensual_usd ? (
-                    <p className="mt-1 text-sm font-semibold text-peligro">
-                      ≈ {formatoUSD(d.impacto_mensual_usd)} / mes
-                    </p>
-                  ) : null}
+                  <CifraConCuenta cifra={d.impacto} sufijo="/ mes" detallado />
                   <p className="mt-1 text-xs text-tenue">Si no se actúa: {d.costo_de_no_actuar}</p>
                 </div>
               ))}
@@ -215,6 +212,20 @@ export function VistaDiagnostico({
       <section className="space-y-3">
         <Titulo>Retorno</Titulo>
         <p className="text-sm">{r.roi.explicacion}</p>
+        <div className="grid gap-3 md:grid-cols-2">
+          {r.roi.componentes.map((c) => (
+            <div key={c.concepto} className="rounded-2xl border border-borde bg-superficie p-4">
+              <p className="font-semibold">
+                {c.concepto} <span className="text-xs font-normal text-tenue">· {c.tipo}</span>
+              </p>
+              <CifraConCuenta cifra={c.calculo} sufijo="/ mes" detallado />
+            </div>
+          ))}
+          <div className="rounded-2xl border border-borde bg-superficie p-4">
+            <p className="font-semibold">Horas liberadas</p>
+            <CifraConCuenta cifra={r.roi.horas} sufijo="/ mes" detallado horas />
+          </div>
+        </div>
       </section>
 
       {r.preguntas_pendientes.length ? (
@@ -358,7 +369,7 @@ export function PanelAnalisis({
             <CheckCircle2 className="size-3.5 text-ok" />
             Versión {actual.version} · {actual.proveedor} · {actual.modelo}
           </p>
-          <VistaDiagnostico r={actual.resultado as ResultadoAnalisis} catalogo={catalogo} />
+          <VistaDiagnostico r={normalizarAnalisis(actual.resultado)} catalogo={catalogo} />
         </div>
       ) : (
         <Vacio

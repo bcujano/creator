@@ -1,7 +1,7 @@
 import 'server-only'
 import ExcelJS from 'exceljs'
 import type { Documento } from '../documento'
-import { hex } from './comun'
+import { hex, lineaCifra } from './comun'
 
 const FORMATO_USD = '"$"#,##0.00'
 
@@ -152,13 +152,21 @@ export async function generarXlsx(doc: Documento): Promise<Buffer> {
   if (doc.analisis) {
     const a = doc.analisis
     const d = libro.addWorksheet(doc.idioma === 'en' ? 'Pain points' : 'Dolores')
-    d.columns = [{ width: 34 }, { width: 12 }, { width: 12 }, { width: 60 }, { width: 18 }]
+    d.columns = [
+      { width: 34 },
+      { width: 12 },
+      { width: 12 },
+      { width: 60 },
+      { width: 18 },
+      { width: 80 },
+    ]
     const c = d.addRow([
       t.dolores,
       doc.idioma === 'en' ? 'Type' : 'Tipo',
       doc.idioma === 'en' ? 'Severity' : 'Severidad',
       t.detalle,
       t.impacto_mes,
+      doc.idioma === 'en' ? 'How it is calculated' : 'Cómo se calcula',
     ])
     c.font = { bold: true }
     for (const x of a.dolores) {
@@ -168,6 +176,7 @@ export async function generarXlsx(doc: Documento): Promise<Buffer> {
         t[x.severidad],
         x.descripcion,
         x.impacto_mensual_usd ?? '',
+        lineaCifra(x.impacto, doc),
       ])
       f.getCell(5).numFmt = FORMATO_USD
       f.alignment = { wrapText: true, vertical: 'top' }

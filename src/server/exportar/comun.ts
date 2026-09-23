@@ -1,6 +1,7 @@
 import 'server-only'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { type Cifra, etiquetaConfianza, formula } from '@/lib/analisis'
 import { env } from '@/lib/env'
 import { formatoUSD } from '@/lib/precios'
 import type { Documento } from '../documento'
@@ -84,4 +85,28 @@ export function filasPaquete(doc: Documento, indice: number) {
     })
   }
   return filas
+}
+
+/** "≈ $150/mes = 3 inquilinos atrasados × $250 renta × 20% … (Estimado: incluye un supuesto)" */
+export function lineaCifra(c: Cifra, doc: Documento, horas = false) {
+  const en = doc.idioma === 'en'
+  if (c.valor === null) {
+    return `${en ? 'To be quantified' : 'Por cuantificar'}${c.pregunta_para_cuantificar ? `: ${c.pregunta_para_cuantificar}` : ''}`
+  }
+  const valor = horas ? `${Math.round(c.valor)} h` : usd(c.valor, doc)
+  const cuenta = c.factores.length ? ` = ${formula(c, doc.idioma)}` : ''
+  return `≈ ${valor}/${en ? 'mo' : 'mes'}${cuenta} (${etiquetaConfianza(c, doc.idioma)})`
+}
+
+/** Componentes del retorno con su cuenta, para listas. */
+export function lineasRoi(doc: Documento) {
+  const a = doc.analisis
+  if (!a) return []
+  return [
+    ...a.roi.componentes.map((c) => `${c.concepto}: ${lineaCifra(c.calculo, doc)}`),
+    `${doc.t.horas_mes}: ${lineaCifra(a.roi.horas, doc, true)}`,
+    ...(doc.recuperacion_meses
+      ? [`${doc.t.recuperacion}: ${doc.recuperacion_meses} ${doc.t.meses}`]
+      : []),
+  ]
 }

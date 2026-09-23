@@ -1,7 +1,8 @@
 import 'server-only'
 import PptxGenJS from 'pptxgenjs'
+import { formula } from '@/lib/analisis'
 import type { Documento } from '../documento'
-import { cargarLogo, etiquetaVeredicto, hex, usd } from './comun'
+import { cargarLogo, etiquetaVeredicto, hex, lineaCifra, usd } from './comun'
 
 const W = 13.33
 const TINTA = '1F2433'
@@ -305,18 +306,17 @@ export async function generarPptx(doc: Documento): Promise<Buffer> {
           fontFace: FUENTE,
           valign: 'top',
         })
-        if (d.impacto_mensual_usd) {
-          s.addText(`${t.impacto_mes}: ${usd(d.impacto_mensual_usd, doc)}`, {
-            x: x + 0.15,
-            y: y + 2.05,
-            w: 3.65,
-            h: 0.4,
-            fontSize: 11,
-            bold: true,
-            color: 'D6336C',
-            fontFace: FUENTE,
-          })
-        }
+        s.addText(lineaCifra(d.impacto, doc), {
+          x: x + 0.15,
+          y: y + 1.85,
+          w: 3.65,
+          h: 0.7,
+          fontSize: 9,
+          bold: d.impacto.valor !== null,
+          color: d.impacto.valor !== null ? 'D6336C' : TENUE,
+          fontFace: FUENTE,
+          valign: 'top',
+        })
       })
     }
 
@@ -478,10 +478,23 @@ export async function generarPptx(doc: Documento): Promise<Buffer> {
       3.4,
       12,
     )
+    const mes = doc.idioma === 'en' ? 'mo' : 'mes'
     const kpis: [string, string][] = [
-      [usd(a.roi.ahorro_mensual_usd, doc), t.ahorro_mes],
-      [usd(a.roi.ingreso_adicional_mensual_usd, doc), t.ingreso_mes],
-      [String(Math.round(a.roi.horas_ahorradas_mes)), t.horas_mes],
+      ...a.roi.componentes
+        .filter((c) => c.calculo.valor !== null)
+        .slice(0, 3)
+        .map((c): [string, string] => [
+          `${usd(c.calculo.valor ?? 0, doc)}/${mes}`,
+          `${c.concepto} = ${formula(c.calculo, doc.idioma)}`,
+        ]),
+      ...(a.roi.horas.valor !== null
+        ? ([
+            [
+              `${Math.round(a.roi.horas.valor)} h`,
+              `${t.horas_mes} = ${formula(a.roi.horas, doc.idioma)}`,
+            ],
+          ] as [string, string][])
+        : []),
       ...(doc.recuperacion_meses
         ? ([[`${doc.recuperacion_meses} ${t.meses}`, t.recuperacion]] as [string, string][])
         : []),

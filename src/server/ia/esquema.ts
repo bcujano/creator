@@ -7,6 +7,37 @@ import { z } from 'zod'
 
 const Severidad = z.enum(['alta', 'media', 'baja'])
 
+/**
+ * Un factor de un cálculo. El monto final NO lo da la IA: lo calcula el
+ * código multiplicando los factores (src/lib/analisis.ts), y cada factor
+ * dice de dónde sale.
+ */
+const Factor = z.object({
+  concepto: z.string().describe('Qué es, en pocas palabras: "inquilinos atrasados al mes".'),
+  valor: z.number().describe('El número. Porcentajes como fracción: 20% = 0.2.'),
+  unidad: z.enum(['usd', 'cantidad', 'porcentaje', 'horas', 'meses']),
+  fuente: z
+    .enum(['cliente', 'consultor', 'supuesto'])
+    .describe('cliente/consultor: lo dijeron en la reunión. supuesto: no lo dijeron.'),
+  evidencia: z
+    .string()
+    .describe(
+      'Si es dato: cita textual de la respuesta. Si es supuesto: por qué es razonable y conservador.',
+    ),
+})
+
+const Calculo = z.object({
+  factores: z
+    .array(Factor)
+    .describe('Se multiplican entre sí. Vacío si no hay datos suficientes para cuantificar.'),
+  pregunta_para_cuantificar: z
+    .string()
+    .nullable()
+    .describe(
+      'Si falta un dato, la pregunta exacta para obtenerlo del cliente. null si está completo.',
+    ),
+})
+
 export const EsquemaAnalisis = z.object({
   resumen_ejecutivo: z
     .string()
@@ -41,10 +72,7 @@ export const EsquemaAnalisis = z.object({
       area: z.string(),
       severidad: Severidad,
       evidencia: z.string().describe('Qué dijo o mostró el cliente que lo revela.'),
-      impacto_mensual_usd: z
-        .number()
-        .nullable()
-        .describe('Pérdida o costo mensual estimado. null si no hay base para estimarlo.'),
+      impacto: Calculo.describe('Pérdida o costo mensual en USD, como producto de factores.'),
       costo_de_no_actuar: z.string(),
     }),
   ),
@@ -82,10 +110,15 @@ export const EsquemaAnalisis = z.object({
     supuestos: z.array(z.string()),
   }),
   roi: z.object({
-    ahorro_mensual_usd: z.number(),
-    ingreso_adicional_mensual_usd: z.number(),
-    horas_ahorradas_mes: z.number(),
-    explicacion: z.string().describe('De dónde salen los números, con supuestos explícitos.'),
+    componentes: z.array(
+      z.object({
+        concepto: z.string(),
+        tipo: z.enum(['ahorro', 'ingreso']),
+        calculo: Calculo.describe('Monto mensual en USD que la solución recupera o genera.'),
+      }),
+    ),
+    horas_liberadas: Calculo.describe('Horas de trabajo por mes que la solución libera.'),
+    explicacion: z.string().describe('Resumen en una o dos frases, sin cifras nuevas.'),
   }),
   plan: z.array(
     z.object({
@@ -113,7 +146,10 @@ export const EsquemaAnalisis = z.object({
   siguiente_paso: z.string(),
 })
 
-export type ResultadoAnalisis = z.infer<typeof EsquemaAnalisis>
+/** Lo que devuelve la IA. Para mostrar, usar siempre ResultadoAnalisis (normalizado). */
+export type ResultadoIA = z.infer<typeof EsquemaAnalisis>
+export type FactorIA = z.infer<typeof Factor>
+export type { ResultadoAnalisis } from '@/lib/analisis'
 
 export const EsquemaSugerencias = z.object({
   preguntas: z.array(

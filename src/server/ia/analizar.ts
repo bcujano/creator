@@ -21,7 +21,7 @@ function entrevistaComoTexto(l: LevantamientoCompleto, vacio: string) {
   return partes.join('\n\n') || vacio
 }
 
-import { EsquemaAnalisis, EsquemaSugerencias, type ResultadoAnalisis } from './esquema'
+import { EsquemaAnalisis, EsquemaSugerencias, type ResultadoIA } from './esquema'
 import { generarEstructurado } from './motor'
 
 function catalogoComoTexto(catalogo: ItemCatalogo[], idioma: Idioma) {
@@ -63,7 +63,12 @@ Estás en la primera reunión con un cliente. Tu trabajo es entender el negocio,
 Cómo trabajas:
 - Te basas en la evidencia del levantamiento. Si algo es una suposición, dilo en "supuestos". No inventes datos del cliente.
 - Dolores ocultos: busca siempre al menos dos (tipo "oculto"), distintos de los que el cliente nombró. Infiérelos de tiempos de respuesta, dependencia de personas clave, trabajo manual repetido, falta de datos para decidir, clientes que se pierden sin seguimiento, errores recurrentes. Cada uno necesita evidencia concreta.
-- Estima el impacto en dólares con cálculos conservadores y explicables (volumen × ticket × % perdido, horas × costo por hora). Si no hay base, usa null.
+- Cifras (impacto de cada dolor, componentes del retorno, horas liberadas): NO calcules el total; da los factores que se multiplican y el sistema hace la cuenta. Reglas estrictas, porque el cliente verá de dónde sale cada número:
+  · Cada factor lleva su fuente. "cliente" o "consultor" solo si lo dijeron en la reunión, y en evidencia va la cita textual de su respuesta.
+  · Nunca inventes dinero: precios, rentas, tickets, sueldos o costos por hora deben venir del cliente o del consultor. Si falta ese dato, deja factores vacío y escribe en pregunta_para_cuantificar la pregunta exacta para obtenerlo.
+  · Se permite como máximo UN factor "supuesto" por cálculo (típicamente un porcentaje), conservador, y en evidencia explica por qué es razonable.
+  · Es preferible dejar una cifra sin cuantificar que presentar un número sin respaldo.
+  · Porcentajes como fracción (20% = 0.2).
 - Soluciones: usa SOLO códigos del catálogo. Si algo necesario no está en el catálogo, descríbelo igual y marca a_medida = true.
 - Si los procesos no están documentados o la operación depende de personas, considera el LEVANTAMIENTO documental como primer paso.
 - Paquetes (exactamente tres):
@@ -72,7 +77,7 @@ Cómo trabajas:
   · premium: la transformación completa.
   No repitas módulos que ya vienen dentro de un paquete (campo "Contiene los módulos"). Ajusta los paquetes al tamaño y presupuesto aparente del cliente.
 - Usa las palabras del cliente: cuando describe cómo imagina el sistema o por qué cree que podemos ayudarle, refleja esa visión en la propuesta de valor. Si indicó cuánto piensa invertir, el paquete recomendado debe caber en ese rango (o explicar por qué conviene salir de él) y el esencial debe quedar por debajo.
-- ROI conservador. Contexto: Ecuador, dólares, pymes.
+- Retorno: componentes de ahorro e ingreso con las mismas reglas de factores; no cuentes dos veces el mismo dinero. Contexto: Ecuador, dólares, pymes.
 - Escribe todo el contenido en ${lengua}, claro y directo, pensado para mostrárselo al dueño del negocio.`
 }
 
@@ -150,7 +155,7 @@ Dame de 3 a 5 preguntas y los dolores que sospechas.`,
 
 /** Convierte los paquetes que sugirió la IA en una propuesta editable. */
 export function propuestaDesdeAnalisis(
-  resultado: ResultadoAnalisis,
+  resultado: ResultadoIA,
   catalogo: Map<string, ItemCatalogo>,
 ): DatosPropuesta {
   const niveles: NivelPaquete[] = ['esencial', 'recomendado', 'premium']

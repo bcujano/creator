@@ -1,6 +1,6 @@
 import 'server-only'
 import type { Documento } from '../documento'
-import { etiquetaVeredicto, filasPaquete, usd } from './comun'
+import { etiquetaVeredicto, filasPaquete, lineaCifra, lineasRoi, usd } from './comun'
 
 /** Markdown: para pegar en un correo, en Notion o pasarlo a otro sistema. */
 export function generarMarkdown(doc: Documento): string {
@@ -26,10 +26,8 @@ export function generarMarkdown(doc: Documento): string {
       if (!lista.length) continue
       l.push(`\n### ${tipo === 'explicito' ? t.dolores_explicitos : t.dolores_ocultos}\n`)
       for (const d of lista) {
-        const impacto = d.impacto_mensual_usd
-          ? ` · ${t.impacto_mes}: ${usd(d.impacto_mensual_usd, doc)}`
-          : ''
-        l.push(`- **${d.titulo}** (${t[d.severidad]}${impacto}): ${d.descripcion}`)
+        l.push(`- **${d.titulo}** (${t[d.severidad]}): ${d.descripcion}`)
+        l.push(`  - ${t.impacto_mes}: ${lineaCifra(d.impacto, doc)}`)
       }
     }
     l.push(`\n## ${t.solucion}\n`)
@@ -47,10 +45,7 @@ export function generarMarkdown(doc: Documento): string {
     l.push(`\n### ${t.riesgos}\n`)
     for (const r of a.viabilidad.riesgos) l.push(`- ${r.riesgo} → ${r.mitigacion}`)
     l.push(`\n## ${t.roi}\n`)
-    l.push(`- ${t.ahorro_mes}: ${usd(a.roi.ahorro_mensual_usd, doc)}`)
-    l.push(`- ${t.ingreso_mes}: ${usd(a.roi.ingreso_adicional_mensual_usd, doc)}`)
-    l.push(`- ${t.horas_mes}: ${Math.round(a.roi.horas_ahorradas_mes)}`)
-    if (doc.recuperacion_meses) l.push(`- ${t.recuperacion}: ${doc.recuperacion_meses} ${t.meses}`)
+    for (const linea of lineasRoi(doc)) l.push(`- ${linea}`)
   }
 
   l.push(`\n## ${t.paquetes}`)
