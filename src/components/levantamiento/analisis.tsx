@@ -172,14 +172,17 @@ export function VistaDiagnostico({
               >
                 <div className="flex items-start justify-between gap-2">
                   <p className="font-semibold">{m.nombre}</p>
-                  <span className="text-sm font-semibold tabular-nums">
-                    {formatoUSD(m.precio_setup)}
-                  </span>
+                  <Insignia tono="aviso">complejidad {m.complejidad ?? 'media'}</Insignia>
                 </div>
                 <p className="mt-1 text-sm">{m.descripcion}</p>
                 <p className="mt-2 text-xs text-tenue">
                   <strong>Por qué:</strong> {m.necesidad}
                 </p>
+                {m.por_que_complejidad ? (
+                  <p className="mt-1 text-xs text-tenue">
+                    <strong>Qué hay que construir:</strong> {m.por_que_complejidad}
+                  </p>
+                ) : null}
                 <ul className="mt-2 space-y-0.5 text-xs">
                   {m.entregables.map((e) => (
                     <li key={e}>• {e}</li>

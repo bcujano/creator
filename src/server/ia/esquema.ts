@@ -131,17 +131,27 @@ export const EsquemaAnalisis = z.object({
   modulos_a_medida: z
     .array(
       z.object({
-        codigo: z.string().describe('Identificador corto en mayúsculas, p. ej. MEDIDA_INVENTARIO.'),
-        nombre: z.string(),
+        codigo: z
+          .string()
+          .describe('Identificador corto en mayúsculas, p. ej. MEDIDA_AGENTE_RUTAS.'),
+        nombre: z
+          .string()
+          .describe(
+            'Lo que ES, en palabras simples: "Agente de seguimiento y reactivación de pacientes".',
+          ),
         descripcion: z
           .string()
-          .describe('Qué es y qué problema resuelve, en lenguaje del dueño del negocio.'),
+          .describe(
+            'Empieza con "Es un agente / asistente / sistema que…" y di qué problema resuelve.',
+          ),
         necesidad: z.string().describe('Qué necesidad del diagnóstico no cubre el catálogo.'),
         entregables: z.array(z.string()).describe('Entregables concretos y verificables.'),
-        precio_setup: z
-          .number()
-          .describe('Implementación en USD, sin IVA. No puede pasar del tope.'),
-        precio_mensual: z.number().describe('Mensualidad adicional en USD; 0 si no requiere.'),
+        complejidad: z
+          .enum(['simple', 'media', 'compleja'])
+          .describe('Define el precio con la tabla de la empresa; no pongas montos.'),
+        por_que_complejidad: z
+          .string()
+          .describe('Qué hay que construir que justifica esa complejidad.'),
         semanas: z.number(),
       }),
     )

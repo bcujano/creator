@@ -24,6 +24,8 @@ export const AJUSTES_DEFECTO: Ajustes = {
     anticipo_pct: 50,
     modelo_por_usuario: 45,
     modelo_volumen_base: 120,
+    a_medida_simple: 300,
+    a_medida_media: 600,
     a_medida_tope: 900,
     a_medida_costo_pct: 35,
   },

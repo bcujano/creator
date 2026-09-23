@@ -58,7 +58,11 @@ export type ParametrosPrecio = {
   modelo_por_usuario: number
   /** Cuota base si se cobrara solo por volumen (simulador). */
   modelo_volumen_base: number
-  /** Precio máximo de implementación de un módulo a medida. */
+  /** Precio de implementación de un módulo a medida simple. */
+  a_medida_simple: number
+  /** Precio de implementación de un módulo a medida de complejidad media. */
+  a_medida_media: number
+  /** Precio de un módulo a medida complejo; también es el tope absoluto. */
   a_medida_tope: number
   /** Costo propio estimado de un desarrollo a medida, como % de su precio. */
   a_medida_costo_pct: number

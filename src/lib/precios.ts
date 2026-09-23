@@ -68,6 +68,19 @@ export function nombreItem(item: Pick<ItemCatalogo, 'nombre_es' | 'nombre_en'>, 
   return idioma === 'en' ? item.nombre_en : item.nombre_es
 }
 
+/** Precio de un módulo a medida según su complejidad (tabla de Ajustes). */
+export function precioAMedida(
+  complejidad: 'simple' | 'media' | 'compleja',
+  parametros: ParametrosPrecio,
+) {
+  const tabla = {
+    simple: parametros.a_medida_simple,
+    media: parametros.a_medida_media,
+    compleja: parametros.a_medida_tope,
+  }
+  return Math.min(tabla[complejidad] ?? parametros.a_medida_media, parametros.a_medida_tope)
+}
+
 /**
  * Un módulo a medida se comporta como un ítem de catálogo armado al vuelo.
  * El precio de implementación nunca pasa del tope configurado.

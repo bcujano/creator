@@ -253,10 +253,18 @@ export function EditorAjustes({ inicial, estado }: { inicial: Ajustes; estado: E
           <Campo type="number" {...campo('precios', 'modelo_volumen_base', 'numero')} />
         </div>
         <div>
-          <Etiqueta>Tope de un módulo a medida (implementación)</Etiqueta>
+          <Etiqueta>Módulo a medida simple</Etiqueta>
+          <Campo type="number" {...campo('precios', 'a_medida_simple', 'numero')} />
+        </div>
+        <div>
+          <Etiqueta>Módulo a medida de complejidad media</Etiqueta>
+          <Campo type="number" {...campo('precios', 'a_medida_media', 'numero')} />
+        </div>
+        <div>
+          <Etiqueta>Módulo a medida complejo (y tope)</Etiqueta>
           <Campo type="number" {...campo('precios', 'a_medida_tope', 'numero')} />
           <p className="mt-1 text-xs text-tenue">
-            La IA nunca propone más; el sistema lo hace cumplir.
+            La IA solo clasifica la complejidad; el precio sale de esta tabla y nunca pasa del tope.
           </p>
         </div>
         <div>

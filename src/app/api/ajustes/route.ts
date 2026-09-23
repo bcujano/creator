@@ -32,6 +32,8 @@ const Ajustes = z.object({
       anticipo_pct: z.number().min(0).max(100),
       modelo_por_usuario: z.number().min(0),
       modelo_volumen_base: z.number().min(0),
+      a_medida_simple: z.number().min(0),
+      a_medida_media: z.number().min(0),
       a_medida_tope: z.number().min(0),
       a_medida_costo_pct: z.number().min(0).max(100),
     })

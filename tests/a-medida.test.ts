@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { AJUSTES_DEFECTO } from '../src/lib/ajustes-defecto'
-import { calcularPaquete } from '../src/lib/precios'
+import { calcularPaquete, precioAMedida } from '../src/lib/precios'
 import type { PaquetePropuesta } from '../src/lib/tipos'
 import { construirAcuerdo } from '../src/server/acuerdo/contenido'
 import { CATALOGO, documentoDePrueba } from './fixture'
@@ -34,6 +34,13 @@ const medida = (precio_setup: number, precio_mensual = 0) => ({
 })
 
 describe('módulos a medida', () => {
+  it('el precio sale de la tabla por complejidad, no de la IA', () => {
+    expect(precioAMedida('simple', precios)).toBe(300)
+    expect(precioAMedida('media', precios)).toBe(600)
+    expect(precioAMedida('compleja', precios)).toBe(900)
+    expect(precioAMedida('simple', { ...precios, a_medida_simple: 5000 })).toBe(900)
+  })
+
   it('se cotizan sin estar en el catálogo, con costo para el margen', () => {
     const r = calcularPaquete(paquete([medida(600)]), CATALOGO, precios)
     expect(r.lineas[0]?.a_medida).toBe(true)
@@ -61,8 +68,10 @@ describe('módulos a medida', () => {
     const doc = documentoDePrueba('es')
     doc.propuesta.cierre = { paquete: 'premium', pagos: [{ concepto: 'a la firma', pct: 100 }] }
     const texto = JSON.stringify(construirAcuerdo(doc, AJUSTES_DEFECTO.legal).bloques)
-    expect(texto).toContain('Sincronización de agenda con Dentalink (desarrollo a medida)')
-    expect(texto).toContain('Conector de citas en ambos sentidos')
-    expect(texto).toContain('$900')
+    expect(texto).toContain(
+      'Agente de seguimiento y reactivación de pacientes (desarrollo a medida)',
+    )
+    expect(texto).toContain('Agente de reactivación por WhatsApp')
+    expect(texto).toContain('$600')
   })
 })
