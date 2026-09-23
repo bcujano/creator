@@ -185,6 +185,12 @@ export type PaquetePropuesta = {
   descuento_mensual_pct: number
 }
 
+/** Un desembolso del valor de implementación. */
+export type Desembolso = { concepto: string; pct: number }
+
+/** Lo que se acordó al cerrar: qué paquete eligió el cliente y cómo paga. */
+export type Cierre = { paquete: NivelPaquete; pagos: Desembolso[] }
+
 export type DatosPropuesta = {
   paquetes: PaquetePropuesta[]
   seleccionado: NivelPaquete

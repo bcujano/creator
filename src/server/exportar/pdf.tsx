@@ -17,6 +17,7 @@ import {
   filasPaquete,
   type Logo,
   lineaCifra,
+  lineasPago,
   lineasRoi,
   usd,
 } from './comun'
@@ -381,7 +382,7 @@ function Inversion({ doc, e }: { doc: Documento; e: E }) {
       <Text style={e.h2}>{t.condiciones_comerciales}</Text>
       <Vinetas
         items={[
-          `${doc.precios.anticipo_pct}% ${t.anticipo}`,
+          ...lineasPago(doc),
           t.mensualidad_nota,
           `${t.precios_iva} ${doc.precios.iva_pct}%.`,
           `${t.valida_hasta}: ${doc.valida_hasta}.`,

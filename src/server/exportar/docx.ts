@@ -24,6 +24,7 @@ import {
   filasPaquete,
   hex,
   lineaCifra,
+  lineasPago,
   lineasRoi,
   usd,
 } from './comun'
@@ -241,7 +242,7 @@ export async function generarDocx(doc: Documento): Promise<Buffer> {
     h(t.paquetes, 1, primario),
     ...doc.paquetes.flatMap((_, i) => tablaPaquete(doc, i)),
     h(t.condiciones_comerciales, 2, primario),
-    vineta(`${doc.precios.anticipo_pct}% ${t.anticipo}`),
+    ...lineasPago(doc).map(vineta),
     vineta(t.mensualidad_nota),
     vineta(`${t.precios_iva} ${doc.precios.iva_pct}%.`),
     vineta(`${t.valida_hasta}: ${doc.valida_hasta}.`),

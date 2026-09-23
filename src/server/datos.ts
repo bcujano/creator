@@ -357,6 +357,7 @@ export type FilaPropuesta = {
   estado: string
   token_publico: string
   crm_sincronizado_en: string | null
+  cierre: import('@/lib/tipos').Cierre | null
   creado_en: string
   actualizado_en: string
 }

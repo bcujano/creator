@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { type Cifra, etiquetaConfianza, formula } from '@/lib/analisis'
 import { env } from '@/lib/env'
+import { cierreEfectivo, montosPagos } from '@/lib/pagos'
 import { formatoUSD } from '@/lib/precios'
 import type { Documento } from '../documento'
 
@@ -109,4 +110,21 @@ export function lineasRoi(doc: Documento) {
       ? [`${doc.t.recuperacion}: ${doc.recuperacion_meses} ${doc.t.meses}`]
       : []),
   ]
+}
+
+/**
+ * Plan de pagos para las condiciones comerciales. Si ya se negoció el cierre,
+ * se detallan los desembolsos con su monto; si no, el anticipo por defecto.
+ */
+export function lineasPago(doc: Documento) {
+  const c = doc.propuesta.cierre
+  if (!c) return [`${doc.precios.anticipo_pct}% ${doc.t.anticipo}`]
+  const efectivo = cierreEfectivo(c, doc.propuesta.datos, doc.precios.anticipo_pct)
+  const paquete = doc.paquetes.find((p) => p.definicion.nivel === efectivo.paquete)
+  const total = paquete?.calculo.setup.total ?? 0
+  const en = doc.idioma === 'en'
+  return montosPagos(efectivo.pagos, total).map(
+    (d, i) =>
+      `${en ? 'Payment' : 'Desembolso'} ${i + 1}: ${d.pct}% (${usd(d.monto, doc)}) ${d.concepto}`,
+  )
 }

@@ -1,5 +1,6 @@
 import 'server-only'
 import { fechaLarga } from '@/lib/i18n'
+import { cierreEfectivo, montosPagos } from '@/lib/pagos'
 import { formatoUSD } from '@/lib/precios'
 import type { DatosLegales } from '@/lib/tipos'
 import type { Documento } from '../documento'
@@ -63,7 +64,8 @@ export function datosFaltantes(c: Documento['cliente']) {
 export function construirAcuerdo(doc: Documento, legal: DatosLegales, hoy = new Date()): Acuerdo {
   const c = doc.cliente
   const v = (x: string | null | undefined) => (x?.trim() ? x.trim() : BLANCO)
-  const paquete = doc.paquetes.find((p) => p.recomendado) ?? doc.paquetes[0]
+  const cierre = cierreEfectivo(doc.propuesta.cierre, doc.propuesta.datos, doc.precios.anticipo_pct)
+  const paquete = doc.paquetes.find((p) => p.definicion.nivel === cierre.paquete) ?? doc.paquetes[0]
   if (!paquete) throw new Error('La propuesta no tiene paquetes.')
   const calc = paquete.calculo
   const numero = doc.propuesta.numero.replace(/^AIU-/, 'ACU-')
@@ -122,8 +124,7 @@ export function construirAcuerdo(doc: Documento, legal: DatosLegales, hoy = new 
     ['Total mensual', usd(calc.mensual.total)],
   ]
 
-  const anticipo = Math.round(calc.setup.total * doc.precios.anticipo_pct) / 100
-  const saldo = Math.round((calc.setup.total - anticipo) * 100) / 100
+  const desembolsos = montosPagos(cierre.pagos, calc.setup.total)
 
   const bloques: Bloque[] = [
     {
@@ -164,7 +165,7 @@ export function construirAcuerdo(doc: Documento, legal: DatosLegales, hoy = new 
     clausula('PLAZO DE IMPLEMENTACIÓN'),
     {
       tipo: 'parrafo',
-      texto: `EL PROVEEDOR implementará la solución en un plazo estimado de ${calc.semanas} semanas, contado desde la recepción del anticipo y de los accesos e información que EL CLIENTE debe proporcionar. Los retrasos atribuibles a EL CLIENTE extenderán el plazo por el mismo tiempo.`,
+      texto: `EL PROVEEDOR implementará la solución en un plazo estimado de ${calc.semanas} semanas, contado desde la recepción del primer desembolso y de los accesos e información que EL CLIENTE debe proporcionar. Los retrasos atribuibles a EL CLIENTE extenderán el plazo por el mismo tiempo.`,
     },
 
     clausula('PRECIO'),
@@ -205,8 +206,10 @@ export function construirAcuerdo(doc: Documento, legal: DatosLegales, hoy = new 
     {
       tipo: 'vinetas',
       items: [
-        `Anticipo del ${doc.precios.anticipo_pct}% del valor de implementación, esto es ${usd(anticipo)}, a la firma del presente acuerdo.`,
-        `Saldo de ${usd(saldo)} a la entrega y puesta en marcha de la solución.`,
+        ...desembolsos.map(
+          (d, i) =>
+            `${desembolsos.length > 1 ? `Desembolso ${i + 1}: ` : ''}${d.pct}% del valor de implementación, esto es ${usd(d.monto)}, ${d.concepto}.`,
+        ),
         ...(hayMensual
           ? [
               'La mensualidad se pagará por adelantado dentro de los cinco primeros días de cada mes, a partir de la puesta en marcha.',

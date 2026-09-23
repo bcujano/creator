@@ -418,6 +418,7 @@ export function documentoDePrueba(idioma: 'es' | 'en' = 'es'): Documento {
       estado: 'borrador',
       token_publico: 'tok',
       crm_sincronizado_en: null,
+      cierre: null,
       creado_en: new Date().toISOString(),
       actualizado_en: new Date().toISOString(),
     },

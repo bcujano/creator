@@ -666,9 +666,11 @@ export function EditorPropuesta({
 
       {base && !sucio ? (
         <CierreTrato
+          key={base.id}
           levantamientoId={levantamiento.id}
           cliente={levantamiento.clientes}
           propuesta={base}
+          anticipoPct={ajustes.precios.anticipo_pct}
         />
       ) : null}
 

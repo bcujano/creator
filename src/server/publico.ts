@@ -1,5 +1,6 @@
 import 'server-only'
 import type { Documento } from './documento'
+import { lineasPago } from './exportar/comun'
 
 /**
  * Versión del documento apta para el cliente: sin costos, márgenes ni notas
@@ -14,6 +15,7 @@ export function documentoPublico(doc: Documento) {
     marca: doc.marca,
     iva_pct: doc.precios.iva_pct,
     anticipo_pct: doc.precios.anticipo_pct,
+    pagos: lineasPago(doc),
     cliente: { nombre: doc.cliente.nombre, contacto_nombre: doc.cliente.contacto_nombre },
     propuesta: {
       id: doc.propuesta.id,

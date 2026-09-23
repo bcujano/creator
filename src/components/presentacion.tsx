@@ -617,7 +617,7 @@ export function PropuestaCliente({ doc }: { doc: DocumentoPublico }) {
           ))}
           <div className="text-sm text-tenue">
             <p>
-              {doc.anticipo_pct}% {doc.t.anticipo} {doc.t.mensualidad_nota}
+              {doc.pagos.join(' · ')}. {doc.t.mensualidad_nota}
             </p>
             {doc.propuesta.condiciones ? <p className="mt-1">{doc.propuesta.condiciones}</p> : null}
             <p className="mt-1">
