@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+/*
+ * Tokens de CREATOR. El color de marca se inyecta en tiempo de ejecución
+ * (--marca, --acento) desde Ajustes, así la presentación y el enlace del
+ * cliente usan siempre los colores vigentes.
+ */
+:root {
+  --marca: #4b2bd6;
+  --acento: #12b886;
+  --fondo: #f6f7fb;
+  --superficie: #ffffff;
+  --superficie-2: #f0f2f8;
+  --borde: #e2e5ee;
+  --tinta: #1f2433;
+  --tenue: #626a7d;
+  --peligro: #d6336c;
+  --aviso: #e8590c;
+  --ok: #2f9e44;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fondo: #10121a;
+    --superficie: #181b26;
+    --superficie-2: #212535;
+    --borde: #2d3246;
+    --tinta: #eceef5;
+    --tenue: #9aa1b4;
+  }
+}
+
+:root[data-theme="dark"] {
+  --fondo: #10121a;
+  --superficie: #181b26;
+  --superficie-2: #212535;
+  --borde: #2d3246;
+  --tinta: #eceef5;
+  --tenue: #9aa1b4;
+}
+
+@theme inline {
+  --color-marca: var(--marca);
+  --color-acento: var(--acento);
+  --color-fondo: var(--fondo);
+  --color-superficie: var(--superficie);
+  --color-superficie-2: var(--superficie-2);
+  --color-borde: var(--borde);
+  --color-tinta: var(--tinta);
+  --color-tenue: var(--tenue);
+  --color-peligro: var(--peligro);
+  --color-aviso: var(--aviso);
+  --color-ok: var(--ok);
+  --font-sans: var(--font-cuerpo), ui-sans-serif, system-ui, sans-serif;
+  --font-titulo: var(--font-display), var(--font-cuerpo), ui-sans-serif, sans-serif;
+}
+
+html,
+body {
+  background: var(--fondo);
+  color: var(--tinta);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* Controles cómodos al tacto en el iPad y el celular. */
+button,
+[role="button"],
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+textarea {
+  field-sizing: content;
+}
+
+.anillo-foco:focus-visible {
+  outline: 2px solid var(--marca);
+  outline-offset: 2px;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.aparecer {
+  animation: aparecer 0.35s ease both;
+}
+
+@media print {
+  .no-imprimir {
+    display: none;
+  }
+}
