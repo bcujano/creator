@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { calcularPaquete, compararModelos, formatoUSD, type PaqueteCalculado } from '@/lib/precios'
 import type {
   DatosPropuesta,
@@ -392,6 +392,17 @@ export function EditorPropuesta({
   const [datos, setDatos] = useState<DatosPropuesta>(() => datosIniciales(base))
   const [idioma, setIdioma] = useState<Idioma>(base?.idioma ?? levantamiento.idioma)
   const [sucio, setSucio] = useState(false)
+
+  // Si llega una versión nueva desde el servidor (p. ej. al terminar el análisis) y no hay
+  // cambios sin guardar, se carga; así la pantalla nunca se queda con un borrador vacío.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: solo reacciona a la lista de versiones
+  useEffect(() => {
+    const ultima = propuestas[0]
+    if (!ultima || sucio || propuestas.some((p) => p.id === versionId)) return
+    setVersionId(ultima.id)
+    setDatos(datosIniciales(ultima))
+    setIdioma(ultima.idioma)
+  }, [propuestas])
   const [guardando, setGuardando] = useState(false)
   const [aviso, setAviso] = useState<{ tono: 'ok' | 'peligro' | 'aviso'; texto: string } | null>(
     null,
