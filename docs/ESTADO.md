@@ -57,5 +57,5 @@ Verificación: `pnpm check` → **45 pruebas** en verde (precios, cifras, pagos,
 
 - **"Ejemplo · Clínica Sonrisa (demo)"**: cliente de demostración con varias versiones de análisis y propuestas. Útil para probar; se puede archivar.
 - **"Prueba · Distribuidora Andina (logística, demo)"**: archivado (probó el módulo a medida de rutas).
-- **DKB Courier** (cliente real, propuesta `AIU-2026-0127` v2, paquete recomendado): acuerdo final editado a mano (IVA incluido: $4.200 en 7 cuotas de $600 + $380/mes, plazo mínimo 12 meses). No usar para pruebas.
+- **DKB Courier** (cliente real, propuesta `AIU-2026-0127` v2, paquete recomendado): acuerdo final editado a mano (IVA incluido: $4.200 en 7 cuotas de $600 de sep-2026 a mar-2027 + $380/mes desde el prototipo del 30/09/2026, plazo mínimo 12 meses desde el 01/10/2026). **Byron entrega el prototipo funcional el 30/09/2026.**. No usar para pruebas.
 - Reunión real en curso de Byron: levantamiento `09186a62-858e-4572-b98a-c13279916d27` (arriendo de estudios). No usarla para pruebas.

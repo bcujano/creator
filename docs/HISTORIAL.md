@@ -15,6 +15,6 @@
 
 1. **A medida grandes:** tres esquemas de valoración con el caso de rutas (A mensualidad, B proyecto por entregables, C partir módulos). Pospuesto por Byron; queda como pendiente 1.
 2. **Revisión del acuerdo ACU-2026-0012 (DKB Courier)**, editado a mano con los valores negociados; se detectaron inconsistencias y necesidades del cierre (pendiente 6).
-3. **Numeración desde 127** (migración `0006`) y acuerdo de DKB corregido: número 0127, "$4.200", "portador", desglose de subtotal sin IVA + IVA 15 % en ambas tablas (precios con IVA incluido).
+3. **Numeración desde 127** (migración `0006`) y acuerdo de DKB corregido: número 0127, "$4.200", "portador", desglose de subtotal sin IVA + IVA 15 % en ambas tablas (precios con IVA incluido). Calendario negociado: $600 a la firma (23/09), $380 el 30/09 contra entrega del prototipo funcional (mensualidad de octubre), cuotas de $600 de octubre a marzo, $980 de noviembre a marzo, solo $380 desde abril 2027; plazo mínimo desde el 01/10/2026.
 
 Pendientes: ver `docs/ESTADO.md`.
