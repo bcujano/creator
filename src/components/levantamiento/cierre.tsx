@@ -7,6 +7,7 @@ import {
   FileSignature,
   FileText,
   Plus,
+  Presentation,
   Trash2,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -44,7 +45,7 @@ const NOMBRE_NIVEL: Record<NivelPaquete, string> = {
 
 /**
  * Cierre en la misma reunión: qué paquete eligió el cliente, cómo lo paga
- * (1 a 4 desembolsos), sus datos legales y el acuerdo listo para firmar.
+ * (1 a 12 desembolsos), sus datos legales y el acuerdo listo para firmar.
  */
 export function CierreTrato({
   levantamientoId,
@@ -106,11 +107,12 @@ export function CierreTrato({
 
   function repartirIgual() {
     const n = pagos.length
-    const base = Math.floor((100 / n) * 100) / 100
+    // Cuatro decimales: 7 cuotas de 14,2857 % dan montos exactos ($600 de $4.200).
+    const base = Math.floor((100 / n) * 10_000) / 10_000
     setPagos(
       pagos.map((p, i) => ({
         ...p,
-        pct: i === n - 1 ? Math.round((100 - base * (n - 1)) * 100) / 100 : base,
+        pct: i === n - 1 ? Math.round((100 - base * (n - 1)) * 10_000) / 10_000 : base,
       })),
     )
   }
@@ -368,6 +370,14 @@ export function CierreTrato({
           className={`inline-flex min-h-11 items-center gap-2 rounded-xl border border-borde bg-superficie px-4 text-sm font-semibold hover:bg-superficie-2 ${sucio ? 'pointer-events-none opacity-40' : ''}`}
         >
           <FileText className="size-4" /> Acuerdo en Word
+        </a>
+        {/* Para enviar junto con el acuerdo: incluye "Lo acordado" con el plan de pagos. */}
+        <a
+          href={sucio ? undefined : `/api/propuestas/${propuesta.id}/exportar?formato=presentacion`}
+          aria-disabled={sucio}
+          className={`inline-flex min-h-11 items-center gap-2 rounded-xl border border-borde bg-superficie px-4 text-sm font-semibold hover:bg-superficie-2 ${sucio ? 'pointer-events-none opacity-40' : ''}`}
+        >
+          <Presentation className="size-4" /> Presentación (PDF)
         </a>
         {propuesta.estado !== 'aceptada' ? (
           <Boton onClick={aceptada} icono={<CheckCircle2 className="size-4" />} disabled={sucio}>

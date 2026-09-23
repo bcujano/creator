@@ -49,7 +49,8 @@ const NIVELES: { nivel: NivelPaquete; texto: string }[] = [
 ]
 
 const FORMATOS = [
-  { f: 'pdf', texto: 'PDF' },
+  { f: 'presentacion', texto: 'Presentación (PDF)' },
+  { f: 'pdf', texto: 'Documento PDF' },
   { f: 'docx', texto: 'Word' },
   { f: 'pptx', texto: 'PowerPoint' },
   { f: 'xlsx', texto: 'Excel' },

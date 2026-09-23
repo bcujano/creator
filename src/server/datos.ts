@@ -402,8 +402,21 @@ export async function crearPropuesta(datos: {
   totales: Record<string, unknown>
 }) {
   const version = await siguienteVersion('propuestas', datos.levantamiento_id)
-  const { data: numero, error: errorNumero } = await db().rpc('siguiente_numero_propuesta')
-  if (errorNumero) falla('numeroPropuesta', errorNumero)
+  // Las versiones de una misma negociación comparten número; solo la primera toma uno de la serie.
+  const { data: anterior, error: errorAnterior } = await db()
+    .from('propuestas')
+    .select('numero')
+    .eq('levantamiento_id', datos.levantamiento_id)
+    .order('version', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (errorAnterior) falla('numeroPropuesta', errorAnterior)
+  let numero = anterior?.numero as string | undefined
+  if (!numero) {
+    const { data: nuevo, error: errorNumero } = await db().rpc('siguiente_numero_propuesta')
+    if (errorNumero) falla('numeroPropuesta', errorNumero)
+    numero = nuevo as string
+  }
   const { data, error } = await db()
     .from('propuestas')
     .insert({ ...datos, version, numero })

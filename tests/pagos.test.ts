@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { AJUSTES_DEFECTO } from '../src/lib/ajustes-defecto'
-import { cierreEfectivo, montosPagos, pagosPorDefecto, validarPagos } from '../src/lib/pagos'
+import {
+  cierreEfectivo,
+  montosPagos,
+  pagosPorDefecto,
+  pctVisible,
+  validarPagos,
+} from '../src/lib/pagos'
 import { construirAcuerdo } from '../src/server/acuerdo/contenido'
 import { lineasPago } from '../src/server/exportar/comun'
 import { documentoDePrueba } from './fixtures/documento'
@@ -16,7 +22,8 @@ describe('desembolsos', () => {
     const p = (pct: number) => ({ concepto: 'x', pct })
     expect(validarPagos([p(40), p(30), p(30)])).toBeNull()
     expect(validarPagos([p(40), p(30)])).toContain('70')
-    expect(validarPagos([p(20), p(20), p(20), p(20), p(20)])).toContain('Entre 1 y 4')
+    expect(validarPagos([p(20), p(20), p(20), p(20), p(20)])).toBeNull()
+    expect(validarPagos(Array.from({ length: 13 }, () => p(100 / 13)))).toContain('Entre 1 y 12')
     expect(validarPagos([p(100), p(0)])).toContain('mayor a 0')
     expect(validarPagos([{ concepto: ' ', pct: 100 }])).toContain('cuándo')
   })
@@ -32,6 +39,14 @@ describe('desembolsos', () => {
     )
     expect(m.map((x) => x.monto)).toEqual([3449.66, 3449.66, 3450.68])
     expect(m.reduce((s, x) => s + x.monto, 0)).toBeCloseTo(10350, 2)
+  })
+
+  it('7 cuotas iguales de un total de $4.200 son $600 exactos', () => {
+    // Lo que produce "Repartir en partes iguales": 4 decimales, el último absorbe el resto.
+    const cuotas = [...Array(6).fill(14.2857), 14.2858].map((pct) => ({ concepto: 'cuota', pct }))
+    expect(validarPagos(cuotas)).toBeNull()
+    expect(montosPagos(cuotas, 4200).map((x) => x.monto)).toEqual(Array(7).fill(600))
+    expect(pctVisible(14.2857)).toBe(14.29)
   })
 
   it('sin cierre negociado usa el paquete destacado', () => {

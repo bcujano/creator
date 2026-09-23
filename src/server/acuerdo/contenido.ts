@@ -1,6 +1,6 @@
 import 'server-only'
 import { fechaLarga } from '@/lib/i18n'
-import { cierreEfectivo, montosPagos } from '@/lib/pagos'
+import { cierreEfectivo, montosPagos, pctVisible } from '@/lib/pagos'
 import { formatoUSD } from '@/lib/precios'
 import type { DatosLegales } from '@/lib/tipos'
 import type { Documento } from '../documento'
@@ -213,7 +213,7 @@ export function construirAcuerdo(doc: Documento, legal: DatosLegales, hoy = new 
       items: [
         ...desembolsos.map(
           (d, i) =>
-            `${desembolsos.length > 1 ? `Desembolso ${i + 1}: ` : ''}${d.pct}% del valor de implementación, esto es ${usd(d.monto)}, ${d.concepto}.`,
+            `${desembolsos.length > 1 ? `Desembolso ${i + 1}: ` : ''}${pctVisible(d.pct)}% del valor de implementación, esto es ${usd(d.monto)}, ${d.concepto}.`,
         ),
         ...(hayMensual
           ? [

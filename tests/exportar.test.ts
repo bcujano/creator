@@ -6,6 +6,7 @@ import { generarDocx } from '../src/server/exportar/docx'
 import { generarMarkdown } from '../src/server/exportar/markdown'
 import { generarPdf } from '../src/server/exportar/pdf'
 import { generarPptx } from '../src/server/exportar/pptx'
+import { generarPresentacion } from '../src/server/exportar/presentacion'
 import { generarXlsx } from '../src/server/exportar/xlsx'
 import { documentoPublico } from '../src/server/publico'
 import { documentoDePrueba } from './fixtures/documento'
@@ -29,6 +30,25 @@ describe('exportaciones', () => {
     expect(pdf.subarray(0, 5).toString()).toBe('%PDF-')
     expect(pdf.length).toBeGreaterThan(5000)
     guardar('propuesta.pdf', pdf)
+  })
+
+  it('Presentación en PDF, también con lo acordado', async () => {
+    const pdf = await generarPresentacion(doc)
+    expect(pdf.subarray(0, 5).toString()).toBe('%PDF-')
+    guardar('presentacion.pdf', pdf)
+    const cerrado = documentoDePrueba('es')
+    cerrado.propuesta.cierre = {
+      paquete: 'recomendado',
+      pagos: [
+        { concepto: 'a la firma', pct: 50 },
+        { concepto: 'a la entrega', pct: 50 },
+      ],
+    }
+    const conCierre = await generarPresentacion(cerrado)
+    // Una diapositiva más: "Lo acordado".
+    const paginas = (b: Buffer) => b.toString('latin1').match(/\/Type \/Page[^s]/g)?.length ?? 0
+    expect(paginas(conCierre)).toBe(paginas(pdf) + 1)
+    guardar('presentacion-cierre.pdf', conCierre)
   })
 
   it('Word', async () => {

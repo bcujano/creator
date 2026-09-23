@@ -1,7 +1,13 @@
 import { redondear } from './precios'
 import type { Cierre, DatosPropuesta, Desembolso, NivelPaquete } from './tipos'
 
-export const MAX_DESEMBOLSOS = 4
+// Hasta 12: cubre cuotas mensuales durante un año (DKB negoció 7).
+export const MAX_DESEMBOLSOS = 12
+
+/** Porcentaje para mostrar: las cuotas iguales guardan 4 decimales (14,2857 %) para cuadrar al centavo. */
+export function pctVisible(pct: number) {
+  return Math.round(pct * 100) / 100
+}
 
 /** Momentos habituales, para elegir rápido en la reunión. */
 export const MOMENTOS = [

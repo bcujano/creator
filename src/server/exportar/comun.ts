@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { type Cifra, etiquetaConfianza, formula } from '@/lib/analisis'
 import { env } from '@/lib/env'
-import { cierreEfectivo, montosPagos } from '@/lib/pagos'
+import { cierreEfectivo, montosPagos, pctVisible } from '@/lib/pagos'
 import { formatoUSD } from '@/lib/precios'
 import type { Documento } from '../documento'
 
@@ -45,7 +45,9 @@ export function nombreArchivo(doc: Documento, extension: string) {
     .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-zA-Z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
-  return `${doc.propuesta.numero}-${cliente || 'propuesta'}.${extension}`
+  // "presentacion.pdf" da AIU-…-cliente-presentacion.pdf, distinto del documento en PDF.
+  const [sufijo, ext] = extension.includes('.') ? extension.split('.') : [null, extension]
+  return `${doc.propuesta.numero}-${cliente || 'propuesta'}${sufijo ? `-${sufijo}` : ''}.${ext}`
 }
 
 export function etiquetaVeredicto(doc: Documento) {
@@ -125,6 +127,6 @@ export function lineasPago(doc: Documento) {
   const en = doc.idioma === 'en'
   return montosPagos(efectivo.pagos, total).map(
     (d, i) =>
-      `${en ? 'Payment' : 'Desembolso'} ${i + 1}: ${d.pct}% (${usd(d.monto, doc)}) ${d.concepto}`,
+      `${en ? 'Payment' : 'Desembolso'} ${i + 1}: ${pctVisible(d.pct)}% (${usd(d.monto, doc)}) ${d.concepto}`,
   )
 }

@@ -401,7 +401,8 @@ function construir(doc: DocumentoPublico): Diapositiva[] {
 
 function Descargas({ doc, base }: { doc: DocumentoPublico; base: string }) {
   const formatos = [
-    ['pdf', 'PDF'],
+    ['presentacion', doc.idioma === 'en' ? 'Presentation (PDF)' : 'Presentación (PDF)'],
+    ['pdf', doc.idioma === 'en' ? 'Document (PDF)' : 'Documento PDF'],
     ['docx', 'Word'],
     ['pptx', 'PowerPoint'],
     ['xlsx', 'Excel'],
