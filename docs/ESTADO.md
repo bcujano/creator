@@ -40,7 +40,7 @@ Verificación: `pnpm check` → **45 pruebas** en verde (precios, cifras, pagos,
 3. **Revisión legal del acuerdo** por el abogado de Byron antes del primer cliente real (`server/acuerdo/contenido.ts`). Aplicar sus cambios ahí; valen para todos.
 4. **Costos mensuales del catálogo** son estimados (sobre todo voz Retell/Twilio y WhatsApp). Ajustar con facturas reales en Catálogo.
 5. **Opcional ofrecido, sin respuesta:** agregar automáticamente las preguntas "por cuantificar" del diagnóstico como preguntas de seguimiento en la Entrevista.
-6. **Cierre más flexible (visto en el acuerdo de DKB Courier, ACU-2026-0012):** se negoció la implementación en 7 cuotas mensuales de $600 y precios "IVA incluido", y hubo que ajustar el Word a mano. El cierre solo admite 1–4 desembolsos por % y siempre suma IVA. Evaluar: cuotas mensuales con fechas, opción "precio final con IVA incluido" y plazo mínimo por acuerdo (DKB: 12 meses).
+6. **Cierre más flexible (visto en el acuerdo de DKB Courier, ACU-2026-0127):** se negoció la implementación en 7 cuotas mensuales de $600 y precios "IVA incluido", y hubo que ajustar el Word a mano. El cierre solo admite 1–4 desembolsos por % y siempre suma IVA. Evaluar: cuotas mensuales con fechas, opción "precio final con IVA incluido" y plazo mínimo por acuerdo (DKB: 12 meses).
 7. **Opcional:** si se pasa a Vercel Pro, subir `maxDuration` de `api/levantamientos/[id]/analizar` y permitir esfuerzo `high`.
 
 ## Datos de producción (no secretos)
@@ -48,7 +48,7 @@ Verificación: `pnpm check` → **45 pruebas** en verde (precios, cifras, pagos,
 - App: https://creator.emprendimientum.com (también `creator-three-kappa.vercel.app`)
 - Vercel: equipo `bcujanos-projects`, proyecto `creator`, conectado a GitHub → cada push a `main` despliega.
 - GitHub: `bcujano/creator` (privado). crm-321 en `bcujano/crm-321`.
-- Supabase: proyecto `fpzbzjfmemxkgiapxlnh` (São Paulo), 5 migraciones aplicadas (0001–0005).
+- Supabase: proyecto `fpzbzjfmemxkgiapxlnh` (São Paulo), 6 migraciones aplicadas (0001–0006).
 - IA: Claude `claude-opus-5` (principal, esfuerzo `medium`), OpenAI `gpt-4.1` (respaldo) y `gpt-4o-transcribe` (audio).
 - CRM: `https://crm.321archlab.com/api/webhook` con `CREATOR_WEBHOOK_SECRET` (en crm-321) = `CRM_WEBHOOK_SECRET` (en CREATOR).
 - Admin: `brncjn@gmail.com`. Logo en `public/brand/logo.png`.
@@ -57,4 +57,5 @@ Verificación: `pnpm check` → **45 pruebas** en verde (precios, cifras, pagos,
 
 - **"Ejemplo · Clínica Sonrisa (demo)"**: cliente de demostración con varias versiones de análisis y propuestas. Útil para probar; se puede archivar.
 - **"Prueba · Distribuidora Andina (logística, demo)"**: archivado (probó el módulo a medida de rutas).
+- **DKB Courier** (cliente real, propuesta `AIU-2026-0127` v2, paquete recomendado): acuerdo final editado a mano (IVA incluido: $4.200 en 7 cuotas de $600 + $380/mes, plazo mínimo 12 meses). No usar para pruebas.
 - Reunión real en curso de Byron: levantamiento `09186a62-858e-4572-b98a-c13279916d27` (arriendo de estudios). No usarla para pruebas.

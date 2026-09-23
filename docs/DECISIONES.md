@@ -40,3 +40,6 @@ Aprobados por el usuario el 23/09/2026: iAgente WhatsApp $2.500+$190/mes; CRM B�
 
 ### 13. Valoración de módulos a medida grandes: pospuesta
 El 23/09/2026 se presentaron tres esquemas (ver ESTADO, pendiente 1) con recomendación del nivel "proyecto" por entregables. Byron lo dejó pendiente para priorizar la revisión del acuerdo de DKB Courier. Mientras tanto sigue la tabla $300/$600/$900 con tope.
+
+### 14. Numeración de propuestas desde la 127
+El acuerdo de DKB Courier se firmó como N.º 127. Migración `0006`: su propuesta pasó de `AIU-2026-0012` a `AIU-2026-0127` (queda en `eventos`) y la secuencia sigue desde ahí: la próxima es `AIU-2026-0128`. El acuerdo toma el mismo número con prefijo `ACU-`.

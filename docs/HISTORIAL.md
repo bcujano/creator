@@ -15,5 +15,6 @@
 
 1. **A medida grandes:** tres esquemas de valoración con el caso de rutas (A mensualidad, B proyecto por entregables, C partir módulos). Pospuesto por Byron; queda como pendiente 1.
 2. **Revisión del acuerdo ACU-2026-0012 (DKB Courier)**, editado a mano con los valores negociados; se detectaron inconsistencias y necesidades del cierre (pendiente 6).
+3. **Numeración desde 127** (migración `0006`) y acuerdo de DKB corregido: número 0127, "$4.200", "portador", desglose de subtotal sin IVA + IVA 15 % en ambas tablas (precios con IVA incluido).
 
 Pendientes: ver `docs/ESTADO.md`.
