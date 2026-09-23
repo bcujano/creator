@@ -6,7 +6,7 @@ import { construirAcuerdo } from '../src/server/acuerdo/contenido'
 import { acuerdoDocx } from '../src/server/acuerdo/docx'
 import { enteroEnLetras, montoEnLetras } from '../src/server/acuerdo/letras'
 import { acuerdoPdf } from '../src/server/acuerdo/pdf'
-import { documentoDePrueba } from './fixture'
+import { documentoDePrueba } from './fixtures/documento'
 
 const SALIDA = process.env.CREATOR_SALIDA_PRUEBAS
 

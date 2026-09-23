@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { Aviso, Boton, Campo, Etiqueta } from '@/components/ui'
+import { Aviso, Boton, Campo, Etiqueta } from '@/components/ui/primitivos'
 import { supabaseBrowser } from '@/lib/supabase/browser'
 
 export default function Login() {

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { Aviso, api, Boton, Campo, cx, Etiqueta } from '@/components/ui/primitivos'
 import {
   cierreEfectivo,
   MAX_DESEMBOLSOS,
@@ -22,7 +23,6 @@ import {
 import { formatoUSD, type PaqueteCalculado } from '@/lib/precios'
 import type { Cliente, Desembolso, NivelPaquete } from '@/lib/tipos'
 import type { FilaPropuesta } from '@/server/datos'
-import { Aviso, api, Boton, Campo, cx, Etiqueta } from '../ui'
 
 const CAMPOS: { clave: keyof Cliente; etiqueta: string; requerido?: boolean }[] = [
   { clave: 'razon_social', etiqueta: 'Razón social', requerido: true },

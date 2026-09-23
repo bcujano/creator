@@ -8,7 +8,7 @@ import { generarPdf } from '../src/server/exportar/pdf'
 import { generarPptx } from '../src/server/exportar/pptx'
 import { generarXlsx } from '../src/server/exportar/xlsx'
 import { documentoPublico } from '../src/server/publico'
-import { documentoDePrueba } from './fixture'
+import { documentoDePrueba } from './fixtures/documento'
 
 // Si se define, los archivos generados se guardan ahí para revisarlos a mano.
 const SALIDA = process.env.CREATOR_SALIDA_PRUEBAS

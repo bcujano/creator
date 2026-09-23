@@ -16,10 +16,10 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
+import { Grabadora } from '@/components/comun/grabadora'
+import { subirArchivo } from '@/components/comun/subir'
+import { Area, Aviso, api, Boton, Campo, cx, Insignia, Vacio } from '@/components/ui/primitivos'
 import type { Insumo } from '@/lib/tipos'
-import { Grabadora } from '../grabadora'
-import { subirArchivo } from '../subir'
-import { Area, Aviso, api, Boton, Campo, cx, Insignia, Vacio } from '../ui'
 import type { PropsEspacio } from './espacio'
 
 const ICONOS: Record<Insumo['tipo'], typeof FileText> = {

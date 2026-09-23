@@ -2,7 +2,7 @@
 
 import { Mic, Square } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import { Boton } from './ui'
+import { Boton } from '@/components/ui/primitivos'
 
 /** Tipo de audio que el navegador sabe grabar (Safari del iPad graba mp4). */
 function tipoSoportado() {

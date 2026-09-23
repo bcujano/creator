@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { FormularioCliente } from '@/components/formulario-cliente'
-import { EstiloMarca } from '@/components/marca-estilo'
+import { FormularioCliente } from '@/components/cliente/formulario-cliente'
+import { EstiloMarca } from '@/components/comun/marca-estilo'
 import { leerAjustes, leerLevantamientoPorToken } from '@/server/datos'
 
 export const dynamic = 'force-dynamic'

@@ -3,10 +3,10 @@
 import { AlertTriangle, Brain, CheckCircle2, Eye, EyeOff, HelpCircle, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { CifraConCuenta } from '@/components/comun/cifra'
+import { Aviso, api, Boton, cx, Insignia, Selector, Vacio } from '@/components/ui/primitivos'
 import { normalizarAnalisis, type ResultadoAnalisis } from '@/lib/analisis'
 import { formatoUSD } from '@/lib/precios'
-import { CifraConCuenta } from '../cifra'
-import { Aviso, api, Boton, cx, Insignia, Selector, Vacio } from '../ui'
 import type { PropsEspacio } from './espacio'
 
 const MENSAJES = [

@@ -3,8 +3,8 @@
 import { BookOpen, Calculator, LayoutGrid, LogOut, Plus, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { cx } from '@/components/ui/primitivos'
 import { supabaseBrowser } from '@/lib/supabase/browser'
-import { cx } from './ui'
 
 const ENLACES = [
   { href: '/', texto: 'Levantamientos', icono: LayoutGrid },

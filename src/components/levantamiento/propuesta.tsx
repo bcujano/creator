@@ -17,6 +17,17 @@ import {
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
+import {
+  Area,
+  Aviso,
+  api,
+  Boton,
+  cx,
+  Etiqueta,
+  Insignia,
+  Selector,
+  Vacio,
+} from '@/components/ui/primitivos'
 import { calcularPaquete, compararModelos, formatoUSD, type PaqueteCalculado } from '@/lib/precios'
 import type {
   DatosPropuesta,
@@ -26,7 +37,6 @@ import type {
   NivelPaquete,
   PaquetePropuesta,
 } from '@/lib/tipos'
-import { Area, Aviso, api, Boton, cx, Etiqueta, Insignia, Selector, Vacio } from '../ui'
 import { CierreTrato } from './cierre'
 import type { PropsEspacio } from './espacio'
 

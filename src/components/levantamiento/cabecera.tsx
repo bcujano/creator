@@ -4,8 +4,8 @@ import { Check, Copy, Download, Pencil, QrCode, Smartphone, X } from 'lucide-rea
 import { useRouter } from 'next/navigation'
 import QRCode from 'qrcode'
 import { useState } from 'react'
+import { api, Boton, Campo, Etiqueta, Selector } from '@/components/ui/primitivos'
 import type { EstadoLevantamiento } from '@/lib/tipos'
-import { api, Boton, Campo, Etiqueta, Selector } from '../ui'
 import type { PropsEspacio } from './espacio'
 
 const ESTADOS: { valor: EstadoLevantamiento; texto: string }[] = [

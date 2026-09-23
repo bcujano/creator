@@ -1,9 +1,9 @@
 'use client'
 
 import { Check } from 'lucide-react'
+import { cx } from '@/components/ui/primitivos'
 import { type Pregunta, SEPARADOR } from '@/lib/preguntas'
 import type { Idioma } from '@/lib/tipos'
-import { cx } from './ui'
 
 /**
  * Una respuesta: texto libre o botones para tocar. Las opciones se guardan

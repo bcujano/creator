@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { calcular, type Factor, formula, normalizarAnalisis } from '../src/lib/analisis'
-import { ANALISIS } from './fixture'
+import { ANALISIS } from './fixtures/documento'
 
 const f = (p: Partial<Factor>): Factor => ({
   concepto: 'x',

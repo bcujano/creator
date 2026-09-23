@@ -3,9 +3,19 @@
 import { Archive, Pencil, Plus, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import {
+  Area,
+  Aviso,
+  api,
+  Boton,
+  Campo,
+  cx,
+  Etiqueta,
+  Insignia,
+  Selector,
+} from '@/components/ui/primitivos'
 import { formatoUSD, redondear } from '@/lib/precios'
 import type { ItemCatalogo, ParametrosPrecio } from '@/lib/tipos'
-import { Area, Aviso, api, Boton, Campo, cx, Etiqueta, Insignia, Selector } from '../ui'
 
 type Borrador = Omit<ItemCatalogo, 'id'> & { id?: string }
 

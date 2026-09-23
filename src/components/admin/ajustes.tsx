@@ -3,8 +3,8 @@
 import { CheckCircle2, Upload, XCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
+import { Aviso, api, Boton, Campo, Etiqueta, Selector } from '@/components/ui/primitivos'
 import type { Ajustes } from '@/lib/tipos'
-import { Aviso, api, Boton, Campo, Etiqueta, Selector } from '../ui'
 
 type Estado = { anthropic: boolean; openai: boolean; ia: boolean; crm: boolean; crmUrl: string }
 

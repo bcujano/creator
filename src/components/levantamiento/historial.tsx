@@ -1,6 +1,6 @@
 'use client'
 
-import { Vacio } from '../ui'
+import { Vacio } from '@/components/ui/primitivos'
 import type { PropsEspacio } from './espacio'
 
 const TEXTOS: Record<string, string> = {

@@ -15,7 +15,8 @@
     "format": "biome check --write .",
     "test": "vitest run",
     "db:migrate": "tsx scripts/db-migrate.ts",
-    "admin:create": "tsx scripts/crear-admin.ts"
+    "admin:create": "tsx scripts/crear-admin.ts",
+    "check": "pnpm typecheck && pnpm lint && pnpm test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.128.0",
@@ -48,5 +49,6 @@
     "tsx": "4.23.15",
     "typescript": "6.0.3",
     "vitest": "5.0.0"
-  }
+  },
+  "packageManager": "pnpm@12.4.2"
 }

@@ -11,10 +11,10 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { CampoRespuesta } from '@/components/comun/campo-respuesta'
+import { Area, Aviso, api, Boton, cx, Insignia } from '@/components/ui/primitivos'
 import { SECCIONES } from '@/lib/preguntas'
 import type { Sugerencias } from '@/server/ia/esquema'
-import { CampoRespuesta } from '../campo-respuesta'
-import { Area, Aviso, api, Boton, cx, Insignia } from '../ui'
 import type { PropsEspacio } from './espacio'
 
 type EstadoGuardado = 'guardado' | 'pendiente' | 'guardando' | 'error'

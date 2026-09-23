@@ -1,9 +1,9 @@
 'use client'
 
+import { cx } from '@/components/ui/primitivos'
 import { type Cifra, etiquetaConfianza, factorTexto, formula } from '@/lib/analisis'
 import { formatoUSD } from '@/lib/precios'
 import type { Idioma } from '@/lib/tipos'
-import { cx } from './ui'
 
 const FUENTE = {
   es: { cliente: 'dato del cliente', consultor: 'dato de la reunión', supuesto: 'supuesto' },

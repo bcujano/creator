@@ -3,7 +3,7 @@ import { AJUSTES_DEFECTO } from '../src/lib/ajustes-defecto'
 import { cierreEfectivo, montosPagos, pagosPorDefecto, validarPagos } from '../src/lib/pagos'
 import { construirAcuerdo } from '../src/server/acuerdo/contenido'
 import { lineasPago } from '../src/server/exportar/comun'
-import { documentoDePrueba } from './fixture'
+import { documentoDePrueba } from './fixtures/documento'
 
 describe('desembolsos', () => {
   it('por defecto: anticipo configurado y saldo contra entrega', () => {

@@ -1,7 +1,7 @@
 'use client'
 
+import { api } from '@/components/ui/primitivos'
 import { supabaseBrowser } from '@/lib/supabase/browser'
-import { api } from './ui'
 
 /**
  * Sube un archivo en dos pasos: el servidor entrega una URL firmada, el

@@ -1,10 +1,10 @@
-import { AJUSTES_DEFECTO } from '../src/lib/ajustes-defecto'
-import { normalizarAnalisis } from '../src/lib/analisis'
-import { textos } from '../src/lib/i18n'
-import { calcularPaquete, resolverItem } from '../src/lib/precios'
-import type { DatosPropuesta, ItemCatalogo } from '../src/lib/tipos'
-import type { Documento } from '../src/server/documento'
-import type { ResultadoIA } from '../src/server/ia/esquema'
+import { AJUSTES_DEFECTO } from '@/lib/ajustes-defecto'
+import { normalizarAnalisis } from '@/lib/analisis'
+import { textos } from '@/lib/i18n'
+import { calcularPaquete, resolverItem } from '@/lib/precios'
+import type { DatosPropuesta, ItemCatalogo } from '@/lib/tipos'
+import type { Documento } from '@/server/documento'
+import type { ResultadoIA } from '@/server/ia/esquema'
 
 /** Un caso realista para probar las salidas sin base de datos ni IA. */
 

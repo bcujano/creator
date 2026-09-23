@@ -12,11 +12,11 @@ import {
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { CifraConCuenta } from '@/components/comun/cifra'
+import { cx } from '@/components/ui/primitivos'
 import { etiquetaConfianza, formula } from '@/lib/analisis'
 import { formatoUSD } from '@/lib/precios'
 import type { DocumentoPublico } from '@/server/publico'
-import { CifraConCuenta } from './cifra'
-import { cx } from './ui'
 
 type Diapositiva = { id: string; contenido: ReactNode; oscura?: boolean }
 

@@ -2,9 +2,9 @@
 
 import { Minus, Plus } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { cx } from '@/components/ui/primitivos'
 import { calcularPaquete, compararModelos, formatoUSD, redondear } from '@/lib/precios'
 import type { ItemCatalogo, ParametrosPrecio } from '@/lib/tipos'
-import { cx } from '../ui'
 
 type Fila = { id: string; codigo: string; clientes: number; usuarios: number; uso: number | null }
 

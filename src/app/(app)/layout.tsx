@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
-import { EstiloMarca } from '@/components/marca-estilo'
-import { Navegacion } from '@/components/navegacion'
+import { EstiloMarca } from '@/components/comun/marca-estilo'
+import { Navegacion } from '@/components/comun/navegacion'
 import { verificarSesion } from '@/lib/auth'
 import { leerAjustes } from '@/server/datos'
 

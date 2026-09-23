@@ -3,7 +3,7 @@ import { AJUSTES_DEFECTO } from '../src/lib/ajustes-defecto'
 import { calcularPaquete, precioAMedida } from '../src/lib/precios'
 import type { PaquetePropuesta } from '../src/lib/tipos'
 import { construirAcuerdo } from '../src/server/acuerdo/contenido'
-import { CATALOGO, documentoDePrueba } from './fixture'
+import { CATALOGO, documentoDePrueba } from './fixtures/documento'
 
 const precios = AJUSTES_DEFECTO.precios
 

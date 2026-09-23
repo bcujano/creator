@@ -2,12 +2,12 @@
 
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, Loader2, Paperclip } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { CampoRespuesta } from '@/components/comun/campo-respuesta'
+import { Grabadora } from '@/components/comun/grabadora'
+import { subirArchivo } from '@/components/comun/subir'
+import { api, cx } from '@/components/ui/primitivos'
 import { seccionesCliente } from '@/lib/preguntas'
 import type { Idioma } from '@/lib/tipos'
-import { CampoRespuesta } from './campo-respuesta'
-import { Grabadora } from './grabadora'
-import { subirArchivo } from './subir'
-import { api, cx } from './ui'
 
 type Datos = Record<
   | 'contacto_nombre'

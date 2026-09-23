@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { Aviso, api, Boton, Campo, Etiqueta, Selector } from '@/components/ui'
+import { Aviso, api, Boton, Campo, Etiqueta, Selector } from '@/components/ui/primitivos'
 
 const CAMPOS: { clave: string; etiqueta: string; tipo?: string; placeholder?: string }[] = [
   {
