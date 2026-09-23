@@ -9,6 +9,18 @@ import type {
   NivelPaquete,
 } from '@/lib/tipos'
 import type { LevantamientoCompleto } from '../datos'
+
+/** Lo que dijo el cliente (en su celular) y lo que anotó el consultor, cada uno con su voz. */
+function entrevistaComoTexto(l: LevantamientoCompleto, vacio: string) {
+  const cliente = respuestasComoTexto(l.respuestas_cliente ?? {}, l.idioma)
+  const consultor = respuestasComoTexto(l.respuestas, l.idioma)
+  const partes = [
+    cliente && `## Respondido por el cliente, con sus palabras\n${cliente}`,
+    consultor && `## Anotado por el consultor durante la reunión\n${consultor}`,
+  ].filter(Boolean)
+  return partes.join('\n\n') || vacio
+}
+
 import { EsquemaAnalisis, EsquemaSugerencias, type ResultadoAnalisis } from './esquema'
 import { generarEstructurado } from './motor'
 
@@ -59,6 +71,7 @@ Cómo trabajas:
   · recomendado: el mejor retorno; es el que tú venderías.
   · premium: la transformación completa.
   No repitas módulos que ya vienen dentro de un paquete (campo "Contiene los módulos"). Ajusta los paquetes al tamaño y presupuesto aparente del cliente.
+- Usa las palabras del cliente: cuando describe cómo imagina el sistema o por qué cree que podemos ayudarle, refleja esa visión en la propuesta de valor. Si indicó cuánto piensa invertir, el paquete recomendado debe caber en ese rango (o explicar por qué conviene salir de él) y el esencial debe quedar por debajo.
 - ROI conservador. Contexto: Ecuador, dólares, pymes.
 - Escribe todo el contenido en ${lengua}, claro y directo, pensado para mostrárselo al dueño del negocio.`
 }
@@ -78,6 +91,7 @@ export function construirEntrada(
     c.sitio_web && `Sitio web: ${c.sitio_web}`,
     c.contacto_nombre &&
       `Contacto: ${c.contacto_nombre}${c.contacto_cargo ? ` (${c.contacto_cargo})` : ''}`,
+    c.razon_social && `Razón social: ${c.razon_social}`,
     c.notas && `Notas: ${c.notas}`,
   ]
     .filter(Boolean)
@@ -90,7 +104,7 @@ ${catalogoComoTexto(catalogo, idioma)}
 ${ficha}
 
 # ENTREVISTA
-${respuestasComoTexto(levantamiento.respuestas, idioma) || '(sin respuestas todavía)'}
+${entrevistaComoTexto(levantamiento, '(sin respuestas todavía)')}
 
 # MATERIAL RECOPILADO
 ${insumosComoTexto(insumos) || '(sin material adicional)'}`
@@ -123,7 +137,7 @@ export async function sugerirPreguntas(
     usuario: `Cliente: ${levantamiento.clientes.nombre} (${levantamiento.clientes.industria || 'industria sin definir'})
 
 Respuestas hasta ahora:
-${respuestasComoTexto(levantamiento.respuestas, idioma) || '(ninguna)'}
+${entrevistaComoTexto(levantamiento, '(ninguna)')}
 
 Material:
 ${insumosComoTexto(insumos).slice(0, 12000) || '(ninguno)'}

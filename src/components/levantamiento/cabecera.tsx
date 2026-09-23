@@ -28,6 +28,9 @@ const FICHA: { clave: keyof PropsEspacio['levantamiento']['clientes']; etiqueta:
   { clave: 'empleados', etiqueta: 'Empleados' },
   { clave: 'sitio_web', etiqueta: 'Sitio web o redes' },
   { clave: 'ruc', etiqueta: 'RUC' },
+  { clave: 'razon_social', etiqueta: 'Razón social' },
+  { clave: 'cedula_representante', etiqueta: 'Cédula del representante' },
+  { clave: 'direccion', etiqueta: 'Dirección' },
 ]
 
 export function Cabecera({ levantamiento, appUrl }: PropsEspacio & { irA: (p: string) => void }) {

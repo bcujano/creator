@@ -46,6 +46,7 @@ export async function leerAjustes(): Promise<Ajustes> {
     precios: { ...AJUSTES_DEFECTO.precios, ...(data?.precios ?? {}) },
     ia: { ...AJUSTES_DEFECTO.ia, ...(data?.ia ?? {}) },
     crm: { ...AJUSTES_DEFECTO.crm, ...(data?.crm ?? {}) },
+    legal: { ...AJUSTES_DEFECTO.legal, ...(data?.legal ?? {}) },
   }
 }
 
@@ -60,6 +61,7 @@ export async function guardarAjustes(
     precios: { ...actuales.precios, ...(parcial.precios ?? {}) },
     ia: { ...actuales.ia, ...(parcial.ia ?? {}) },
     crm: { ...actuales.crm, ...(parcial.crm ?? {}) },
+    legal: { ...actuales.legal, ...(parcial.legal ?? {}) },
   }
   const { error } = await db()
     .from('ajustes')

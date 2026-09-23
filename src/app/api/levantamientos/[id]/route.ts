@@ -31,6 +31,9 @@ const Cambios = z.object({
       empleados: z.string(),
       ruc: z.string(),
       notas: z.string(),
+      razon_social: z.string(),
+      direccion: z.string(),
+      cedula_representante: z.string(),
     })
     .partial()
     .optional(),

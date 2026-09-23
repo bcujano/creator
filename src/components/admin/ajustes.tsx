@@ -255,6 +255,56 @@ export function EditorAjustes({ inicial, estado }: { inicial: Ajustes; estado: E
       </Seccion>
 
       <Seccion
+        titulo="Datos legales"
+        texto="Quién presta el servicio en los acuerdos que se generan para firmar."
+      >
+        <div>
+          <Etiqueta>Razón social</Etiqueta>
+          <Campo {...campo('legal', 'razon_social')} />
+        </div>
+        <div>
+          <Etiqueta>RUC</Etiqueta>
+          <Campo {...campo('legal', 'ruc')} />
+        </div>
+        <div>
+          <Etiqueta>Línea de negocio</Etiqueta>
+          <Campo {...campo('legal', 'linea_negocio')} />
+        </div>
+        <div>
+          <Etiqueta>Descripción de la línea</Etiqueta>
+          <Campo {...campo('legal', 'descripcion_linea')} />
+        </div>
+        <div>
+          <Etiqueta>Representante legal</Etiqueta>
+          <Campo {...campo('legal', 'representante')} />
+        </div>
+        <div>
+          <Etiqueta>Cargo</Etiqueta>
+          <Campo {...campo('legal', 'cargo')} />
+        </div>
+        <div>
+          <Etiqueta>Ciudad (firma y jurisdicción)</Etiqueta>
+          <Campo {...campo('legal', 'ciudad')} />
+        </div>
+        <div>
+          <Etiqueta>Dirección</Etiqueta>
+          <Campo {...campo('legal', 'direccion')} />
+        </div>
+        <div>
+          <Etiqueta>Plazo mínimo de la mensualidad (meses)</Etiqueta>
+          <Campo type="number" {...campo('legal', 'plazo_minimo_meses', 'numero')} />
+        </div>
+        <div>
+          <Etiqueta>Días de preaviso para terminar</Etiqueta>
+          <Campo type="number" {...campo('legal', 'dias_preaviso', 'numero')} />
+        </div>
+        <div>
+          <Etiqueta>Días de garantía</Etiqueta>
+          <Campo type="number" {...campo('legal', 'garantia_dias', 'numero')} />
+        </div>
+      </Seccion>
+
+      <Seccion
         titulo="Inteligencia artificial"
         texto="Claude es el motor principal; si falla, se reintenta con OpenAI. OpenAI también transcribe los audios."
       >

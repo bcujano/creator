@@ -1,8 +1,20 @@
 import 'server-only'
-import { Document, Image, Page, renderToBuffer, StyleSheet, Text, View } from '@react-pdf/renderer'
+import {
+  Document,
+  Font,
+  Image,
+  Page,
+  renderToBuffer,
+  StyleSheet,
+  Text,
+  View,
+} from '@react-pdf/renderer'
 import type { ReactNode } from 'react'
 import type { Documento } from '../documento'
 import { cargarLogo, etiquetaVeredicto, filasPaquete, type Logo, usd } from './comun'
+
+// Sin cortar palabras con guion: en español y en documentos formales se ve mal.
+Font.registerHyphenationCallback((palabra) => [palabra])
 
 function estilos(primario: string, acento: string) {
   return StyleSheet.create({

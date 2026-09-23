@@ -45,6 +45,22 @@ const Ajustes = z.object({
     })
     .partial()
     .optional(),
+  legal: z
+    .object({
+      razon_social: z.string().min(1),
+      ruc: z.string().min(1),
+      linea_negocio: z.string(),
+      descripcion_linea: z.string(),
+      representante: z.string().min(1),
+      cargo: z.string().min(1),
+      ciudad: z.string().min(1),
+      direccion: z.string(),
+      plazo_minimo_meses: z.number().int().min(0).max(60),
+      dias_preaviso: z.number().int().min(0).max(365),
+      garantia_dias: z.number().int().min(0).max(365),
+    })
+    .partial()
+    .optional(),
   crm: z
     .object({
       activo: z.boolean(),

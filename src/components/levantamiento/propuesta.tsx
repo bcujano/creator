@@ -26,6 +26,7 @@ import type {
   PaquetePropuesta,
 } from '@/lib/tipos'
 import { Area, Aviso, api, Boton, cx, Etiqueta, Insignia, Selector, Vacio } from '../ui'
+import { CierreTrato } from './cierre'
 import type { PropsEspacio } from './espacio'
 
 const NIVELES: { nivel: NivelPaquete; texto: string }[] = [
@@ -94,6 +95,46 @@ function Numero({
         className,
       )}
     />
+  )
+}
+
+/**
+ * Precio que se puede negociar en la reunión: vacío = precio de lista. Si se
+ * cambia, se ve el de lista tachado y un botón para volver a él.
+ */
+function PrecioNegociable({
+  etiqueta,
+  lista,
+  valor,
+  onChange,
+}: {
+  etiqueta: string
+  lista: number
+  valor: number | null | undefined
+  onChange: (v: number | null) => void
+}) {
+  const ajustado = valor !== null && valor !== undefined && valor !== lista
+  return (
+    <div>
+      <span className="flex items-center justify-between text-[11px] text-tenue">
+        {etiqueta}
+        {ajustado ? (
+          <button
+            type="button"
+            onClick={() => onChange(null)}
+            className="text-marca"
+            title="Volver al precio de lista"
+          >
+            <s>{formatoUSD(lista)}</s> ↺
+          </button>
+        ) : null}
+      </span>
+      <Numero
+        valor={valor ?? lista}
+        onChange={(v) => onChange(v === lista ? null : v)}
+        className={ajustado ? 'border-aviso text-aviso' : undefined}
+      />
+    </div>
   )
 }
 
@@ -179,12 +220,7 @@ function EditorPaquete({
                     <p className="text-xs text-ok">
                       Incluido en {mapa.get(calc.incluido_en)?.nombre_es}
                     </p>
-                  ) : (
-                    <p className="text-xs tabular-nums text-tenue">
-                      {formatoUSD(calc?.setup ?? 0)}
-                      {calc?.mensual ? ` + ${formatoUSD(calc.mensual)}/mes` : ''}
-                    </p>
-                  )}
+                  ) : null}
                 </div>
                 <button
                   type="button"
@@ -197,38 +233,33 @@ function EditorPaquete({
                   <Trash2 className="size-4" />
                 </button>
               </div>
-              {!calc?.incluido_en ? (
-                <details className="mt-2">
-                  <summary className="cursor-pointer text-xs text-tenue">
-                    Ajustar precio o cantidad
-                  </summary>
-                  <div className="mt-2 grid grid-cols-3 gap-2">
-                    <div>
-                      <span className="text-[11px] text-tenue">Cant.</span>
-                      <Numero
-                        valor={l.cantidad}
-                        min={1}
-                        onChange={(v) => linea(i, { cantidad: Math.max(1, v ?? 1) })}
-                      />
-                    </div>
-                    <div>
-                      <span className="text-[11px] text-tenue">Setup</span>
-                      <Numero
-                        valor={l.precio_setup}
-                        placeholder={String(item?.precio_setup ?? 0)}
-                        onChange={(v) => linea(i, { precio_setup: v })}
-                      />
-                    </div>
-                    <div>
-                      <span className="text-[11px] text-tenue">Mensual</span>
-                      <Numero
-                        valor={l.precio_mensual}
-                        placeholder={String(item?.precio_mensual ?? 0)}
-                        onChange={(v) => linea(i, { precio_mensual: v })}
-                      />
-                    </div>
+              {!calc?.incluido_en && item ? (
+                <div className="mt-2 grid grid-cols-[56px_1fr_1fr] gap-2">
+                  <div>
+                    <span className="text-[11px] text-tenue">Cant.</span>
+                    <Numero
+                      valor={l.cantidad}
+                      min={1}
+                      onChange={(v) => linea(i, { cantidad: Math.max(1, v ?? 1) })}
+                    />
                   </div>
-                </details>
+                  <PrecioNegociable
+                    etiqueta="Setup"
+                    lista={item.precio_setup}
+                    valor={l.precio_setup}
+                    onChange={(v) => linea(i, { precio_setup: v })}
+                  />
+                  {item.precio_mensual > 0 || l.precio_mensual ? (
+                    <PrecioNegociable
+                      etiqueta="Mensual"
+                      lista={item.precio_mensual}
+                      valor={l.precio_mensual}
+                      onChange={(v) => linea(i, { precio_mensual: v })}
+                    />
+                  ) : (
+                    <span className="self-end pb-2 text-xs text-tenue">pago único</span>
+                  )}
+                </div>
               ) : null}
             </div>
           )
@@ -621,6 +652,14 @@ export function EditorPropuesta({
           ) : null}
         </div>
       </div>
+
+      {base && !sucio ? (
+        <CierreTrato
+          levantamientoId={levantamiento.id}
+          cliente={levantamiento.clientes}
+          propuesta={base}
+        />
+      ) : null}
 
       {base && !sucio ? (
         <div className="rounded-2xl border border-borde bg-superficie p-5">

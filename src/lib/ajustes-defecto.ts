@@ -32,6 +32,20 @@ export const AJUSTES_DEFECTO: Ajustes = {
     modelo_transcripcion: 'gpt-4o-transcribe',
     esfuerzo: 'medium',
   },
+  legal: {
+    razon_social: '321 SOLUCIONES INMOBILIARIAS S.A.S.',
+    ruc: '1793232459001',
+    linea_negocio: 'AiUDA',
+    descripcion_linea:
+      'línea de negocio dedicada a brindar soluciones empresariales con inteligencia artificial',
+    representante: 'Byron Cujano',
+    cargo: 'Director General',
+    ciudad: 'Quito',
+    direccion: '',
+    plazo_minimo_meses: 6,
+    dias_preaviso: 30,
+    garantia_dias: 30,
+  },
   crm: {
     activo: true,
     enviar_al_crear_propuesta: false,

@@ -1,7 +1,8 @@
 'use client'
 
-import { Brain, ClipboardList, FileStack, History, Package } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Brain, ClipboardList, FileStack, History, Package, Smartphone } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 import type { Ajustes, Insumo, ItemCatalogo } from '@/lib/tipos'
 import type { FilaAnalisis, FilaPropuesta, LevantamientoCompleto } from '@/server/datos'
 import { cx } from '../ui'
@@ -56,6 +57,8 @@ export function Espacio(props: PropsEspacio) {
     } catch {}
   }, [props.levantamiento.id])
 
+  const aviso = usePulsoCliente(props.levantamiento.id)
+
   function cambiar(p: Pestana) {
     setPestana(p)
     try {
@@ -64,7 +67,14 @@ export function Espacio(props: PropsEspacio) {
   }
 
   const conteo: Partial<Record<Pestana, number>> = {
-    entrevista: Object.values(props.levantamiento.respuestas).filter((v) => v.trim()).length,
+    entrevista: new Set(
+      [
+        ...Object.entries(props.levantamiento.respuestas),
+        ...Object.entries(props.levantamiento.respuestas_cliente ?? {}),
+      ]
+        .filter(([, v]) => v.trim())
+        .map(([k]) => k),
+    ).size,
     material: props.insumos.length,
     analisis: props.analisis.length,
     propuesta: props.propuestas.length,
@@ -73,6 +83,13 @@ export function Espacio(props: PropsEspacio) {
   return (
     <div className="aparecer space-y-5">
       <Cabecera {...props} irA={(p) => cambiar(p as Pestana)} />
+
+      {aviso ? (
+        <div className="aparecer no-imprimir fixed right-4 bottom-4 z-40 flex items-center gap-3 rounded-2xl bg-tinta px-4 py-3 text-sm text-fondo shadow-lg">
+          <Smartphone className="size-4 text-acento" />
+          {aviso}
+        </div>
+      ) : null}
 
       <div className="no-imprimir sticky top-16 z-20 -mx-4 border-b border-borde bg-fondo/90 px-4 backdrop-blur">
         <div className="flex gap-1 overflow-x-auto py-2">
@@ -111,4 +128,53 @@ export function Espacio(props: PropsEspacio) {
       {pestana === 'historial' ? <Historial {...props} /> : null}
     </div>
   )
+}
+
+/**
+ * Mientras la reunión está abierta, consulta cada 5 s si el cliente respondió
+ * algo desde su celular; si cambió, recarga los datos del servidor sin perder
+ * lo que el consultor está escribiendo.
+ */
+function usePulsoCliente(levantamientoId: string) {
+  const router = useRouter()
+  const firma = useRef<string | null>(null)
+  const [aviso, setAviso] = useState('')
+
+  useEffect(() => {
+    let vivo = true
+    let ocultar: ReturnType<typeof setTimeout> | undefined
+    async function revisar() {
+      if (document.visibilityState !== 'visible') return
+      try {
+        const r = await fetch(`/api/levantamientos/${levantamientoId}/pulso`, { cache: 'no-store' })
+        if (!r.ok || !vivo) return
+        const { firma: nueva, cliente_termino } = (await r.json()) as {
+          firma: string
+          cliente_termino: boolean
+        }
+        if (firma.current !== null && firma.current !== nueva) {
+          router.refresh()
+          setAviso(
+            cliente_termino
+              ? 'El cliente terminó el formulario'
+              : 'El cliente actualizó sus respuestas',
+          )
+          clearTimeout(ocultar)
+          ocultar = setTimeout(() => setAviso(''), 5000)
+        }
+        firma.current = nueva
+      } catch {
+        // Sin conexión: se reintenta en el siguiente ciclo.
+      }
+    }
+    void revisar()
+    const t = setInterval(revisar, 5000)
+    return () => {
+      vivo = false
+      clearInterval(t)
+      clearTimeout(ocultar)
+    }
+  }, [levantamientoId, router])
+
+  return aviso
 }

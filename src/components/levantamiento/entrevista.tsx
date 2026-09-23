@@ -1,9 +1,19 @@
 'use client'
 
-import { Check, ChevronDown, CloudOff, Lightbulb, Plus, Sparkles } from 'lucide-react'
+import {
+  Check,
+  ChevronDown,
+  CloudOff,
+  Lightbulb,
+  PencilLine,
+  Plus,
+  Smartphone,
+  Sparkles,
+} from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SECCIONES } from '@/lib/preguntas'
 import type { Sugerencias } from '@/server/ia/esquema'
+import { CampoRespuesta } from '../campo-respuesta'
 import { Area, Aviso, api, Boton, cx, Insignia } from '../ui'
 import type { PropsEspacio } from './espacio'
 
@@ -82,19 +92,37 @@ function IndicadorGuardado({ estado }: { estado: EstadoGuardado }) {
   return <Insignia>Guardando…</Insignia>
 }
 
-export function Entrevista({ levantamiento, insumos, estado: estadoSistema }: PropsEspacio) {
+function hace(fecha: string) {
+  const minutos = Math.round((Date.now() - new Date(fecha).getTime()) / 60_000)
+  if (minutos < 1) return 'hace un momento'
+  if (minutos < 60) return `hace ${minutos} min`
+  return new Date(fecha).toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' })
+}
+
+export function Entrevista({ levantamiento, estado: estadoSistema }: PropsEspacio) {
   const { respuestas, cambiar, estado } = useAutoguardado(
     levantamiento.id,
     levantamiento.respuestas,
   )
-  const [abiertas, setAbiertas] = useState<Record<string, boolean>>({ negocio: true })
+  const delCliente = levantamiento.respuestas_cliente ?? {}
+  const [abiertas, setAbiertas] = useState<Record<string, boolean>>({})
+  const [complementando, setComplementando] = useState<Record<string, boolean>>({})
+  const [verCliente, setVerCliente] = useState(true)
   const [sugerencias, setSugerencias] = useState<Sugerencias | null>(null)
   const [pensando, setPensando] = useState(false)
   const [error, setError] = useState('')
   const [nuevaPregunta, setNuevaPregunta] = useState('')
 
+  const clienteRespondio = (id: string) => Boolean(delCliente[id]?.trim())
+  const respondida = (id: string) => clienteRespondio(id) || Boolean(respuestas[id]?.trim())
   const extras = Object.keys(respuestas).filter((k) => k.startsWith('extra:'))
-  const formularioCliente = insumos.find((i) => i.tipo === 'formulario' && i.origen === 'cliente')
+  const totalCliente = Object.values(delCliente).filter((v) => v.trim()).length
+
+  // Se abre sola la primera sección que todavía tiene algo por preguntar.
+  const primeraPendiente = SECCIONES.find((s) =>
+    s.preguntas.some((p) => !clienteRespondio(p.id)),
+  )?.id
+  const abierta = (id: string) => abiertas[id] ?? id === primeraPendiente
 
   async function sugerir() {
     setPensando(true)
@@ -120,28 +148,90 @@ export function Entrevista({ levantamiento, insumos, estado: estadoSistema }: Pr
     setNuevaPregunta('')
   }
 
-  const respondidas = (ids: string[]) => ids.filter((id) => respuestas[id]?.trim()).length
-
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_340px]">
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-tenue">
-            Escribe mientras el cliente habla. Todo se guarda solo.
-          </p>
+          <p className="text-sm text-tenue">Pregunta solo lo que falta. Todo se guarda solo.</p>
           <IndicadorGuardado estado={estado} />
         </div>
 
-        {formularioCliente ? (
-          <Aviso tono="ok">
-            El cliente ya respondió el formulario desde su celular. Lo verás en Material y entra al
-            diagnóstico.
-          </Aviso>
+        {totalCliente > 0 ? (
+          <div className="overflow-hidden rounded-2xl border border-acento/40 bg-acento/5">
+            <button
+              type="button"
+              onClick={() => setVerCliente(!verCliente)}
+              className="anillo-foco flex min-h-14 w-full items-center justify-between gap-3 px-5 text-left"
+            >
+              <span className="flex items-center gap-2">
+                <Smartphone className="size-5 text-acento" />
+                <span className="font-titulo text-lg font-semibold">
+                  El cliente respondió {totalCliente}
+                </span>
+                {levantamiento.cliente_termino ? (
+                  <Insignia tono="ok">terminó</Insignia>
+                ) : (
+                  <Insignia tono="aviso">en curso</Insignia>
+                )}
+              </span>
+              <span className="flex items-center gap-2 text-xs text-tenue">
+                {levantamiento.cliente_respondio_en ? hace(levantamiento.cliente_respondio_en) : ''}
+                <ChevronDown className={cx('size-5 transition', verCliente && 'rotate-180')} />
+              </span>
+            </button>
+            {verCliente ? (
+              <div className="space-y-4 border-t border-acento/20 px-5 py-4">
+                {SECCIONES.map((s) => {
+                  const suyas = s.preguntas.filter((p) => clienteRespondio(p.id))
+                  if (suyas.length === 0) return null
+                  return (
+                    <div key={s.id}>
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-tenue">
+                        {s.es}
+                      </p>
+                      <div className="space-y-3">
+                        {suyas.map((p) => (
+                          <div key={p.id} className="rounded-xl bg-superficie p-3">
+                            <p className="text-sm text-tenue">{p.es}</p>
+                            <p className="mt-1 whitespace-pre-wrap font-medium">
+                              {delCliente[p.id]}
+                            </p>
+                            {complementando[p.id] || respuestas[p.id]?.trim() ? (
+                              <div className="mt-2">
+                                <Area
+                                  rows={2}
+                                  placeholder="Tu complemento de la conversación…"
+                                  value={respuestas[p.id] ?? ''}
+                                  onChange={(e) => cambiar(p.id, e.target.value)}
+                                />
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setComplementando({ ...complementando, [p.id]: true })
+                                }
+                                className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-marca"
+                              >
+                                <PencilLine className="size-3.5" /> Complementar
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : null}
+          </div>
         ) : null}
 
         {SECCIONES.map((s) => {
-          const abierta = abiertas[s.id] ?? false
-          const hechas = respondidas(s.preguntas.map((p) => p.id))
+          const pendientes = s.preguntas.filter((p) => !clienteRespondio(p.id))
+          if (pendientes.length === 0) return null
+          const hechas = s.preguntas.filter((p) => respondida(p.id)).length
+          const abiertaSeccion = abierta(s.id)
           return (
             <div
               key={s.id}
@@ -149,39 +239,40 @@ export function Entrevista({ levantamiento, insumos, estado: estadoSistema }: Pr
             >
               <button
                 type="button"
-                onClick={() => setAbiertas({ ...abiertas, [s.id]: !abierta })}
+                onClick={() => setAbiertas({ ...abiertas, [s.id]: !abiertaSeccion })}
                 className="anillo-foco flex min-h-14 w-full items-center justify-between gap-3 px-5 text-left"
               >
-                <span className="font-titulo text-lg font-semibold">{s.es}</span>
+                <span>
+                  <span className="font-titulo text-lg font-semibold">{s.es}</span>
+                  {s.id === 'consultor' ? (
+                    <span className="ml-2 text-xs text-tenue">solo tú</span>
+                  ) : null}
+                </span>
                 <span className="flex items-center gap-3">
                   <span className="text-xs tabular-nums text-tenue">
                     {hechas}/{s.preguntas.length}
                   </span>
                   <ChevronDown
-                    className={cx('size-5 text-tenue transition', abierta && 'rotate-180')}
+                    className={cx('size-5 text-tenue transition', abiertaSeccion && 'rotate-180')}
                   />
                 </span>
               </button>
-              {abierta ? (
-                <div className="space-y-5 border-t border-borde px-5 py-5">
-                  {s.preguntas.map((p) => (
+              {abiertaSeccion ? (
+                <div className="space-y-6 border-t border-borde px-5 py-5">
+                  {pendientes.map((p) => (
                     <div key={p.id}>
-                      <label
-                        htmlFor={p.id}
-                        className="mb-1.5 flex flex-wrap items-center gap-2 font-medium"
+                      <p
+                        id={`${p.id}-titulo`}
+                        className="mb-2 flex flex-wrap items-center gap-2 font-medium"
                       >
-                        {p.es}
+                        <label htmlFor={p.id}>{p.es}</label>
                         {p.sondeo ? <Insignia tono="marca">dolor oculto</Insignia> : null}
-                        {p.solo_consultor ? <Insignia>solo consultor</Insignia> : null}
-                      </label>
-                      {p.ayuda_es ? (
-                        <p className="mb-1.5 text-xs text-tenue">{p.ayuda_es}</p>
-                      ) : null}
-                      <Area
-                        id={p.id}
-                        rows={2}
-                        value={respuestas[p.id] ?? ''}
-                        onChange={(e) => cambiar(p.id, e.target.value)}
+                      </p>
+                      <CampoRespuesta
+                        pregunta={p}
+                        idioma="es"
+                        valor={respuestas[p.id] ?? ''}
+                        onChange={(v) => cambiar(p.id, v)}
                       />
                     </div>
                   ))}
@@ -194,7 +285,7 @@ export function Entrevista({ levantamiento, insumos, estado: estadoSistema }: Pr
         <div className="rounded-2xl border border-borde bg-superficie p-5">
           <p className="font-titulo text-lg font-semibold">Preguntas de seguimiento</p>
           <p className="mb-4 text-sm text-tenue">
-            Las que surgen en la conversación o las que sugiere la IA.
+            Las que surgen en la conversación o las que sugiere el copiloto.
           </p>
           <div className="space-y-5">
             {extras.map((id) => (
@@ -236,7 +327,8 @@ export function Entrevista({ levantamiento, insumos, estado: estadoSistema }: Pr
             <p className="font-titulo text-lg font-semibold">Copiloto</p>
           </div>
           <p className="mt-1 text-sm text-tenue">
-            Según lo conversado, te sugiere qué preguntar ahora para destapar dolores ocultos.
+            Lee lo que respondió el cliente y lo conversado, y te dice qué preguntar ahora para
+            destapar dolores ocultos.
           </p>
           <Boton
             variante="primario"

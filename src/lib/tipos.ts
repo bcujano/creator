@@ -75,11 +75,27 @@ export type AjustesCRM = {
   source: string
 }
 
+/** Quién presta el servicio en los acuerdos. */
+export type DatosLegales = {
+  razon_social: string
+  ruc: string
+  linea_negocio: string
+  descripcion_linea: string
+  representante: string
+  cargo: string
+  ciudad: string
+  direccion: string
+  plazo_minimo_meses: number
+  dias_preaviso: number
+  garantia_dias: number
+}
+
 export type Ajustes = {
   marca: Marca
   precios: ParametrosPrecio
   ia: AjustesIA
   crm: AjustesCRM
+  legal: DatosLegales
 }
 
 export type Cliente = {
@@ -95,6 +111,9 @@ export type Cliente = {
   sitio_web: string
   empleados: string
   notas: string
+  razon_social: string
+  direccion: string
+  cedula_representante: string
   crm_lead_id: string | null
   creado_en: string
 }
@@ -114,6 +133,10 @@ export type Levantamiento = {
   estado: EstadoLevantamiento
   idioma: Idioma
   respuestas: Record<string, string>
+  /** Lo que el cliente respondió desde su celular (mismas claves de pregunta). */
+  respuestas_cliente: Record<string, string>
+  cliente_respondio_en: string | null
+  cliente_termino: boolean
   token_cliente: string
   formulario_activo: boolean
   creado_en: string
