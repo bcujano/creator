@@ -240,7 +240,9 @@ export function PanelAnalisis({
   catalogo,
   estado,
   irAPropuesta,
-}: PropsEspacio & { irAPropuesta: () => void }) {
+  autoIniciar,
+  alIniciar,
+}: PropsEspacio & { irAPropuesta: () => void; autoIniciar?: boolean; alIniciar?: () => void }) {
   const router = useRouter()
   const [corriendo, setCorriendo] = useState(false)
   const [mensaje, setMensaje] = useState(0)
@@ -255,7 +257,23 @@ export function PanelAnalisis({
     return () => clearInterval(t)
   }, [corriendo])
 
-  const respuestas = Object.values(levantamiento.respuestas).filter((v) => v.trim()).length
+  // Viene del botón "Listo" de la entrevista: arranca solo, una vez.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: debe correr solo al llegar con la orden
+  useEffect(() => {
+    if (autoIniciar && estado.ia) {
+      alIniciar?.()
+      void ejecutar()
+    }
+  }, [autoIniciar])
+
+  const respuestas = new Set(
+    [
+      ...Object.entries(levantamiento.respuestas),
+      ...Object.entries(levantamiento.respuestas_cliente ?? {}),
+    ]
+      .filter(([, v]) => v.trim())
+      .map(([k]) => k),
+  ).size
   const poco = respuestas + insumos.length < 3
 
   async function ejecutar() {

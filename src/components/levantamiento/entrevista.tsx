@@ -99,7 +99,12 @@ function hace(fecha: string) {
   return new Date(fecha).toLocaleString('es-EC', { dateStyle: 'short', timeStyle: 'short' })
 }
 
-export function Entrevista({ levantamiento, estado: estadoSistema }: PropsEspacio) {
+export function Entrevista({
+  levantamiento,
+  analisis,
+  estado: estadoSistema,
+  alTerminar,
+}: PropsEspacio & { alTerminar: () => void }) {
   const { respuestas, cambiar, estado } = useAutoguardado(
     levantamiento.id,
     levantamiento.respuestas,
@@ -317,6 +322,28 @@ export function Entrevista({ levantamiento, estado: estadoSistema }: PropsEspaci
               Agregar
             </Boton>
           </div>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-marca p-5 text-white">
+          <div>
+            <p className="font-titulo text-lg font-semibold">¿Terminaste la conversación?</p>
+            <p className="text-sm opacity-85">
+              La IA arma el diagnóstico, la solución y los tres paquetes con precio. Toma de 1 a 4
+              minutos.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={alTerminar}
+            disabled={!estadoSistema.ia}
+            className="anillo-foco inline-flex min-h-12 items-center gap-2 rounded-xl bg-white px-5 font-semibold text-marca shadow-sm hover:bg-white/90 disabled:opacity-50"
+          >
+            <Sparkles className="size-4" />
+            {analisis.some((a) => a.estado === 'listo')
+              ? 'Volver a analizar'
+              : 'Listo: analizar y diseñar'}{' '}
+            →
+          </button>
         </div>
       </div>
 

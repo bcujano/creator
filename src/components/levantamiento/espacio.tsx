@@ -58,6 +58,7 @@ export function Espacio(props: PropsEspacio) {
   }, [props.levantamiento.id])
 
   const aviso = usePulsoCliente(props.levantamiento.id)
+  const [autoAnalizar, setAutoAnalizar] = useState(false)
 
   function cambiar(p: Pestana) {
     setPestana(p)
@@ -117,10 +118,23 @@ export function Espacio(props: PropsEspacio) {
         </div>
       </div>
 
-      {pestana === 'entrevista' ? <Entrevista {...props} /> : null}
+      {pestana === 'entrevista' ? (
+        <Entrevista
+          {...props}
+          alTerminar={() => {
+            setAutoAnalizar(true)
+            cambiar('analisis')
+          }}
+        />
+      ) : null}
       {pestana === 'material' ? <Material {...props} /> : null}
       {pestana === 'analisis' ? (
-        <PanelAnalisis {...props} irAPropuesta={() => cambiar('propuesta')} />
+        <PanelAnalisis
+          {...props}
+          irAPropuesta={() => cambiar('propuesta')}
+          autoIniciar={autoAnalizar}
+          alIniciar={() => setAutoAnalizar(false)}
+        />
       ) : null}
       {pestana === 'propuesta' ? (
         <EditorPropuesta {...props} irAAnalisis={() => cambiar('analisis')} />
