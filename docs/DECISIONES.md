@@ -50,3 +50,9 @@ Antes cada versión guardada tomaba un número nuevo de la serie (DKB: v1 = 0011
 ### 16. Presentación descargable en PDF
 Pedido de Byron: enviar la presentación como valor agregado después de la reunión y junto al contrato. Es un PDF horizontal hecho con react-pdf a partir del mismo `Documento` (no una captura de la pantalla del iPad), así funciona desde el servidor y en el enlace público. Si hay cierre, marca el paquete "Elegido" y agrega "Lo acordado". Para que coincida con un contrato negociado, lo negociado se guarda como nueva versión de la propuesta.
 
+### 17. El precio que se muestra en grande es el total con IVA
+Byron: mostrar la base sin IVA como cifra principal lo confundía y lo llevaba a cobrar sin IVA. Desde el 24/09/2026 el número destacado en el editor, la presentación (pantalla, PDF, PowerPoint) y las tarjetas del cierre es el **total con IVA**, que es lo que se pide al cliente; la base queda como detalle ("$X sin IVA"). Las tablas de detalle siguen con subtotal, IVA y total.
+
+### 18. Brief de arranque del proyecto en Markdown
+Al firmar, Byron necesita pasarle a Claude todo lo aprobado para diseñar y construir. `server/proyecto.ts` arma un .md interno (no pasa por `publico.ts`: incluye entrevista textual, material y notas internas, pero nunca costos ni márgenes) con instrucciones de uso al inicio, el alcance contratado como fuente de verdad y lo ofrecido que quedó fuera. Solo se habilita con el cierre guardado.
+

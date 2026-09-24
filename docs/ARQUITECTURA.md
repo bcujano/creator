@@ -33,6 +33,7 @@ src/
     servicios.ts              Orquestación: ejecutarAnalisis, guardarPropuesta
     documento.ts              Arma el documento único para todas las salidas
     publico.ts                Versión sin datos internos para el cliente
+    proyecto.ts               Brief .md de arranque del proyecto aprobado (interno)
     ia/{motor,esquema,analizar}.ts
     exportar/{presentacion,pdf,docx,pptx,xlsx,markdown,comun,index}
     acuerdo/{contenido,pdf,docx,letras}
@@ -98,6 +99,6 @@ Storage: `insumos` (privado, subida directa con URL firmada), `marca` (público,
 | `…/[id]/insumos` · `subida` · `archivos` | Notas y archivos (URL firmada + registro + extracción) |
 | `…/[id]/sugerir` · `analizar` · `propuestas` · `respaldo` · `pulso` · `beacon` | Copiloto, análisis, nueva versión, JSON completo, firma para el panel en vivo, guardado al cerrar pestaña |
 | `PATCH /api/propuestas/[id]` | Estado y/o `cierre` |
-| `GET /api/propuestas/[id]/exportar?formato=` · `acuerdo?formato=` · `POST …/crm` | Archivos, acuerdo, CRM |
+| `GET /api/propuestas/[id]/exportar?formato=` · `acuerdo?formato=` · `proyecto` · `POST …/crm` | Archivos, acuerdo, brief de arranque (.md), CRM |
 | `/api/publico/f/[token]` (PUT, subida, archivos) · `/api/publico/p/[token]/exportar` | Cliente sin sesión |
 | `/api/catalogo` · `/api/ajustes` (PUT; POST sube logo) | Administración |

@@ -104,7 +104,8 @@ export function briefProyecto(doc: Documento, ctx: ContextoProyecto): string {
       )
     }
     const semanas = linea.a_medida?.semanas ?? item?.semanas
-    if (semanas) L.push('', `Plazo de referencia: ${semanas} semanas.`)
+    if (semanas)
+      L.push('', `Plazo de referencia: ${semanas} ${semanas === 1 ? 'semana' : 'semanas'}.`)
     L.push('')
   }
   L.push(
@@ -138,7 +139,9 @@ export function briefProyecto(doc: Documento, ctx: ContextoProyecto): string {
   )
   L.push('', 'Plan de pagos de la implementación:', '')
   for (const [i, d] of montosPagos(cierre.pagos, calc.setup.total).entries()) {
-    L.push(`${i + 1}. ${usd(d.monto, doc)} (${pctVisible(d.pct)} %) ${d.concepto}`)
+    L.push(
+      `${i + 1}. ${usd(d.monto, doc)} (${pctVisible(d.pct).toLocaleString('es-EC')} %) ${d.concepto}`,
+    )
   }
   if (p.datos.condiciones) L.push('', `Condiciones particulares: ${p.datos.condiciones}`)
 
@@ -155,14 +158,22 @@ export function briefProyecto(doc: Documento, ctx: ContextoProyecto): string {
     L.push('', 'Lo que descubrimos:', ...lista(dolores('oculto')))
 
     const codigos = new Set(elegido.definicion.lineas.map((l) => l.codigo))
+    // Solo lo contratado: una solución a medida entra si el paquete trae algún módulo a medida.
+    const conAMedida = elegido.definicion.lineas.some((l) => l.a_medida)
     const soluciones = a.soluciones.filter(
-      (s) => s.codigos_catalogo.some((cod) => codigos.has(cod)) || s.a_medida,
+      (s) =>
+        s.codigos_catalogo.some((cod) => codigos.has(cod)) ||
+        (s.a_medida && conAMedida && !s.codigos_catalogo.length),
     )
     if (soluciones.length) {
       L.push('', '## Soluciones y cómo se mide el éxito', '')
       for (const s of soluciones) {
+        // Una solución puede apoyarse en productos que el cliente no contrató: se avisa.
+        const fuera = s.codigos_catalogo
+          .filter((cod) => !codigos.has(cod))
+          .map((cod) => ctx.catalogo.get(cod)?.nombre_es ?? cod)
         L.push(
-          `- **${s.titulo}**: ${s.descripcion} Resuelve: ${s.dolores_que_resuelve.join('; ')}. Indicador: ${s.indicador}.`,
+          `- **${s.titulo}**: ${s.descripcion} Resuelve: ${s.dolores_que_resuelve.join('; ')}. Indicador: ${s.indicador.replace(/\.+$/, '')}.${fuera.length ? ` ⚠️ Usa partes no contratadas: ${fuera.join(', ')}.` : ''}`,
         )
       }
     }
@@ -180,6 +191,10 @@ export function briefProyecto(doc: Documento, ctx: ContextoProyecto): string {
     L.push('', `Integraciones: ${a.arquitectura.integraciones.join(', ')}.`)
 
     L.push('', '## Plan presentado al cliente', '')
+    L.push(
+      '> Se armó para los tres paquetes: quita lo que no esté en "Alcance contratado" y ajusta los hitos a ese alcance.',
+      '',
+    )
     for (const f of a.plan) {
       L.push(`**Fase ${f.fase} · ${f.nombre}** (${f.semanas} semanas)`, ...lista(f.entregables), '')
     }

@@ -18,17 +18,19 @@ CREATOR está **en producción y en uso** en https://creator.emprendimientum.com
 | Diagnóstico IA: dolores explícitos/ocultos, madurez, soluciones, arquitectura, viabilidad, plan, 3 paquetes | ✅ | `server/ia/` |
 | **Cifras fundamentadas**: factores con fuente y cita; el código multiplica; "por cuantificar" si falta un dato | ✅ | `lib/analisis.ts`, `components/comun/cifra.tsx` |
 | **Módulos a medida**: solo herramientas/agentes IA nuevos; precio por complejidad (tabla $300/$600/$900) | ✅ (ver pendiente 1) | `lib/precios.ts` (`precioAMedida`, `itemAMedida`) |
+| Precio **con IVA** como cifra principal en editor, presentación, PDF y PowerPoint (la base sin IVA es el detalle) | ✅ | |
 | Propuesta editable: paquetes, precio negociable por ítem, descuentos %, usuarios, volumen, margen y simulador de modelos de cobro (solo interno) | ✅ | `levantamiento/propuesta.tsx` |
 | Presentación en iPad (diapositivas) y enlace público para el celular | ✅ | `components/presentacion/`, `app/presentar`, `app/p` |
 | Exportación PDF, Word, PowerPoint, Excel (fórmulas vivas), Markdown | ✅ | `server/exportar/` |
 | **Presentación descargable (PDF 16:9)** para enviar después de la reunión; con cierre agrega "Lo acordado" (paquete, totales con IVA, plan de pagos). En Entregar al cliente, junto al acuerdo y en el enlace público | ✅ | `server/exportar/presentacion.tsx` (`formato=presentacion`) |
+| **Arranque del proyecto (.md)**: con el cierre guardado, un brief para darle a Claude (alcance contratado y lo que quedó fuera, condiciones con IVA y pagos, diagnóstico, arquitectura, plan, riesgos, preguntas abiertas, entrevista textual y material) | ✅ | `server/proyecto.ts`, `api/propuestas/[id]/proyecto` |
 | Cierre: paquete que eligió el cliente + 1 a 12 desembolsos que suman 100% (cuotas iguales al centavo) | ✅ | `levantamiento/cierre.tsx`, `lib/pagos.ts` |
 | Acuerdo para firmar (PDF/Word), 321 S.A.S. (AiUDA) ↔ cliente, montos en letras | ✅ | `server/acuerdo/` |
 | Integración CRM (crm-321) con clave propia de permisos mínimos | ✅ configurada, ⚠️ sin probar el alta real | `server/crm.ts` |
 | Catálogo editable (21 productos) con historial de precios; Ajustes (marca, precios, legal, IA, CRM); Rentabilidad | ✅ | `app/(app)/admin/*` |
 | Historial/bitácora, respaldo JSON por cliente, versiones inmutables | ✅ | tabla `eventos` |
 
-Verificación: `pnpm check` → **47 pruebas** en verde (precios, cifras, pagos, a medida, acuerdo, exportaciones, no-fuga de datos internos). CI en GitHub Actions.
+Verificación: `pnpm check` → **50 pruebas** en verde (precios, cifras, pagos, a medida, acuerdo, exportaciones, no-fuga de datos internos). CI en GitHub Actions.
 
 ## Pendientes (en orden)
 
