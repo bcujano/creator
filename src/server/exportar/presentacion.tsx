@@ -535,14 +535,14 @@ export async function generarPresentacion(doc: Documento): Promise<Buffer> {
                 {p.definicion.propuesta_valor}
               </Text>
               <Text style={{ fontSize: 22, fontFamily: 'Helvetica-Bold', color: c.primario }}>
-                {usd(p.calculo.setup.base, doc)}
+                {usd(p.calculo.setup.total, doc)}
               </Text>
               <Text style={{ fontSize: 8.5, color: TENUE }}>
-                {t.implementacion} + {t.iva}
+                {t.implementacion} {t.con_iva} · {usd(p.calculo.setup.base, doc)} {t.sin_iva}
               </Text>
               <Text style={{ fontSize: 13, fontFamily: 'Helvetica-Bold', marginVertical: 6 }}>
-                {p.calculo.mensual.base
-                  ? `+ ${usd(p.calculo.mensual.base, doc)} / ${doc.idioma === 'en' ? 'month' : 'mes'}`
+                {p.calculo.mensual.total
+                  ? `+ ${usd(p.calculo.mensual.total, doc)} / ${mes} ${t.con_iva}`
                   : t.pago_unico}
               </Text>
               <Vinetas c={c} tamano={9.5} items={p.items.map((i) => i.nombre)} />
@@ -551,8 +551,7 @@ export async function generarPresentacion(doc: Documento): Promise<Buffer> {
         })}
       </View>
       <Text style={{ fontSize: 8.5, color: TENUE, marginTop: 8 }}>
-        {t.precios_iva} {doc.precios.iva_pct}%{' '}
-        {doc.idioma === 'en' ? 'not included' : 'no incluido'}.{' '}
+        {t.precios_iva} {doc.precios.iva_pct}% {doc.idioma === 'en' ? 'included' : 'incluido'}.{' '}
         {cierre ? '' : `${t.valida_hasta}: ${doc.valida_hasta}.`}
       </Text>
     </Diapositiva>,

@@ -504,22 +504,23 @@ function EditorPaquete({
             <span className="tabular-nums">{formatoUSD(calculo.usuarios.cargo)}/mes</span>
           </div>
         ) : null}
+        {/* Se muestra primero lo que se cobra: el total con IVA. La base es solo referencia. */}
         <div className="flex justify-between">
-          <span className="text-tenue">Implementación</span>
+          <span className="text-tenue">Implementación con IVA</span>
           <span className="font-titulo text-lg font-bold tabular-nums">
-            {formatoUSD(calculo.setup.base)}
+            {formatoUSD(calculo.setup.total)}
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-tenue">Mensualidad</span>
+          <span className="text-tenue">Mensualidad con IVA</span>
           <span className="font-titulo text-lg font-bold tabular-nums">
-            {formatoUSD(calculo.mensual.base)}
+            {formatoUSD(calculo.mensual.total)}
           </span>
         </div>
         <div className="flex justify-between text-xs text-tenue">
-          <span>Con IVA</span>
+          <span>Sin IVA</span>
           <span className="tabular-nums">
-            {formatoUSD(calculo.setup.total)} · {formatoUSD(calculo.mensual.total)}/mes
+            {formatoUSD(calculo.setup.base)} · {formatoUSD(calculo.mensual.base)}/mes
           </span>
         </div>
         <div

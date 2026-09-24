@@ -314,13 +314,15 @@ function construir(doc: DocumentoPublico): Diapositiva[] {
               <p className="font-titulo text-2xl font-bold">{p.nombre}</p>
               <p className="mt-1 text-sm text-tenue">{p.propuesta_valor}</p>
               <p className="mt-5 font-titulo text-4xl font-extrabold tabular-nums">
-                {usd(p.setup.base, doc)}
+                {usd(p.setup.total, doc)}
               </p>
               <p className="text-xs text-tenue">
-                {t.implementacion} · + {t.iva} {doc.iva_pct}%
+                {t.implementacion} {t.con_iva} · {usd(p.setup.base, doc)} {t.sin_iva}
               </p>
               <p className="mt-2 text-lg font-semibold tabular-nums">
-                {p.mensual.base ? `+ ${usd(p.mensual.base, doc)} / ${mes}` : t.pago_unico}
+                {p.mensual.total
+                  ? `+ ${usd(p.mensual.total, doc)} / ${mes} ${t.con_iva}`
+                  : t.pago_unico}
               </p>
               <ul className="mt-4 space-y-1.5 text-sm">
                 {p.items.map((it) => (

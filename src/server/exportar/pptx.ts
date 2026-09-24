@@ -590,7 +590,7 @@ export async function generarPptx(doc: Documento): Promise<Buffer> {
       fontFace: FUENTE,
       valign: 'top',
     })
-    pq.addText(usd(p.calculo.setup.base, doc), {
+    pq.addText(usd(p.calculo.setup.total, doc), {
       x: x + 0.15,
       y: y + 1.9,
       w: ancho - 0.3,
@@ -600,18 +600,21 @@ export async function generarPptx(doc: Documento): Promise<Buffer> {
       color: primario,
       fontFace: FUENTE,
     })
-    pq.addText(`${t.implementacion} + ${t.iva}`, {
-      x: x + 0.15,
-      y: y + 2.42,
-      w: ancho - 0.3,
-      h: 0.3,
-      fontSize: 9,
-      color: TENUE,
-      fontFace: FUENTE,
-    })
     pq.addText(
-      p.calculo.mensual.base
-        ? `+ ${usd(p.calculo.mensual.base, doc)} / ${doc.idioma === 'en' ? 'month' : 'mes'}`
+      `${t.implementacion} ${t.con_iva} · ${usd(p.calculo.setup.base, doc)} ${t.sin_iva}`,
+      {
+        x: x + 0.15,
+        y: y + 2.42,
+        w: ancho - 0.3,
+        h: 0.3,
+        fontSize: 9,
+        color: TENUE,
+        fontFace: FUENTE,
+      },
+    )
+    pq.addText(
+      p.calculo.mensual.total
+        ? `+ ${usd(p.calculo.mensual.total, doc)} / ${doc.idioma === 'en' ? 'month' : 'mes'} ${t.con_iva}`
         : t.pago_unico,
       {
         x: x + 0.15,
@@ -634,9 +637,9 @@ export async function generarPptx(doc: Documento): Promise<Buffer> {
       11,
     )
   })
-  const sinIva = doc.idioma === 'en' ? 'not included' : 'no incluido'
+  const conIva = doc.idioma === 'en' ? 'included' : 'incluido'
   pq.addText(
-    `${t.precios_iva} ${doc.precios.iva_pct}% ${sinIva}. ${t.valida_hasta}: ${doc.valida_hasta}.`,
+    `${t.precios_iva} ${doc.precios.iva_pct}% ${conIva}. ${t.valida_hasta}: ${doc.valida_hasta}.`,
     {
       x: 0.6,
       y: 6.9,

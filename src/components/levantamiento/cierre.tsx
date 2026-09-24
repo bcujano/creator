@@ -8,6 +8,7 @@ import {
   FileText,
   Plus,
   Presentation,
+  Rocket,
   Trash2,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -378,6 +379,15 @@ export function CierreTrato({
           className={`inline-flex min-h-11 items-center gap-2 rounded-xl border border-borde bg-superficie px-4 text-sm font-semibold hover:bg-superficie-2 ${sucio ? 'pointer-events-none opacity-40' : ''}`}
         >
           <Presentation className="size-4" /> Presentación (PDF)
+        </a>
+        {/* Cuando ya firmó: todo lo aprobado en un .md para diseñar el sistema con Claude. */}
+        <a
+          href={sucio || !propuesta.cierre ? undefined : `/api/propuestas/${propuesta.id}/proyecto`}
+          aria-disabled={sucio || !propuesta.cierre}
+          title="Alcance, condiciones, diagnóstico, entrevista y material, listo para dárselo a Claude"
+          className={`inline-flex min-h-11 items-center gap-2 rounded-xl border border-borde bg-superficie px-4 text-sm font-semibold hover:bg-superficie-2 ${sucio || !propuesta.cierre ? 'pointer-events-none opacity-40' : ''}`}
+        >
+          <Rocket className="size-4" /> Arranque del proyecto (.md)
         </a>
         {propuesta.estado !== 'aceptada' ? (
           <Boton onClick={aceptada} icono={<CheckCircle2 className="size-4" />} disabled={sucio}>
