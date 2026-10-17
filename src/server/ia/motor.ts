@@ -55,6 +55,34 @@ function clienteOpenAI() {
   return openai
 }
 
+/**
+ * Comprueba que un modelo exista antes de guardarlo en Ajustes. Un nombre mal
+ * escrito ("claude-sonnet-5.5", "gpt-4.1 mini") dejaba todos los análisis en error.
+ * Devuelve el mensaje para el usuario, o null si el modelo existe o no se puede verificar.
+ */
+export async function problemaConModelo(
+  proveedor: 'anthropic' | 'openai',
+  modelo: string,
+): Promise<string | null> {
+  try {
+    if (proveedor === 'anthropic') {
+      const cliente = clienteAnthropic()
+      if (cliente) await cliente.models.retrieve(modelo)
+    } else {
+      const cliente = clienteOpenAI()
+      if (cliente) await cliente.models.retrieve(modelo)
+    }
+    return null
+  } catch (e) {
+    const estado = (e as { status?: number }).status
+    // Solo un 404 prueba que el nombre está mal; una caída de red no debe impedir guardar.
+    if (estado !== 404) return null
+    const sugerencia = String((e as Error).message).match(/Did you mean ([\w.-]+)\?/)?.[1]
+    const nombre = proveedor === 'anthropic' ? 'Anthropic' : 'OpenAI'
+    return `El modelo "${modelo}" no existe en ${nombre}.${sugerencia ? ` ¿Quisiste decir "${sugerencia}"?` : ' Usa el identificador exacto, con guiones y sin espacios.'}`
+  }
+}
+
 async function conAnthropic<T extends z.ZodType>(
   cliente: Anthropic,
   modelo: string,

@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { subirMarca } from '@/server/almacen'
 import { guardarAjustes, leerAjustes } from '@/server/datos'
 import { Invalido, privada } from '@/server/http'
+import { problemaConModelo } from '@/server/ia/motor'
 
 const color = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Color en formato #RRGGBB')
 
@@ -42,8 +43,8 @@ const Ajustes = z.object({
   ia: z
     .object({
       proveedor: z.enum(['anthropic', 'openai']),
-      modelo_anthropic: z.string().min(1),
-      modelo_openai: z.string().min(1),
+      modelo_anthropic: z.string().trim().min(1),
+      modelo_openai: z.string().trim().min(1),
       modelo_transcripcion: z.string().min(1),
       esfuerzo: z.enum(['low', 'medium', 'high', 'xhigh', 'max']),
     })
@@ -79,7 +80,19 @@ const Ajustes = z.object({
 export const GET = privada(async () => NextResponse.json(await leerAjustes()))
 
 export const PUT = privada(async (req: Request) => {
-  return NextResponse.json(await guardarAjustes(Ajustes.parse(await req.json())))
+  const cambios = Ajustes.parse(await req.json())
+  // Un modelo mal escrito no falla al guardar sino en plena reunión, al analizar: se verifica aquí.
+  const actuales = (await leerAjustes()).ia
+  const revisar = [
+    ['anthropic', cambios.ia?.modelo_anthropic, actuales.modelo_anthropic],
+    ['openai', cambios.ia?.modelo_openai, actuales.modelo_openai],
+  ] as const
+  for (const [proveedor, nuevo, anterior] of revisar) {
+    if (!nuevo || nuevo === anterior) continue
+    const problema = await problemaConModelo(proveedor, nuevo.trim())
+    if (problema) throw new Invalido(problema)
+  }
+  return NextResponse.json(await guardarAjustes(cambios))
 })
 
 /** Sube el logo (PNG o JPG, máx. 2 MB) y lo deja como logo de la marca. */

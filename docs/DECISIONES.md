@@ -56,3 +56,6 @@ Byron: mostrar la base sin IVA como cifra principal lo confundía y lo llevaba a
 ### 18. Brief de arranque del proyecto en Markdown
 Al firmar, Byron necesita pasarle a Claude todo lo aprobado para diseñar y construir. `server/proyecto.ts` arma un .md interno (no pasa por `publico.ts`: incluye entrevista textual, material y notas internas, pero nunca costos ni márgenes) con instrucciones de uso al inicio, el alcance contratado como fuente de verdad y lo ofrecido que quedó fuera. Solo se habilita con el cierre guardado.
 
+### 19. Ajustes verifica los modelos de IA antes de guardarlos
+El 06/10/2026 se cambió el modelo a "claude-sonnet-5.5" y "gpt-4.1 mini" (punto y espacio en vez de guiones). Se guardó sin error y el 17/10 el análisis de Código F. falló con los dos proveedores en plena reunión. Ahora `PUT /api/ajustes` consulta a Anthropic/OpenAI si el modelo existe (`problemaConModelo` en `server/ia/motor.ts`) y rechaza el cambio con la sugerencia correcta. Solo un 404 bloquea; una falla de red no impide guardar.
+

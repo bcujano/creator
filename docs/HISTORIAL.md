@@ -23,4 +23,8 @@
 1. **Precio con IVA como cifra principal** en editor, presentación, PDF y PowerPoint.
 2. **Brief "Arranque del proyecto (.md)"** en el cierre; generado el de DKB (`PROYECTO-AIU-2026-0127-DKB-courier.md`).
 
+## 17 de octubre de 2026
+
+1. **Análisis de Código F. en error**: nombres de modelo mal escritos en Ajustes desde el 06/10. Corregidos a `claude-sonnet-5-5` / `gpt-4.1-mini`, análisis re-ejecutado (v2, 64 s, propuesta AIU-2026-0129) y validación de modelos al guardar Ajustes.
+
 Pendientes: ver `docs/ESTADO.md`.
