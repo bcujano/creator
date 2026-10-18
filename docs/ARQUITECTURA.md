@@ -87,6 +87,7 @@ Storage: `insumos` (privado, subida directa con URL firmada), `marca` (público,
 
 - **Motor de precios** (`lib/precios.ts`): líneas del catálogo o a medida (`itemAMedida`), módulos incluidos en paquetes a $0, usuarios extra, excedentes de volumen, descuentos, IVA, costo y margen, simulador de modelos de cobro.
 - **Cifras** (`lib/analisis.ts`): `calcular()` multiplica factores y aplica las reglas anti-invención; `normalizarAnalisis()` es idempotente y tolera análisis antiguos.
+- **Valor** (`lib/valor.ts`): precio de módulos a medida por valor demostrado (`valorPorModulo` suma las cifras de los problemas que solo ese módulo resuelve, sin doble cobro con el catálogo), referencia por facturación, piso de rentabilidad y retorno que ve el cliente.
 - **Pagos** (`lib/pagos.ts`): `cierreEfectivo`, `validarPagos` (1–12, suma 100%), `pctVisible`, `montosPagos` (el último absorbe el redondeo).
 - **IA** (`server/ia/`): `esquema.ts` (zod, sin opcionales para servir a ambos proveedores), `analizar.ts` (prompts: reglas de cifras, dolores ocultos, módulos a medida, presupuesto del cliente), `motor.ts` (streaming, esfuerzo adaptativo, fallback por gramática grande, respaldo OpenAI).
 - **Salidas**: `server/documento.ts` → exportadores y presentación; `server/publico.ts` filtra costos, márgenes y notas internas.

@@ -1,8 +1,9 @@
 import 'server-only'
 import PptxGenJS from 'pptxgenjs'
 import { formula } from '@/lib/analisis'
+import { fraseRetorno } from '@/lib/valor'
 import type { Documento } from '../documento'
-import { cargarLogo, etiquetaVeredicto, hex, lineaCifra, usd } from './comun'
+import { cargarLogo, etiquetaVeredicto, hex, lineaCifra, textoRecuperacion, usd } from './comun'
 
 const W = 13.33
 const TINTA = '1F2433'
@@ -637,13 +638,27 @@ export async function generarPptx(doc: Documento): Promise<Buffer> {
         fontFace: FUENTE,
       },
     )
+    const recupera = textoRecuperacion(doc, p)
+    if (recupera)
+      pq.addText(recupera, {
+        x: x + 0.15,
+        y: y + 3.1,
+        w: ancho - 0.3,
+        h: 0.32,
+        fontSize: 11,
+        bold: true,
+        color: '12805C',
+        fontFace: FUENTE,
+      })
     vinetas(
       pq,
-      p.items.map((it) => it.nombre),
+      p.items.map((it) =>
+        it.retorno ? `${it.nombre} · ${fraseRetorno(it.retorno, doc.idioma)}` : it.nombre,
+      ),
       x + 0.15,
-      y + 3.2,
+      y + (recupera ? 3.5 : 3.2),
       ancho - 0.3,
-      2.3,
+      recupera ? 2.0 : 2.3,
       11,
     )
   })

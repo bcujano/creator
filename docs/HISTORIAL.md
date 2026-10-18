@@ -30,4 +30,8 @@
 2. **Modelos por tarea**: Opus 5.5 para el análisis (155 s medidos), Sonnet 5.5 como modelo rápido, gpt-4.1 de respaldo.
 3. **Enfoque del sistema**: 8 áreas elegibles (hasta 3) en Nueva reunión, en la entrevista y en el formulario del cliente; preguntas, copiloto, análisis, portadas y brief se adaptan (migración `0008`, 4 pruebas nuevas).
 
+## 18 de octubre de 2026
+
+1. **Precio por valor de los módulos a medida** (elimina el tope de $900 y la tabla por complejidad): valor × 6 meses, referencia por facturación, piso de rentabilidad, justificación en el editor y retorno visible para el cliente. Recuperación en meses del paquete recomendado destacada. 9 pruebas nuevas. Validado con un análisis real (distribuidora de prueba: rutas $2.520).
+
 Pendientes: ver `docs/ESTADO.md`.

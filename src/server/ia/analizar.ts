@@ -1,6 +1,6 @@
 import 'server-only'
+import { normalizarAnalisis } from '@/lib/analisis'
 import { enfoque, enfoquesDe } from '@/lib/enfoques'
-import { precioAMedida } from '@/lib/precios'
 import { respuestasComoTexto } from '@/lib/preguntas'
 import type {
   Ajustes,
@@ -11,6 +11,7 @@ import type {
   NivelPaquete,
   ParametrosPrecio,
 } from '@/lib/tipos'
+import { precioPorValor, valorPorModulo } from '@/lib/valor'
 import type { LevantamientoCompleto } from '../datos'
 
 /** Lo que dijo el cliente (en su celular) y lo que anotó el consultor, cada uno con su voz. */
@@ -100,8 +101,10 @@ Cómo trabajas:
   · NO son módulos a medida y NO se cobran aparte: conectar o sincronizar con lo que el cliente ya usa (su calendario, su software de la industria, Excel, facturación), configuraciones, plantillas o reportes que son parte de implementar un producto del catálogo. Eso va incluido: menciónalo en la descripción de la solución y en integraciones de la arquitectura.
   · El nombre dice lo que ES, en palabras que un dueño entiende sin explicación: "Agente de…", "Asistente de…", "Sistema de…". Nunca términos de marketing o ambiguos ("campaña", "puente", "motor", "hub").
   · La descripción empieza con "Es un agente / asistente / sistema que…" y dice qué problema resuelve.
-  · No pongas precio: clasifica la complejidad (simple, media o compleja) y explica qué hay que construir. El precio sale de la tabla de la empresa. No infles: la mayoría son simples o medias.
+  · No pongas precio. El sistema lo calcula por el VALOR que el módulo le recupera al cliente cada mes: la suma de las cifras de los problemas que resuelve. Por eso en dolores_que_resuelve lista los títulos EXACTOS de los dolores que SOLO este módulo resuelve (si un producto del catálogo ya los resuelve, no los listes: no se cobra dos veces lo mismo), y esos dolores deben tener su cifra con datos del cliente; si falta el dato, deja en cada uno la pregunta exacta para obtenerlo.
+  · Clasifica la complejidad y estima las semanas reales de trabajo (para el costo y la planificación, no para el precio). No infles las semanas.
   · No busques cobrar de más: si un producto del catálogo bien configurado lo resuelve, no crees un módulo a medida.
+- Facturación mensual del cliente (facturacion_mensual): clientes o pedidos al mes × ticket promedio, con las mismas reglas de factores (solo lo que dijo; sin ese dato, factores vacíos y la pregunta exacta). Sirve para dimensionar el negocio.
   · En la solución correspondiente marca a_medida = true e incluye el código del módulo en los paquetes donde tenga sentido.
 - Si los procesos no están documentados o la operación depende de personas, considera el LEVANTAMIENTO documental como primer paso.
 - Paquetes (exactamente tres):
@@ -202,19 +205,36 @@ export function propuestaDesdeAnalisis(
 ): DatosPropuesta {
   const niveles: NivelPaquete[] = ['esencial', 'recomendado', 'premium']
   // Los módulos a medida viajan dentro de la línea: no dependen del catálogo.
-  // El precio sale de la tabla por complejidad; la IA no pone montos.
+  // El precio sale del valor que entrega cada módulo (lib/valor.ts); la IA no pone montos.
+  const analisis = normalizarAnalisis(resultado)
+  const valores = valorPorModulo(analisis)
   const aMedida = new Map(
-    (resultado.modulos_a_medida ?? []).map((m) => [
-      m.codigo,
-      {
-        nombre: m.nombre,
-        descripcion: m.descripcion,
-        entregables: m.entregables,
-        precio_setup: precioAMedida(m.complejidad, precios),
-        precio_mensual: 0,
-        semanas: Math.max(1, Math.round(m.semanas)),
-      },
-    ]),
+    (resultado.modulos_a_medida ?? []).map((m) => {
+      const semanas = Math.max(1, Math.round(m.semanas))
+      const v = valores.get(m.codigo)
+      const { precio, justificacion } = precioPorValor(
+        {
+          valor_mensual: v?.valor_mensual ?? null,
+          facturacion_mensual: analisis.facturacion_mensual.valor,
+          semanas,
+          dolores: v?.dolores ?? [],
+          pregunta: v?.pregunta ?? null,
+        },
+        precios,
+      )
+      return [
+        m.codigo,
+        {
+          nombre: m.nombre,
+          descripcion: m.descripcion,
+          entregables: m.entregables,
+          precio_setup: precio,
+          precio_mensual: 0,
+          semanas,
+          valor: justificacion,
+        },
+      ]
+    }),
   )
   const paquetes = niveles.map((nivel) => {
     const sugerido = resultado.paquetes.find((p) => p.nivel === nivel)

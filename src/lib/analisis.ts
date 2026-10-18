@@ -37,8 +37,10 @@ export type Dolor = Omit<DolorIA, 'impacto'> & {
 
 export type ComponenteRoi = { concepto: string; tipo: 'ahorro' | 'ingreso'; calculo: Cifra }
 
-export type ResultadoAnalisis = Omit<ResultadoIA, 'dolores' | 'roi'> & {
+export type ResultadoAnalisis = Omit<ResultadoIA, 'dolores' | 'roi' | 'facturacion_mensual'> & {
   dolores: Dolor[]
+  /** Ventas mensuales del cliente (clientes × ticket). Los análisis antiguos no la traen. */
+  facturacion_mensual: Cifra
   roi: {
     componentes: ComponenteRoi[]
     horas: Cifra
@@ -154,6 +156,9 @@ export function normalizarAnalisis(bruto: unknown): ResultadoAnalisis {
   return {
     ...r,
     dolores,
+    facturacion_mensual: calcular(
+      (r as unknown as { facturacion_mensual?: Calculo | Cifra }).facturacion_mensual as Calculo,
+    ),
     roi: {
       componentes,
       horas,

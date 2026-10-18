@@ -11,6 +11,7 @@ import type {
   ItemCatalogo,
   PaquetePropuesta,
 } from '@/lib/tipos'
+import { type RetornoModulo, retornoDelModulo } from '@/lib/valor'
 import {
   type FilaPropuesta,
   leerAjustes,
@@ -34,6 +35,8 @@ export type ItemVisible = {
   descripcion: string
   caracteristicas: string[]
   a_medida: boolean
+  /** Solo módulos a medida con valor demostrado: lo que recupera el cliente con el precio final. */
+  retorno?: RetornoModulo
 }
 
 export type PaqueteDocumento = {
@@ -96,10 +99,20 @@ async function armar(propuesta: FilaPropuesta, idiomaForzado?: Idioma): Promise<
     .map((definicion) => ({
       definicion,
       calculo: calcularPaquete(definicion, catalogo, ajustes.precios, idioma),
-      items: definicion.lineas
-        .map((l) => resolverItem(l, catalogo, ajustes.precios))
-        .filter((i): i is ItemCatalogo => Boolean(i))
-        .map((i) => itemVisible(i, idioma)),
+      items: definicion.lineas.flatMap((l) => {
+        const item = resolverItem(l, catalogo, ajustes.precios)
+        if (!item) return []
+        const visible = itemVisible(item, idioma)
+        const justificacion = l.a_medida?.valor
+        if (l.a_medida && justificacion?.metodo === 'valor' && justificacion.valor_mensual) {
+          const r = retornoDelModulo(
+            l.precio_setup ?? l.a_medida.precio_setup,
+            justificacion.valor_mensual,
+          )
+          if (r) visible.retorno = { valor_mensual: justificacion.valor_mensual, ...r }
+        }
+        return [visible]
+      }),
       recomendado: definicion.nivel === propuesta.datos.seleccionado,
     }))
 
@@ -111,9 +124,9 @@ async function armar(propuesta: FilaPropuesta, idiomaForzado?: Idioma): Promise<
   const beneficio = resultado
     ? resultado.roi.ahorro_mensual_usd + resultado.roi.ingreso_adicional_mensual_usd
     : 0
-  const neto = elegido ? beneficio - elegido.calculo.mensual.base : 0
+  const neto = elegido ? beneficio - elegido.calculo.mensual.total : 0
   const recuperacion =
-    elegido && neto > 0 ? Math.max(1, Math.ceil(elegido.calculo.setup.base / neto)) : null
+    elegido && neto > 0 ? Math.max(1, Math.ceil(elegido.calculo.setup.total / neto)) : null
 
   const creada = new Date(propuesta.creado_en)
   const vence = new Date(creada.getTime() + ajustes.marca.validez_dias * 86_400_000)

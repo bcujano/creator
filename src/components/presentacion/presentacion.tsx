@@ -16,6 +16,7 @@ import { CifraConCuenta } from '@/components/comun/cifra'
 import { cx } from '@/components/ui/primitivos'
 import { etiquetaConfianza, formula } from '@/lib/analisis'
 import { formatoUSD } from '@/lib/precios'
+import { fraseRetorno } from '@/lib/valor'
 import type { DocumentoPublico } from '@/server/publico'
 
 type Diapositiva = { id: string; contenido: ReactNode; oscura?: boolean }
@@ -329,16 +330,28 @@ function construir(doc: DocumentoPublico): Diapositiva[] {
                   ? `+ ${usd(p.mensual.total, doc)} / ${mes} ${t.con_iva}`
                   : t.pago_unico}
               </p>
+              {p.recomendado && doc.recuperacion_meses ? (
+                <p className="mt-2 inline-flex w-fit items-center rounded-full bg-ok/12 px-3 py-1 text-sm font-semibold text-ok">
+                  {t.se_recupera} {doc.recuperacion_meses} {t.meses}
+                </p>
+              ) : null}
               <ul className="mt-4 space-y-1.5 text-sm">
                 {p.items.map((it) => (
                   <li key={it.codigo} className="flex gap-2">
                     <span className="text-acento">✓</span>
-                    {it.nombre}
-                    {it.a_medida ? (
-                      <span className="ml-1 rounded bg-aviso/12 px-1 text-[11px] text-aviso">
-                        {doc.idioma === 'en' ? 'custom' : 'a medida'}
-                      </span>
-                    ) : null}
+                    <span>
+                      {it.nombre}
+                      {it.a_medida ? (
+                        <span className="ml-1 rounded bg-aviso/12 px-1 text-[11px] text-aviso">
+                          {doc.idioma === 'en' ? 'custom' : 'a medida'}
+                        </span>
+                      ) : null}
+                      {it.retorno ? (
+                        <span className="mt-0.5 block text-xs font-medium text-ok">
+                          {fraseRetorno(it.retorno, doc.idioma)}
+                        </span>
+                      ) : null}
+                    </span>
                   </li>
                 ))}
               </ul>

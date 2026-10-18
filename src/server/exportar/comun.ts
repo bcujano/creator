@@ -5,6 +5,7 @@ import { type Cifra, etiquetaConfianza, formula } from '@/lib/analisis'
 import { env } from '@/lib/env'
 import { cierreEfectivo, montosPagos, pctVisible } from '@/lib/pagos'
 import { formatoUSD } from '@/lib/precios'
+import { fraseRetorno, type RetornoModulo } from '@/lib/valor'
 import type { Documento } from '../documento'
 
 export type Logo = { buffer: Buffer; formato: 'png' | 'jpg'; mime: string } | null
@@ -88,6 +89,21 @@ export function filasPaquete(doc: Documento, indice: number) {
     })
   }
   return filas
+}
+
+/** Retorno de los módulos a medida con valor demostrado de un paquete: una línea por módulo. */
+export function lineasRetornoModulos(doc: Documento, indice: number) {
+  const p = doc.paquetes[indice]
+  return (p?.items ?? [])
+    .filter((i) => i.retorno)
+    .map((i) => `${i.nombre}: ${fraseRetorno(i.retorno as RetornoModulo, doc.idioma)}`)
+}
+
+/** "Se recupera en 4 meses" para el paquete recomendado, o null si no hay cifras para calcularlo. */
+export function textoRecuperacion(doc: Documento, p: Documento['paquetes'][number]) {
+  return p.recomendado && doc.recuperacion_meses
+    ? `${doc.t.se_recupera} ${doc.recuperacion_meses} ${doc.t.meses}`
+    : null
 }
 
 /** "≈ $150/mes = 3 inquilinos atrasados × $250 renta × 20% … (Estimado: incluye un supuesto)" */

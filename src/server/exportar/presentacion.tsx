@@ -3,8 +3,16 @@ import { Document, Font, Image, Page, renderToBuffer, Text, View } from '@react-
 import type { ReactNode } from 'react'
 import { formula } from '@/lib/analisis'
 import { cierreEfectivo, montosPagos } from '@/lib/pagos'
+import { fraseRetorno } from '@/lib/valor'
 import type { Documento } from '../documento'
-import { cargarLogo, etiquetaVeredicto, type Logo, lineaCifra, usd } from './comun'
+import {
+  cargarLogo,
+  etiquetaVeredicto,
+  type Logo,
+  lineaCifra,
+  textoRecuperacion,
+  usd,
+} from './comun'
 
 /**
  * La presentación de la reunión como PDF horizontal (16:9), para enviarla al
@@ -545,7 +553,25 @@ export async function generarPresentacion(doc: Documento): Promise<Buffer> {
                   ? `+ ${usd(p.calculo.mensual.total, doc)} / ${mes} ${t.con_iva}`
                   : t.pago_unico}
               </Text>
-              <Vinetas c={c} tamano={9.5} items={p.items.map((i) => i.nombre)} />
+              {textoRecuperacion(doc, p) ? (
+                <Text
+                  style={{
+                    fontSize: 10,
+                    fontFamily: 'Helvetica-Bold',
+                    color: '#12805C',
+                    marginBottom: 6,
+                  }}
+                >
+                  {textoRecuperacion(doc, p)}
+                </Text>
+              ) : null}
+              <Vinetas
+                c={c}
+                tamano={9.5}
+                items={p.items.map((i) =>
+                  i.retorno ? `${i.nombre} · ${fraseRetorno(i.retorno, doc.idioma)}` : i.nombre,
+                )}
+              />
             </Tarjeta>
           )
         })}

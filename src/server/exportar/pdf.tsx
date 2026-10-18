@@ -18,6 +18,7 @@ import {
   type Logo,
   lineaCifra,
   lineasPago,
+  lineasRetornoModulos,
   lineasRoi,
   usd,
 } from './comun'
@@ -376,6 +377,11 @@ function Inversion({ doc, e }: { doc: Documento; e: E }) {
               {usd(p.calculo.mensual.total, doc)}
             </Text>
           </View>
+          {lineasRetornoModulos(doc, i).map((linea) => (
+            <Text key={linea} style={[e.tenue, { fontSize: 9, marginTop: 4 }]}>
+              {linea}
+            </Text>
+          ))}
           <Text style={[e.tenue, { fontSize: 9, marginTop: 4 }]}>
             {p.calculo.usuarios.incluidos > 0
               ? `${p.calculo.usuarios.incluidos} ${t.usuarios} · `

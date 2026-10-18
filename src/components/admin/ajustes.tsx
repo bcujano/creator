@@ -253,24 +253,33 @@ export function EditorAjustes({ inicial, estado }: { inicial: Ajustes; estado: E
           <Campo type="number" {...campo('precios', 'modelo_volumen_base', 'numero')} />
         </div>
         <div>
-          <Etiqueta>Módulo a medida simple</Etiqueta>
-          <Campo type="number" {...campo('precios', 'a_medida_simple', 'numero')} />
-        </div>
-        <div>
-          <Etiqueta>Módulo a medida de complejidad media</Etiqueta>
-          <Campo type="number" {...campo('precios', 'a_medida_media', 'numero')} />
-        </div>
-        <div>
-          <Etiqueta>Módulo a medida complejo (y tope)</Etiqueta>
-          <Campo type="number" {...campo('precios', 'a_medida_tope', 'numero')} />
+          <Etiqueta>A medida: meses de valor que se cobran</Etiqueta>
+          <Campo type="number" {...campo('precios', 'a_medida_meses_valor', 'numero')} />
           <p className="mt-1 text-xs text-tenue">
-            La IA solo clasifica la complejidad; el precio sale de esta tabla y nunca pasa del tope.
+            Precio = lo que el módulo le recupera al cliente cada mes × estos meses. Con 6, el
+            cliente lo recupera en medio año y en el primero gana el doble. Sin tope.
           </p>
         </div>
         <div>
-          <Etiqueta>Costo propio de un desarrollo a medida (%)</Etiqueta>
-          <Campo type="number" {...campo('precios', 'a_medida_costo_pct', 'numero')} />
-          <p className="mt-1 text-xs text-tenue">Para calcular tu margen.</p>
+          <Etiqueta>A medida: costo de una semana de trabajo</Etiqueta>
+          <Campo type="number" {...campo('precios', 'a_medida_costo_semana', 'numero')} />
+          <p className="mt-1 text-xs text-tenue">Para tu margen y el piso de rentabilidad.</p>
+        </div>
+        <div>
+          <Etiqueta>A medida: piso (veces el costo)</Etiqueta>
+          <Campo type="number" {...campo('precios', 'a_medida_piso_veces', 'numero')} />
+          <p className="mt-1 text-xs text-tenue">
+            Ningún módulo se cotiza por debajo de este múltiplo de su costo.
+          </p>
+        </div>
+        <div>
+          <Etiqueta>
+            A medida: referencia sin valor demostrado (% de la facturación mensual)
+          </Etiqueta>
+          <Campo type="number" {...campo('precios', 'a_medida_referencia_pct', 'numero')} />
+          <p className="mt-1 text-xs text-tenue">
+            Solo mientras el cliente no dé datos para calcular el valor real.
+          </p>
         </div>
       </Seccion>
 

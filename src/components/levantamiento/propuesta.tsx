@@ -36,7 +36,9 @@ import type {
   ModuloAMedida,
   NivelPaquete,
   PaquetePropuesta,
+  ParametrosPrecio,
 } from '@/lib/tipos'
+import { precioPorValor, retornoDelModulo } from '@/lib/valor'
 import { CierreTrato } from './cierre'
 import type { PropsEspacio } from './espacio'
 
@@ -156,19 +158,109 @@ function PrecioNegociable({
  * Desarrollo a medida: lo que el catálogo no cubre. Se explica qué es y qué
  * se entrega; el precio de implementación no puede pasar del tope.
  */
+/** Por qué cuesta lo que cuesta: solo la ve el consultor. El cliente ve el retorno, no el piso. */
+function JustificacionPrecio({
+  modulo,
+  onUsarSugerido,
+}: {
+  modulo: ModuloAMedida
+  onUsarSugerido: () => void
+}) {
+  const v = modulo.valor
+  if (!v) return null
+  const retorno = retornoDelModulo(modulo.precio_setup, v.valor_mensual)
+  const bajoPiso = modulo.precio_setup < v.piso
+  const distinto = modulo.precio_setup !== v.sugerido
+  return (
+    <div className="mt-2 space-y-1 rounded-lg bg-superficie p-2.5 text-[11px] leading-relaxed">
+      <p className="font-semibold uppercase tracking-wide text-tenue">
+        Precio por valor · solo tú lo ves
+      </p>
+      {v.metodo === 'valor' && v.valor_mensual ? (
+        <p>
+          Recupera <strong>{formatoUSD(v.valor_mensual)}/mes</strong> × {v.meses} meses ={' '}
+          <strong>{formatoUSD(v.sugerido)}</strong>.
+          {retorno
+            ? ` Con ${formatoUSD(modulo.precio_setup)} el cliente lo recupera en ${retorno.recuperacion_meses} meses y el primer año gana ${retorno.retorno_anio.toLocaleString('es-EC')}×.`
+            : null}
+        </p>
+      ) : v.metodo === 'referencia' && v.facturacion_mensual ? (
+        <p>
+          Sin valor demostrado. Referencia por el tamaño del negocio (factura ~
+          {formatoUSD(v.facturacion_mensual)}/mes) = <strong>{formatoUSD(v.sugerido)}</strong>.
+        </p>
+      ) : (
+        <p>
+          Sin valor demostrado ni facturación: queda el piso de rentabilidad,{' '}
+          <strong>{formatoUSD(v.piso)}</strong>.
+        </p>
+      )}
+      {v.metodo !== 'valor' && v.valor_mensual ? (
+        <p className="text-tenue">
+          El valor demostrado ({formatoUSD(v.valor_mensual)}/mes × {v.meses}) queda bajo el piso.
+        </p>
+      ) : null}
+      {v.pregunta ? (
+        <p className="text-acento">
+          Para subir el precio, pregunta: «{v.pregunta}» (con ese dato se calcula el valor real).
+        </p>
+      ) : null}
+      <p className="text-tenue">
+        Piso de rentabilidad {formatoUSD(v.piso)}.{' '}
+        {v.dolores.length ? `Resuelve: ${v.dolores.join('; ')}.` : null}
+      </p>
+      {bajoPiso ? (
+        <p className="font-semibold text-peligro">
+          Estás por debajo del piso: así no ganas lo debido.
+        </p>
+      ) : null}
+      {distinto ? (
+        <button
+          type="button"
+          onClick={onUsarSugerido}
+          className="font-semibold text-marca underline"
+        >
+          Volver al precio sugerido ({formatoUSD(v.sugerido)})
+        </button>
+      ) : null}
+    </div>
+  )
+}
+
 function EditorAMedida({
   modulo,
-  tope,
+  parametros,
   onChange,
   onQuitar,
 }: {
   modulo: ModuloAMedida
-  tope: number
+  parametros: ParametrosPrecio
   onChange: (m: ModuloAMedida) => void
   onQuitar: () => void
 }) {
   const [abierto, setAbierto] = useState(!modulo.descripcion)
-  const excede = modulo.precio_setup > tope
+
+  // Al cambiar las semanas cambia el piso; si el precio seguía al sugerido, lo sigue.
+  function cambiarSemanas(semanas: number) {
+    if (!modulo.valor) return onChange({ ...modulo, semanas })
+    const { precio, justificacion } = precioPorValor(
+      {
+        valor_mensual: modulo.valor.valor_mensual,
+        facturacion_mensual: modulo.valor.facturacion_mensual,
+        semanas,
+        dolores: modulo.valor.dolores,
+        pregunta: modulo.valor.pregunta,
+      },
+      parametros,
+    )
+    const seguia = modulo.precio_setup === modulo.valor.sugerido
+    onChange({
+      ...modulo,
+      semanas,
+      valor: justificacion,
+      precio_setup: seguia ? precio : modulo.precio_setup,
+    })
+  }
   return (
     <div className="rounded-xl border border-dashed border-aviso/50 bg-aviso/5 p-3">
       <div className="flex items-start justify-between gap-2">
@@ -192,11 +284,15 @@ function EditorAMedida({
       </div>
       <div className="mt-2 grid grid-cols-3 gap-2">
         <div>
-          <span className="text-[11px] text-tenue">Setup (máx. {formatoUSD(tope)})</span>
+          <span className="text-[11px] text-tenue">Setup</span>
           <Numero
             valor={modulo.precio_setup}
             onChange={(v) => onChange({ ...modulo, precio_setup: Math.max(0, v ?? 0) })}
-            className={excede ? 'border-peligro text-peligro' : undefined}
+            className={
+              modulo.valor && modulo.precio_setup < modulo.valor.piso
+                ? 'border-peligro text-peligro'
+                : undefined
+            }
           />
         </div>
         <div>
@@ -208,15 +304,15 @@ function EditorAMedida({
         </div>
         <div>
           <span className="text-[11px] text-tenue">Semanas</span>
-          <Numero
-            valor={modulo.semanas}
-            onChange={(v) => onChange({ ...modulo, semanas: Math.max(0, v ?? 0) })}
-          />
+          <Numero valor={modulo.semanas} onChange={(v) => cambiarSemanas(Math.max(0, v ?? 0))} />
         </div>
       </div>
-      {excede ? (
-        <p className="mt-1 text-[11px] text-peligro">Se cobrará el tope de {formatoUSD(tope)}.</p>
-      ) : null}
+      <JustificacionPrecio
+        modulo={modulo}
+        onUsarSugerido={() =>
+          modulo.valor && onChange({ ...modulo, precio_setup: modulo.valor.sugerido })
+        }
+      />
       <button
         type="button"
         onClick={() => setAbierto(!abierto)}
@@ -269,7 +365,7 @@ function EditorPaquete({
   onChange,
   onElegir,
   margenMinimo,
-  topeAMedida,
+  parametros,
 }: {
   paquete: PaquetePropuesta
   calculo: PaqueteCalculado
@@ -278,7 +374,7 @@ function EditorPaquete({
   onChange: (p: PaquetePropuesta) => void
   onElegir: () => void
   margenMinimo: number
-  topeAMedida: number
+  parametros: ParametrosPrecio
 }) {
   const mapa = new Map(catalogo.map((c) => [c.codigo, c]))
   const disponibles = catalogo.filter(
@@ -337,7 +433,7 @@ function EditorPaquete({
               <EditorAMedida
                 key={l.codigo}
                 modulo={l.a_medida}
-                tope={topeAMedida}
+                parametros={parametros}
                 onChange={(m) =>
                   linea(i, { a_medida: m, precio_setup: null, precio_mensual: null })
                 }
@@ -446,7 +542,16 @@ function EditorPaquete({
                     nombre: 'Módulo a medida',
                     descripcion: '',
                     entregables: [],
-                    precio_setup: topeAMedida,
+                    precio_setup: precioPorValor(
+                      {
+                        valor_mensual: null,
+                        facturacion_mensual: null,
+                        semanas: 2,
+                        dolores: [],
+                        pregunta: null,
+                      },
+                      parametros,
+                    ).precio,
                     precio_mensual: 0,
                     semanas: 2,
                   },
@@ -745,7 +850,7 @@ export function EditorPropuesta({
             catalogo={catalogo}
             seleccionado={p.nivel === datos.seleccionado}
             margenMinimo={ajustes.precios.margen_minimo_mensual}
-            topeAMedida={ajustes.precios.a_medida_tope}
+            parametros={ajustes.precios}
             onElegir={() => cambiar({ ...datos, seleccionado: p.nivel })}
             onChange={(nuevo) =>
               cambiar({ ...datos, paquetes: datos.paquetes.map((x, j) => (j === i ? nuevo : x)) })

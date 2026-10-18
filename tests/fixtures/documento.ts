@@ -333,6 +333,25 @@ const BRUTO: ResultadoIA = {
       entregables: ['Pipeline de presupuestos', 'Reportes'],
     },
   ],
+  facturacion_mensual: {
+    factores: [
+      {
+        concepto: 'pacientes al mes',
+        valor: 600,
+        unidad: 'cantidad',
+        fuente: 'cliente',
+        evidencia: '“unos 600 pacientes al mes”',
+      },
+      {
+        concepto: 'ticket promedio',
+        valor: 85,
+        unidad: 'usd',
+        fuente: 'cliente',
+        evidencia: '“ticket promedio $85”',
+      },
+    ],
+    pregunta_para_cuantificar: null,
+  },
   modulos_a_medida: [
     {
       codigo: 'MEDIDA_REACTIVACION',
@@ -341,6 +360,7 @@ const BRUTO: ResultadoIA = {
         'Es un agente que escribe por WhatsApp a pacientes que no vuelven hace meses y les ofrece agendar.',
       necesidad: 'La base histórica de pacientes no se trabaja.',
       entregables: ['Agente de reactivación por WhatsApp', 'Reporte de pacientes que regresan'],
+      dolores_que_resuelve: ['Presupuestos que nadie sigue'],
       complejidad: 'media',
       por_que_complejidad: 'Segmentar la base por tiempo sin visita y conversar con cada paciente.',
       semanas: 2,

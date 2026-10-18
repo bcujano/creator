@@ -17,6 +17,7 @@ import {
   TextRun,
   WidthType,
 } from 'docx'
+import { fraseRetorno } from '@/lib/valor'
 import type { Documento } from '../documento'
 import {
   cargarLogo,
@@ -145,6 +146,9 @@ function tablaPaquete(doc: Documento, indice: number) {
     ),
     ...pq.items.flatMap((item) => [
       p(item.nombre, { negrita: true, tamano: 20 }),
+      ...(item.retorno
+        ? [p(fraseRetorno(item.retorno, doc.idioma), { color: '12805C', tamano: 18 })]
+        : []),
       ...item.caracteristicas.map(vineta),
     ]),
   ]

@@ -1,6 +1,13 @@
 import 'server-only'
 import type { Documento } from '../documento'
-import { etiquetaVeredicto, filasPaquete, lineaCifra, lineasRoi, usd } from './comun'
+import {
+  etiquetaVeredicto,
+  filasPaquete,
+  lineaCifra,
+  lineasRetornoModulos,
+  lineasRoi,
+  usd,
+} from './comun'
 
 /** Markdown: para pegar en un correo, en Notion o pasarlo a otro sistema. */
 export function generarMarkdown(doc: Documento): string {
@@ -64,6 +71,7 @@ export function generarMarkdown(doc: Documento): string {
     l.push(
       `| **${t.total}** | **${usd(p.calculo.setup.total, doc)}** | **${usd(p.calculo.mensual.total, doc)}** |`,
     )
+    for (const linea of lineasRetornoModulos(doc, i)) l.push(`\n- ${linea}`)
   })
 
   if (a) {

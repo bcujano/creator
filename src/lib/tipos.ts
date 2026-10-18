@@ -58,14 +58,14 @@ export type ParametrosPrecio = {
   modelo_por_usuario: number
   /** Cuota base si se cobrara solo por volumen (simulador). */
   modelo_volumen_base: number
-  /** Precio de implementación de un módulo a medida simple. */
-  a_medida_simple: number
-  /** Precio de implementación de un módulo a medida de complejidad media. */
-  a_medida_media: number
-  /** Precio de un módulo a medida complejo; también es el tope absoluto. */
-  a_medida_tope: number
-  /** Costo propio estimado de un desarrollo a medida, como % de su precio. */
-  a_medida_costo_pct: number
+  /** Meses del valor mensual demostrado que se cobran por un módulo a medida (se paga solo en ese plazo). */
+  a_medida_meses_valor: number
+  /** Costo propio de una semana de trabajo del equipo en un desarrollo a medida. */
+  a_medida_costo_semana: number
+  /** El precio nunca baja de esta cantidad de veces el costo directo del módulo. */
+  a_medida_piso_veces: number
+  /** Sin valor demostrado: % de la facturación mensual del cliente como precio de referencia. */
+  a_medida_referencia_pct: number
 }
 
 export type AjustesIA = {
@@ -178,6 +178,24 @@ export type Insumo = {
 export type NivelPaquete = 'esencial' | 'recomendado' | 'premium'
 
 /** Desarrollo que no está en el catálogo y se cotiza para este cliente. */
+/** De dónde sale el precio de un módulo a medida: lo que se muestra para defenderlo. */
+export type JustificacionPrecio = {
+  /** valor: valor demostrado × meses · referencia: % de la facturación · piso: mínimo de rentabilidad. */
+  metodo: 'valor' | 'referencia' | 'piso'
+  /** Lo que recupera al mes el cliente, sumando los problemas que solo este módulo resuelve. */
+  valor_mensual: number | null
+  meses: number
+  facturacion_mensual: number | null
+  /** Precio mínimo para ganar lo debido (INTERNO: nunca llega al cliente). */
+  piso: number
+  /** Lo que sugirió el sistema; el precio final puede negociarse. */
+  sugerido: number
+  /** Títulos de los problemas que resuelve. */
+  dolores: string[]
+  /** Qué preguntar para demostrar valor y poder subir el precio. */
+  pregunta: string | null
+}
+
 export type ModuloAMedida = {
   nombre: string
   descripcion: string
@@ -185,6 +203,8 @@ export type ModuloAMedida = {
   precio_setup: number
   precio_mensual: number
   semanas: number
+  /** Cómo se calculó el precio. Los módulos agregados a mano no lo tienen. */
+  valor?: JustificacionPrecio | null
 }
 
 export type LineaPropuesta = {

@@ -18,7 +18,8 @@ CREATOR está **en producción y en uso** en https://creator.emprendimientum.com
 | Material: PDF, Word, Excel, imágenes (visión), audio (transcripción OpenAI), notas | ✅ | `server/extraer.ts` |
 | Diagnóstico IA: dolores explícitos/ocultos, madurez, soluciones, arquitectura, viabilidad, plan, 3 paquetes | ✅ | `server/ia/` |
 | **Cifras fundamentadas**: factores con fuente y cita; el código multiplica; "por cuantificar" si falta un dato | ✅ | `lib/analisis.ts`, `components/comun/cifra.tsx` |
-| **Módulos a medida**: solo herramientas/agentes IA nuevos; precio por complejidad (tabla $300/$600/$900) | ✅ (ver pendiente 1) | `lib/precios.ts` (`precioAMedida`, `itemAMedida`) |
+| **Módulos a medida**: solo herramientas/agentes IA nuevos; **precio por valor** (valor mensual demostrado × 6 meses, sin tope; referencia por facturación y piso de rentabilidad cuando falta el dato) con la justificación y la pregunta para subirlo en el editor | ✅ | `lib/valor.ts`, `levantamiento/propuesta.tsx` |
+| Retorno al cliente: cada módulo a medida con valor demostrado muestra "recupera ~$X al mes · se paga en N meses · N× el primer año"; el paquete recomendado muestra "Se recupera en N meses" (sobre el precio con IVA) en pantalla, PDF y PowerPoint | ✅ | `ItemVisible.retorno`, `lineasRetornoModulos` |
 | Precio **con IVA** como cifra principal en editor, presentación, PDF y PowerPoint (la base sin IVA es el detalle) | ✅ | |
 | Propuesta editable: paquetes, precio negociable por ítem, descuentos %, usuarios, volumen, margen y simulador de modelos de cobro (solo interno) | ✅ | `levantamiento/propuesta.tsx` |
 | Presentación en iPad (diapositivas) y enlace público para el celular | ✅ | `components/presentacion/`, `app/presentar`, `app/p` |
@@ -31,15 +32,11 @@ CREATOR está **en producción y en uso** en https://creator.emprendimientum.com
 | Catálogo editable (21 productos) con historial de precios; Ajustes (marca, precios, legal, IA, CRM); Rentabilidad | ✅ | `app/(app)/admin/*` |
 | Historial/bitácora, respaldo JSON por cliente, versiones inmutables | ✅ | tabla `eventos` |
 
-Verificación: `pnpm check` → **54 pruebas** en verde (precios, cifras, pagos, a medida, acuerdo, exportaciones, no-fuga de datos internos). CI en GitHub Actions.
+Verificación: `pnpm check` → **63 pruebas** en verde (precios, cifras, pagos, a medida, acuerdo, exportaciones, no-fuga de datos internos). CI en GitHub Actions.
 
 ## Pendientes (en orden)
 
-1. **⭐ IMPORTANTE (en espera de decisión de Byron; más urgente desde que existen enfoques fuera de ventas: inventario, finanzas, operación y equipo casi no tienen productos en el catálogo y se resuelven con módulos a medida topados en $900) — Valorar bien los módulos a medida grandes.** Hoy un sistema como el de rutas de la distribuidora (6 entregables, 6 semanas) sale a $900 por el tope. Propuestas presentadas el 23/09/2026:
-   - **A · $900 + mensualidad** de operación ($120/mes en complejos): rutas = $1.620 al plazo mínimo, $2.340 el primer año.
-   - **B · Nivel "proyecto" por entregables (recomendado):** simple/media/compleja se mantienen; si hay ≥3 piezas nuevas o >4 semanas, la IA da talla a cada entregable (S 8 h, M 16 h, L 32 h) y el código multiplica por $30/h (tarifa implícita de la tabla actual); tope $6.000, sobre eso se cotiza aparte. Rutas = 112 h → $3.360 + IVA.
-   - **C · Partir en varios módulos de tabla:** rutas = $900 + $900 + $600 = $2.400.
-   Al decidir: `lib/precios.ts#precioAMedida`, `ParametrosPrecio` (+ Ajustes), `server/ia/esquema.ts` (talla por entregable), `server/ia/analizar.ts`, pruebas en `tests/a-medida.test.ts`.
+1. **Calibrar el precio por valor con los primeros cierres.** Ya implementado (ver DECISIONES 22). Parámetros en Ajustes → Precios: meses de valor (6), costo semanal ($165), piso (2× costo) y referencia sin valor demostrado (1,5 % de la facturación mensual). Revisar si 6 meses y 1,5 % se sostienen en la negociación real. Falta usar los costos fijos de Byron ($1.000 de desarrollo por proyecto, $200/mes digital, $900/mes operativos) para mostrar el punto de equilibrio en Rentabilidad.
 2. **Probar el primer "Enviar al CRM" real** y confirmar que el lead y la actividad aparecen bien en crm-321 (ver `docs/OPERACION.md` → CRM).
 3. **Revisión legal del acuerdo** por el abogado de Byron antes del primer cliente real (`server/acuerdo/contenido.ts`). Aplicar sus cambios ahí; valen para todos.
 4. **Costos mensuales del catálogo** son estimados (sobre todo voz Retell/Twilio y WhatsApp). Ajustar con facturas reales en Catálogo.

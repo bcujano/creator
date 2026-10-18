@@ -68,22 +68,10 @@ export function nombreItem(item: Pick<ItemCatalogo, 'nombre_es' | 'nombre_en'>, 
   return idioma === 'en' ? item.nombre_en : item.nombre_es
 }
 
-/** Precio de un módulo a medida según su complejidad (tabla de Ajustes). */
-export function precioAMedida(
-  complejidad: 'simple' | 'media' | 'compleja',
-  parametros: ParametrosPrecio,
-) {
-  const tabla = {
-    simple: parametros.a_medida_simple,
-    media: parametros.a_medida_media,
-    compleja: parametros.a_medida_tope,
-  }
-  return Math.min(tabla[complejidad] ?? parametros.a_medida_media, parametros.a_medida_tope)
-}
-
 /**
  * Un módulo a medida se comporta como un ítem de catálogo armado al vuelo.
- * El precio de implementación nunca pasa del tope configurado.
+ * Su precio sale del valor que entrega (ver lib/valor.ts), sin tope; su costo, de
+ * las semanas de trabajo por el costo semanal del equipo.
  */
 export function itemAMedida(
   linea: LineaPropuesta,
@@ -91,8 +79,9 @@ export function itemAMedida(
 ): ItemCatalogo | undefined {
   const m = linea.a_medida
   if (!m) return undefined
-  const setup = Math.min(Math.max(0, m.precio_setup), parametros.a_medida_tope)
+  const setup = Math.max(0, m.precio_setup)
   const mensual = Math.max(0, m.precio_mensual)
+  const semanas = Math.max(0, Math.round(m.semanas))
   return {
     id: linea.codigo,
     codigo: linea.codigo,
@@ -108,11 +97,11 @@ export function itemAMedida(
     incluye: [],
     precio_setup: setup,
     precio_mensual: mensual,
-    costo_setup: redondear((setup * parametros.a_medida_costo_pct) / 100),
-    costo_mensual: redondear((mensual * parametros.a_medida_costo_pct) / 100),
+    costo_setup: redondear(semanas * parametros.a_medida_costo_semana),
+    costo_mensual: 0,
     usuarios_incluidos: 0,
     volumen: null,
-    semanas: Math.max(0, Math.round(m.semanas)),
+    semanas,
     estado: 'listo',
     activo: true,
     orden: 999,
@@ -165,10 +154,7 @@ export function calcularPaquete(
     }
 
     const incluido_en = incluidoPor.get(item.codigo) ?? null
-    // El tope de un desarrollo a medida también aplica al negociar el precio.
-    const precioSetup = linea.a_medida
-      ? Math.min(linea.precio_setup ?? item.precio_setup, parametros.a_medida_tope)
-      : (linea.precio_setup ?? item.precio_setup)
+    const precioSetup = linea.precio_setup ?? item.precio_setup
     const precioMensual = linea.precio_mensual ?? item.precio_mensual
 
     let volumen: LineaCalculada['volumen'] = null

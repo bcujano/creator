@@ -128,6 +128,9 @@ export const EsquemaAnalisis = z.object({
       entregables: z.array(z.string()),
     }),
   ),
+  facturacion_mensual: Calculo.describe(
+    'Ventas mensuales aproximadas del cliente: clientes o pedidos al mes × ticket promedio, solo con lo que dijo. Sin ese dato, factores vacíos y la pregunta exacta.',
+  ),
   modulos_a_medida: z
     .array(
       z.object({
@@ -146,13 +149,20 @@ export const EsquemaAnalisis = z.object({
           ),
         necesidad: z.string().describe('Qué necesidad del diagnóstico no cubre el catálogo.'),
         entregables: z.array(z.string()).describe('Entregables concretos y verificables.'),
+        dolores_que_resuelve: z
+          .array(z.string())
+          .describe(
+            'Títulos EXACTOS de los dolores que solo este módulo resuelve (no los que ya resuelve un producto del catálogo). De su valor sale el precio.',
+          ),
         complejidad: z
           .enum(['simple', 'media', 'compleja'])
-          .describe('Define el precio con la tabla de la empresa; no pongas montos.'),
+          .describe('Cuánto hay que construir. No define el precio; no pongas montos.'),
         por_que_complejidad: z
           .string()
           .describe('Qué hay que construir que justifica esa complejidad.'),
-        semanas: z.number(),
+        semanas: z
+          .number()
+          .describe('Semanas reales de trabajo para construirlo y dejarlo funcionando.'),
       }),
     )
     .describe('Solo para necesidades que el catálogo no cubre. Vacío si todo está en el catálogo.'),
