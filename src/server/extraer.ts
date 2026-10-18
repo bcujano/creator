@@ -84,6 +84,7 @@ async function textoImagen(ajustes: Ajustes, buffer: Buffer, mime: string) {
     imagenes: [{ mime, base64: buffer.toString('base64') }],
     esfuerzo: 'low',
     maxTokens: 8000,
+    rapida: true,
   })
   const d = r.datos
   return [

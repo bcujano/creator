@@ -52,7 +52,7 @@ Verificación: `pnpm check` → **50 pruebas** en verde (precios, cifras, pagos,
 - Vercel: equipo `bcujanos-projects`, proyecto `creator`, conectado a GitHub → cada push a `main` despliega.
 - GitHub: `bcujano/creator` (privado). crm-321 en `bcujano/crm-321`.
 - Supabase: proyecto `fpzbzjfmemxkgiapxlnh` (São Paulo), 7 migraciones aplicadas (0001–0007).
-- IA: Claude `claude-sonnet-5-5` (principal desde 06/10/2026, esfuerzo `medium`, ~65 s por análisis), OpenAI `gpt-4.1-mini` (respaldo). Ajustes verifica que el modelo exista antes de guardarlo y `gpt-4o-transcribe` (audio).
+- IA: análisis con Claude `claude-opus-5-5` (esfuerzo `medium`, ~155 s, ~$0,37), modelo rápido `claude-sonnet-5-5` (copiloto y lectura de material), respaldo OpenAI `gpt-4.1`, audio `gpt-4o-transcribe`. Ajustes verifica que cada modelo exista antes de guardarlo y `gpt-4o-transcribe` (audio).
 - CRM: `https://crm.321archlab.com/api/webhook` con `CREATOR_WEBHOOK_SECRET` (en crm-321) = `CRM_WEBHOOK_SECRET` (en CREATOR).
 - Admin: `brncjn@gmail.com`. Logo en `public/brand/logo.png`.
 

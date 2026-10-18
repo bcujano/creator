@@ -31,7 +31,8 @@ export const AJUSTES_DEFECTO: Ajustes = {
   },
   ia: {
     proveedor: 'anthropic',
-    modelo_anthropic: 'claude-opus-5',
+    modelo_anthropic: 'claude-opus-5-5',
+    modelo_rapido: 'claude-sonnet-5-5',
     modelo_openai: 'gpt-4.1',
     modelo_transcripcion: 'gpt-4o-transcribe',
     esfuerzo: 'medium',

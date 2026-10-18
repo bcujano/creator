@@ -349,11 +349,15 @@ export function EditorAjustes({ inicial, estado }: { inicial: Ajustes; estado: E
           </Selector>
         </div>
         <div>
-          <Etiqueta>Modelo Anthropic</Etiqueta>
+          <Etiqueta>Modelo de Claude para el análisis</Etiqueta>
           <Campo {...campo('ia', 'modelo_anthropic')} />
         </div>
         <div>
-          <Etiqueta>Modelo OpenAI</Etiqueta>
+          <Etiqueta>Modelo rápido (copiloto y lectura de material)</Etiqueta>
+          <Campo {...campo('ia', 'modelo_rapido')} />
+        </div>
+        <div>
+          <Etiqueta>Modelo OpenAI (respaldo)</Etiqueta>
           <Campo {...campo('ia', 'modelo_openai')} />
         </div>
         <div>

@@ -158,6 +158,7 @@ ${insumosComoTexto(insumos).slice(0, 12000) || '(ninguno)'}
 Dame de 3 a 5 preguntas y los dolores que sospechas.`,
     esfuerzo: 'low',
     maxTokens: 8000,
+    rapida: true,
   })
 }
 

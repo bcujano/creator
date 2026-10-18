@@ -59,3 +59,6 @@ Al firmar, Byron necesita pasarle a Claude todo lo aprobado para diseñar y cons
 ### 19. Ajustes verifica los modelos de IA antes de guardarlos
 El 06/10/2026 se cambió el modelo a "claude-sonnet-5.5" y "gpt-4.1 mini" (punto y espacio en vez de guiones). Se guardó sin error y el 17/10 el análisis de Código F. falló con los dos proveedores en plena reunión. Ahora `PUT /api/ajustes` consulta a Anthropic/OpenAI si el modelo existe (`problemaConModelo` en `server/ia/motor.ts`) y rechaza el cambio con la sugerencia correcta. Solo un 404 bloquea; una falla de red no impide guardar.
 
+### 20. Un modelo por tarea
+17/10/2026, aprobado por Byron. El análisis es lo que vende: **Claude Opus 5.5** con esfuerzo `medium` (medido: 155 s con Código F, 7 dolores, ~$0,37; Opus 5 costaba ~$0,44 y Sonnet 5.5 ~$0,11 pero con análisis más cortos). El copiloto de la entrevista y la lectura de imágenes usan el **modelo rápido** (`ia.modelo_rapido`, Claude Sonnet 5.5). Respaldo: `gpt-4.1` completo, porque si entra debe poder hacer el análisis entero. Fable 5.1 descartado: 2,5× el costo de Opus y turnos largos que chocan con los 300 s de Vercel.
+

@@ -71,6 +71,8 @@ export type ParametrosPrecio = {
 export type AjustesIA = {
   proveedor: 'anthropic' | 'openai'
   modelo_anthropic: string
+  /** Modelo de Claude para tareas cortas en plena reunión: copiloto y lectura de material. */
+  modelo_rapido: string
   modelo_openai: string
   modelo_transcripcion: string
   esfuerzo: 'low' | 'medium' | 'high' | 'xhigh' | 'max'

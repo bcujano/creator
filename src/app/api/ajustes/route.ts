@@ -44,6 +44,7 @@ const Ajustes = z.object({
     .object({
       proveedor: z.enum(['anthropic', 'openai']),
       modelo_anthropic: z.string().trim().min(1),
+      modelo_rapido: z.string().trim().min(1),
       modelo_openai: z.string().trim().min(1),
       modelo_transcripcion: z.string().min(1),
       esfuerzo: z.enum(['low', 'medium', 'high', 'xhigh', 'max']),
@@ -85,6 +86,7 @@ export const PUT = privada(async (req: Request) => {
   const actuales = (await leerAjustes()).ia
   const revisar = [
     ['anthropic', cambios.ia?.modelo_anthropic, actuales.modelo_anthropic],
+    ['anthropic', cambios.ia?.modelo_rapido, actuales.modelo_rapido],
     ['openai', cambios.ia?.modelo_openai, actuales.modelo_openai],
   ] as const
   for (const [proveedor, nuevo, anterior] of revisar) {

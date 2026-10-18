@@ -23,6 +23,8 @@ export type SolicitudEstructurada<T extends z.ZodType> = {
   imagenes?: Imagen[]
   esfuerzo?: AjustesIA['esfuerzo']
   maxTokens?: number
+  /** Tarea corta en plena reunión: usa el modelo rápido de Claude. */
+  rapida?: boolean
 }
 
 export type RespuestaEstructurada<T> = {
@@ -234,7 +236,10 @@ export async function generarEstructurado<T extends z.ZodType>(
   const errores: string[] = []
   for (const proveedor of orden) {
     try {
-      if (proveedor === 'anthropic' && a) return await conAnthropic(a, ajustes.modelo_anthropic, s)
+      if (proveedor === 'anthropic' && a) {
+        const modelo = s.rapida ? ajustes.modelo_rapido : ajustes.modelo_anthropic
+        return await conAnthropic(a, modelo, s)
+      }
       if (proveedor === 'openai' && o) return await conOpenAI(o, ajustes.modelo_openai, s)
     } catch (error) {
       const mensaje = error instanceof Error ? error.message : String(error)
