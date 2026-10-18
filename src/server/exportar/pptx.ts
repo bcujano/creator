@@ -160,6 +160,16 @@ export async function generarPptx(doc: Documento): Promise<Buffer> {
     color: 'FFFFFF',
     fontFace: FUENTE,
   })
+  if (doc.enfoques.length)
+    portada.addText(`${t.enfoque}: ${doc.enfoques.join(' · ')}`, {
+      x: 0.8,
+      y: 5.2,
+      w: 11,
+      h: 0.45,
+      fontSize: 16,
+      color: 'E6E1FF',
+      fontFace: FUENTE,
+    })
   portada.addText(`${t.numero} ${doc.propuesta.numero} · ${doc.fecha}`, {
     x: 0.8,
     y: 6.5,

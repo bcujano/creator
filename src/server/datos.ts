@@ -167,14 +167,19 @@ export async function listarLevantamientos(): Promise<LevantamientoResumen[]> {
   return (data ?? []) as LevantamientoResumen[]
 }
 
-export async function crearLevantamiento(clienteId: string, titulo: string, idioma: 'es' | 'en') {
+export async function crearLevantamiento(
+  clienteId: string,
+  titulo: string,
+  idioma: 'es' | 'en',
+  enfoques: string[] = [],
+) {
   const { data, error } = await db()
     .from('levantamientos')
-    .insert({ cliente_id: clienteId, titulo, idioma })
+    .insert({ cliente_id: clienteId, titulo, idioma, enfoques })
     .select()
     .single()
   if (error) falla('crearLevantamiento', error)
-  await registrarEvento('levantamiento', data.id, 'creado', { clienteId, titulo })
+  await registrarEvento('levantamiento', data.id, 'creado', { clienteId, titulo, enfoques })
   return data as Levantamiento
 }
 

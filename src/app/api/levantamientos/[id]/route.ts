@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { IDS_ENFOQUE, MAX_ENFOQUES } from '@/lib/enfoques'
 import {
   actualizarCliente,
   actualizarLevantamiento,
@@ -16,6 +17,7 @@ const Cambios = z.object({
     .optional(),
   idioma: z.enum(['es', 'en']).optional(),
   formulario_activo: z.boolean().optional(),
+  enfoques: z.array(z.enum(IDS_ENFOQUE)).max(MAX_ENFOQUES).optional(),
   /** Respuestas a fusionar (no reemplaza las demás). Un valor vacío borra la respuesta. */
   respuestas: z.record(z.string(), z.string()).optional(),
   cliente: z
@@ -59,6 +61,12 @@ export const PATCH = privada(async (req: Request, { params }: Ctx<{ id: string }
     datos.respuestas = fusion
   }
   if (Object.keys(datos).length > 0) await actualizarLevantamiento(id, datos)
+  if (resto.enfoques && resto.enfoques.join() !== (actual.enfoques ?? []).join()) {
+    await registrarEvento('levantamiento', id, 'enfoque', {
+      de: actual.enfoques ?? [],
+      a: resto.enfoques,
+    })
+  }
   if (resto.estado && resto.estado !== actual.estado) {
     await registrarEvento('levantamiento', id, 'estado', { de: actual.estado, a: resto.estado })
   }

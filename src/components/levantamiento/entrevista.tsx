@@ -12,8 +12,10 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { CampoRespuesta } from '@/components/comun/campo-respuesta'
+import { SelectorEnfoque } from '@/components/comun/selector-enfoque'
 import { Area, Aviso, api, Boton, cx, Insignia } from '@/components/ui/primitivos'
-import { SECCIONES } from '@/lib/preguntas'
+import { enfoquesDe, type IdEnfoque, nombreEnfoque } from '@/lib/enfoques'
+import { seccionesPara } from '@/lib/preguntas'
 import type { Sugerencias } from '@/server/ia/esquema'
 import type { PropsEspacio } from './espacio'
 
@@ -117,6 +119,31 @@ export function Entrevista({
   const [pensando, setPensando] = useState(false)
   const [error, setError] = useState('')
   const [nuevaPregunta, setNuevaPregunta] = useState('')
+  const [elegidos, setElegidos] = useState<IdEnfoque[]>(
+    () => enfoquesDe({ enfoques: levantamiento.enfoques }) as IdEnfoque[],
+  )
+  const [verEnfoque, setVerEnfoque] = useState(elegidos.length === 0)
+  const [errorEnfoque, setErrorEnfoque] = useState('')
+
+  // Manda lo que eligió el consultor; si no eligió, lo que marcó el cliente en su celular.
+  const enfoques = enfoquesDe({ enfoques: elegidos, respuestas_cliente: delCliente, respuestas })
+  const deCliente = elegidos.length === 0 && enfoques.length > 0
+  const SECCIONES = seccionesPara(enfoques)
+
+  async function cambiarEnfoques(nuevos: IdEnfoque[]) {
+    const antes = elegidos
+    setElegidos(nuevos)
+    setErrorEnfoque('')
+    try {
+      await api(`/api/levantamientos/${levantamiento.id}`, {
+        method: 'PATCH',
+        json: { enfoques: nuevos },
+      })
+    } catch (e) {
+      setElegidos(antes)
+      setErrorEnfoque(e instanceof Error ? e.message : String(e))
+    }
+  }
 
   const clienteRespondio = (id: string) => Boolean(delCliente[id]?.trim())
   const respondida = (id: string) => clienteRespondio(id) || Boolean(respuestas[id]?.trim())
@@ -159,6 +186,54 @@ export function Entrevista({
         <div className="flex items-center justify-between">
           <p className="text-sm text-tenue">Pregunta solo lo que falta. Todo se guarda solo.</p>
           <IndicadorGuardado estado={estado} />
+        </div>
+
+        <div
+          className={cx(
+            'rounded-2xl border bg-superficie',
+            enfoques.length ? 'border-borde' : 'border-aviso/50',
+          )}
+        >
+          <button
+            type="button"
+            onClick={() => setVerEnfoque(!verEnfoque)}
+            className="anillo-foco flex min-h-14 w-full items-center justify-between gap-3 px-5 text-left"
+          >
+            <span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-tenue">
+                Enfoque del sistema
+              </span>
+              <span className="block font-titulo text-lg font-semibold">
+                {enfoques.length
+                  ? enfoques.map((id) => nombreEnfoque(id)).join(' · ')
+                  : 'Por definir'}
+              </span>
+              {deCliente ? (
+                <span className="text-xs text-acento">
+                  Lo marcó el cliente; elige tú para fijarlo.
+                </span>
+              ) : enfoques.length === 0 ? (
+                <span className="text-xs text-aviso">
+                  Elige el área para ver sus preguntas y orientar el diagnóstico.
+                </span>
+              ) : null}
+            </span>
+            <ChevronDown className={cx('size-5 shrink-0 transition', verEnfoque && 'rotate-180')} />
+          </button>
+          {verEnfoque ? (
+            <div className="border-t border-borde px-5 py-4">
+              <p className="mb-3 text-sm text-tenue">
+                Hasta 3 áreas; la primera es la principal. Cambiarlo agrega o quita las preguntas de
+                esa área (lo ya respondido no se pierde).
+              </p>
+              <SelectorEnfoque valor={elegidos} onChange={cambiarEnfoques} compacto />
+              {errorEnfoque ? (
+                <div className="mt-3">
+                  <Aviso>{errorEnfoque}</Aviso>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
 
         {totalCliente > 0 ? (

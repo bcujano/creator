@@ -25,6 +25,7 @@ export default async function Formulario({ params }: { params: Promise<{ token: 
         idiomaInicial={levantamiento.idioma}
         respuestasIniciales={levantamiento.respuestas_cliente ?? {}}
         terminado={levantamiento.cliente_termino}
+        enfoques={levantamiento.enfoques ?? []}
         datosIniciales={{
           contacto_nombre: c.contacto_nombre,
           contacto_cargo: c.contacto_cargo,

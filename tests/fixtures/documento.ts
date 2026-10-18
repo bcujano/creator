@@ -470,5 +470,6 @@ export function documentoDePrueba(idioma: 'es' | 'en' = 'es'): Documento {
     fecha: '23 de septiembre de 2026',
     valida_hasta: '8 de octubre de 2026',
     recuperacion_meses: 4,
+    enfoques: ['Ventas y comercial', 'Atención al cliente y servicio'],
   }
 }

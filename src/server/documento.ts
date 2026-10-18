@@ -1,5 +1,6 @@
 import 'server-only'
 import { normalizarAnalisis } from '@/lib/analisis'
+import { enfoquesDe, nombreEnfoque } from '@/lib/enfoques'
 import { fechaLarga, textos } from '@/lib/i18n'
 import { calcularPaquete, type PaqueteCalculado, resolverItem } from '@/lib/precios'
 import type {
@@ -54,6 +55,8 @@ export type Documento = {
   fecha: string
   valida_hasta: string
   recuperacion_meses: number | null
+  /** Áreas en que se enfoca el sistema, con su nombre en el idioma del documento. */
+  enfoques: string[]
 }
 
 export function calcularTodos(
@@ -127,6 +130,7 @@ async function armar(propuesta: FilaPropuesta, idiomaForzado?: Idioma): Promise<
     fecha: fechaLarga(creada, idioma),
     valida_hasta: fechaLarga(vence, idioma),
     recuperacion_meses: recuperacion,
+    enfoques: enfoquesDe(levantamiento).map((id) => nombreEnfoque(id, idioma)),
   }
 }
 

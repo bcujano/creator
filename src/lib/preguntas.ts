@@ -1,3 +1,4 @@
+import { ENFOQUES, type IdEnfoque, PREGUNTA_AREAS, seccionesDeEnfoques } from './enfoques'
 import type { Idioma } from './tipos'
 
 /**
@@ -38,7 +39,8 @@ export type Seccion = {
 
 const o = (es: string, en: string): Opcion => ({ es, en })
 
-export const SECCIONES: Seccion[] = [
+/** Preguntas comunes a todo negocio; las de cada área viven en `enfoques.ts`. */
+const BASE: Seccion[] = [
   {
     id: 'negocio',
     es: 'Tu negocio',
@@ -105,15 +107,6 @@ export const SECCIONES: Seccion[] = [
     intro_en: 'No judgment: this is how most growing businesses work.',
     preguntas: [
       {
-        id: 'ventas_proceso',
-        es: 'Cuéntanos qué pasa desde que alguien te escribe hasta que te compra.',
-        en: 'Tell us what happens from the moment someone contacts you until they buy.',
-        ejemplo_es: 'Ej.: escriben por WhatsApp, les mando precios, agendo una visita…',
-        ejemplo_en: 'E.g.: they message on WhatsApp, I send prices, we book a visit…',
-        tipo: 'texto',
-        cliente: true,
-      },
-      {
         id: 'tecnologia_herramientas',
         es: '¿Con qué herramientas trabajan?',
         en: 'Which tools do you use?',
@@ -128,35 +121,6 @@ export const SECCIONES: Seccion[] = [
           o('Ninguna en especial', 'Nothing in particular'),
         ],
         cliente: true,
-      },
-      {
-        id: 'ventas_tiempo_respuesta',
-        es: 'Cuando llega un mensaje nuevo, ¿en cuánto tiempo lo responden?',
-        en: 'When a new message arrives, how soon do you reply?',
-        tipo: 'unica',
-        opciones: [
-          o('En minutos', 'Within minutes'),
-          o('En una o dos horas', 'In an hour or two'),
-          o('El mismo día', 'Same day'),
-          o('Al día siguiente', 'Next day'),
-          o('Depende de quién esté', 'Depends on who is around'),
-        ],
-        cliente: true,
-        sondeo: true,
-      },
-      {
-        id: 'atencion_fuera_horario',
-        es: '¿Y si te escriben de noche o el fin de semana?',
-        en: 'And if they write at night or on weekends?',
-        tipo: 'unica',
-        opciones: [
-          o('Respondemos igual', 'We still reply'),
-          o('Esperan al siguiente día hábil', 'They wait until the next business day'),
-          o('Muchos se pierden', 'Many are lost'),
-          o('No lo sé', "I don't know"),
-        ],
-        cliente: true,
-        sondeo: true,
       },
       {
         id: 'operacion_dependencia',
@@ -190,28 +154,13 @@ export const SECCIONES: Seccion[] = [
         cliente: true,
       },
       {
-        id: 'ventas_perdidos',
-        es: '¿Sientes que se te escapan clientes?',
-        en: 'Do you feel customers slip away?',
-        tipo: 'unica',
-        opciones: [
-          o('Casi nunca', 'Hardly ever'),
-          o('A veces', 'Sometimes'),
-          o('Seguido', 'Often'),
-          o('No sé cuántos', "I don't know how many"),
-        ],
+        // Si el consultor no eligió el enfoque, esta respuesta lo define (ver enfoquesDe).
+        id: PREGUNTA_AREAS,
+        es: '¿En qué área de tu negocio necesitas más ayuda?',
+        en: 'Which area of your business needs the most help?',
+        tipo: 'multiple',
+        opciones: ENFOQUES.map((e) => o(e.es, e.en)),
         cliente: true,
-        sondeo: true,
-      },
-      {
-        id: 'ventas_perdidos_donde',
-        es: 'Si pasa, ¿en qué momento se pierden?',
-        en: 'If it happens, at what point are they lost?',
-        ejemplo_es: 'Ej.: después de enviar la cotización nadie les vuelve a escribir',
-        ejemplo_en: 'E.g.: after we send the quote nobody follows up',
-        tipo: 'texto',
-        cliente: true,
-        sondeo: true,
       },
       {
         id: 'direccion_visibilidad',
@@ -294,43 +243,12 @@ export const SECCIONES: Seccion[] = [
     intro_en: 'Only you see these. Use them if the conversation allows.',
     preguntas: [
       {
-        id: 'sondeo_cotizar',
-        es: '¿Cómo cotizan y cuánto tarda una cotización?',
-        en: 'How do you quote and how long does a quote take?',
-        tipo: 'texto',
-        cliente: false,
-        sondeo: true,
-      },
-      {
-        id: 'sondeo_ausentismo',
-        es: '¿Agendan citas, visitas o entregas? ¿Cuántas fallan de cada 10?',
-        en: 'Do you book appointments, visits or deliveries? How many out of 10 fall through?',
-        tipo: 'texto',
-        cliente: false,
-        sondeo: true,
-      },
-      {
         id: 'sondeo_errores',
         es: '¿Qué error se repite y cuánto cuesta cuando pasa?',
         en: 'Which mistake keeps happening and what does it cost?',
         tipo: 'texto',
         cliente: false,
         sondeo: true,
-      },
-      {
-        id: 'sondeo_reportes',
-        es: '¿Quién arma los reportes o cuadra los números, y cuántas horas le toma?',
-        en: 'Who builds reports or reconciles numbers, and how many hours does it take?',
-        tipo: 'texto',
-        cliente: false,
-        sondeo: true,
-      },
-      {
-        id: 'sondeo_marketing',
-        es: '¿Invierten en publicidad? ¿Cuánto al mes y saben qué les devuelve?',
-        en: 'Do you invest in ads? How much per month and do you know the return?',
-        tipo: 'texto',
-        cliente: false,
       },
       {
         id: 'sondeo_intentos',
@@ -358,18 +276,34 @@ export function textoPregunta(p: Pregunta, idioma: Idioma) {
   return idioma === 'en' ? p.en : p.es
 }
 
+/**
+ * Secciones de la entrevista para los enfoques elegidos: las comunes y, antes de
+ * "El sistema que imaginas", una sección por cada enfoque.
+ */
+export function seccionesPara(enfoques: IdEnfoque[]): Seccion[] {
+  const finales = new Set(['vision', 'consultor'])
+  return [
+    ...BASE.filter((s) => !finales.has(s.id)),
+    ...seccionesDeEnfoques(enfoques),
+    ...BASE.filter((s) => finales.has(s.id)),
+  ]
+}
+
+/** Todas las preguntas que existen, de cualquier enfoque: para leer respuestas guardadas. */
+const TODAS = seccionesPara(ENFOQUES.map((e) => e.id))
+
 export function mapaPreguntas() {
   const mapa = new Map<string, { pregunta: Pregunta; seccion: Seccion }>()
-  for (const seccion of SECCIONES) {
+  for (const seccion of TODAS) {
     for (const pregunta of seccion.preguntas) mapa.set(pregunta.id, { pregunta, seccion })
   }
   return mapa
 }
 
-export function seccionesCliente() {
-  return SECCIONES.map((s) => ({ ...s, preguntas: s.preguntas.filter((p) => p.cliente) })).filter(
-    (s) => s.preguntas.length > 0,
-  )
+export function seccionesCliente(enfoques: IdEnfoque[]) {
+  return seccionesPara(enfoques)
+    .map((s) => ({ ...s, preguntas: s.preguntas.filter((p) => p.cliente) }))
+    .filter((s) => s.preguntas.length > 0)
 }
 
 const humanizar = (id: string) => id.replace(/_/g, ' ')

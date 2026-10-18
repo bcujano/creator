@@ -27,7 +27,7 @@ src/
     levantamiento/            Espacio: cabecera, entrevista, material, analisis, propuesta, cierre, historial
     admin/                    Catálogo, ajustes, simulador de rentabilidad
   lib/                        Dominio puro (cliente y servidor): tipos, precios, pagos, analisis (cifras),
-                              preguntas, i18n, ajustes-defecto, env, auth, supabase/{admin,server,browser}
+                              preguntas, enfoques (áreas del sistema y sus preguntas), i18n, ajustes-defecto, env, auth, supabase/{admin,server,browser}
   server/                     Solo servidor (`import 'server-only'`)
     datos.ts                  Acceso a datos (service role) y bitácora
     servicios.ts              Orquestación: ejecutarAnalisis, guardarPropuesta
@@ -39,7 +39,7 @@ src/
     acuerdo/{contenido,pdf,docx,letras}
     extraer.ts, almacen.ts, subidas.ts, crm.ts, http.ts
   proxy.ts                    Protección de rutas (Next 16)
-supabase/migrations/          SQL append-only (0001–0007)
+supabase/migrations/          SQL append-only (0001–0008)
 scripts/                      db-migrate, crear-admin
 tests/                        Vitest; fixtures/ con un caso completo (Clínica Sonrisa)
 docs/                         Estado, arquitectura, decisiones, operación, historial

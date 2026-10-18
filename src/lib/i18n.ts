@@ -5,6 +5,7 @@ const TEXTOS = {
   es: {
     propuesta: 'Propuesta de solución',
     preparado_para: 'Preparado para',
+    enfoque: 'Enfoque',
     fecha: 'Fecha',
     numero: 'Propuesta N.º',
     valida_hasta: 'Válida hasta',
@@ -81,6 +82,7 @@ const TEXTOS = {
   en: {
     propuesta: 'Solution proposal',
     preparado_para: 'Prepared for',
+    enfoque: 'Focus',
     fecha: 'Date',
     numero: 'Proposal No.',
     valida_hasta: 'Valid until',

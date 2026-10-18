@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { IDS_ENFOQUE, MAX_ENFOQUES } from '@/lib/enfoques'
 import { crearCliente, crearLevantamiento } from '@/server/datos'
 import { privada } from '@/server/http'
 
@@ -17,6 +18,7 @@ const Entrada = z.object({
     ruc: z.string().default(''),
   }),
   idioma: z.enum(['es', 'en']).default('es'),
+  enfoques: z.array(z.enum(IDS_ENFOQUE)).max(MAX_ENFOQUES).default([]),
 })
 
 export const POST = privada(async (req: Request) => {
@@ -26,6 +28,7 @@ export const POST = privada(async (req: Request) => {
     cliente.id,
     `Diagnóstico ${cliente.nombre}`,
     datos.idioma,
+    datos.enfoques,
   )
   return NextResponse.json({ id: levantamiento.id })
 })

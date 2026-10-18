@@ -6,6 +6,7 @@ import { CampoRespuesta } from '@/components/comun/campo-respuesta'
 import { Grabadora } from '@/components/comun/grabadora'
 import { subirArchivo } from '@/components/comun/subir'
 import { api, cx } from '@/components/ui/primitivos'
+import { enfoquesDe } from '@/lib/enfoques'
 import { seccionesCliente } from '@/lib/preguntas'
 import type { Idioma } from '@/lib/tipos'
 
@@ -111,6 +112,7 @@ export function FormularioCliente({
   respuestasIniciales,
   datosIniciales,
   terminado: terminadoInicial,
+  enfoques: enfoquesElegidos,
 }: {
   token: string
   empresa: string
@@ -119,12 +121,16 @@ export function FormularioCliente({
   respuestasIniciales: Record<string, string>
   datosIniciales: Datos
   terminado: boolean
+  enfoques: string[]
 }) {
-  const secciones = seccionesCliente()
-  const total = secciones.length + 1 // + tus datos
   const [idioma, setIdioma] = useState<Idioma>(idiomaInicial)
   const [paso, setPaso] = useState(-1) // -1 = bienvenida
   const [respuestas, setRespuestas] = useState(respuestasIniciales)
+  // Si el consultor no eligió el enfoque, lo que marque el cliente agrega las preguntas de esa área.
+  const secciones = seccionesCliente(
+    enfoquesDe({ enfoques: enfoquesElegidos, respuestas_cliente: respuestas }),
+  )
+  const total = secciones.length + 1 // + tus datos
   const [datos, setDatos] = useState<Datos>(datosIniciales)
   const [estado, setEstado] = useState<'inicial' | 'guardando' | 'guardado' | 'error'>('inicial')
   const [terminado, setTerminado] = useState(terminadoInicial)

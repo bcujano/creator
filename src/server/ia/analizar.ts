@@ -1,4 +1,5 @@
 import 'server-only'
+import { enfoque, enfoquesDe } from '@/lib/enfoques'
 import { precioAMedida } from '@/lib/precios'
 import { respuestasComoTexto } from '@/lib/preguntas'
 import type {
@@ -46,6 +47,29 @@ function catalogoComoTexto(catalogo: ItemCatalogo[], idioma: Idioma) {
     .join('\n\n')
 }
 
+/** El enfoque elegido, con lo que hay que buscar en cada área; o la instrucción de elegirlo. */
+export function enfoqueComoTexto(l: LevantamientoCompleto) {
+  const ids = enfoquesDe(l)
+  if (ids.length === 0) {
+    return 'Por definir: ni el consultor ni el cliente lo eligieron. Decide tú el área donde el sistema da más retorno según la evidencia, explica por qué en el resumen ejecutivo y diseña alrededor de ella.'
+  }
+  const origen = l.enfoques?.length
+    ? 'elegido por el consultor'
+    : 'marcado por el cliente en su formulario'
+  return [
+    `Áreas (${origen}), en orden de prioridad:`,
+    ...ids.map((id, i) => {
+      const e = enfoque(id)
+      if (!e) return ''
+      return `${i + 1}. ${e.es}${i === 0 ? ' (principal)' : ''}: ${e.resumen_es}
+   Qué buscar: ${e.guia_ia}
+   Categorías del catálogo que suelen aplicar: ${e.categorias.join(', ')}.`
+    }),
+  ]
+    .filter(Boolean)
+    .join('\n')
+}
+
 function insumosComoTexto(insumos: Insumo[]) {
   return insumos
     .filter((i) => i.estado === 'listo' && i.contenido.trim())
@@ -58,11 +82,12 @@ function insumosComoTexto(insumos: Insumo[]) {
 
 function sistema(ajustes: Ajustes, idioma: Idioma) {
   const lengua = idioma === 'en' ? 'inglés' : 'español'
-  return `Eres el consultor principal de ${ajustes.marca.nombre}, empresa ecuatoriana que diseña, desarrolla e implanta sistemas con inteligencia artificial para empresas (CRMs con IA, agentes de WhatsApp, llamadas con IA, un Super Agente que conoce todo el CRM y gerencia, automatizaciones con n8n, cotizadores, marketing con IA).
+  return `Eres el consultor principal de ${ajustes.marca.nombre}, empresa ecuatoriana que diseña, desarrolla e implanta sistemas con inteligencia artificial para empresas: ventas y atención (CRMs con IA, agentes de WhatsApp, llamadas con IA, cotizadores), dirección (un Super Agente que conoce todo el negocio, paneles, alertas), marketing con IA, y sistemas a medida para operación, inventario y logística, finanzas y equipo, con automatizaciones en n8n.
 
 Estás en la primera reunión con un cliente. Tu trabajo es entender el negocio, descubrir sus dolores —los que dice y los que no ve— y diseñar en el momento la solución, con paquetes listos para cotizar.
 
 Cómo trabajas:
+- Enfoque: el sistema se diseña alrededor del ENFOQUE DEL SISTEMA. Diagnostica el negocio completo (los dolores de otras áreas cuentan, como oportunidades o fases futuras), pero las soluciones, la arquitectura, el plan y los tres paquetes se centran en el enfoque, empezando por el principal. El paquete esencial resuelve el dolor más urgente del área principal. No empujes ventas o CRM si el enfoque es otro, salvo que la evidencia lo justifique y lo expliques. Si el catálogo no cubre el área, usa módulos a medida con las reglas de abajo.
 - Te basas en la evidencia del levantamiento. Si algo es una suposición, dilo en "supuestos". No inventes datos del cliente.
 - Dolores ocultos: busca siempre al menos dos (tipo "oculto"), distintos de los que el cliente nombró. Infiérelos de tiempos de respuesta, dependencia de personas clave, trabajo manual repetido, falta de datos para decidir, clientes que se pierden sin seguimiento, errores recurrentes. Cada uno necesita evidencia concreta.
 - Cifras (impacto de cada dolor, componentes del retorno, horas liberadas): NO calcules el total; da los factores que se multiplican y el sistema hace la cuenta. Reglas estrictas, porque el cliente verá de dónde sale cada número:
@@ -116,6 +141,9 @@ ${catalogoComoTexto(catalogo, idioma)}
 # FICHA DEL CLIENTE
 ${ficha}
 
+# ENFOQUE DEL SISTEMA
+${enfoqueComoTexto(levantamiento)}
+
 # ENTREVISTA
 ${entrevistaComoTexto(levantamiento, '(sin respuestas todavía)')}
 
@@ -148,6 +176,10 @@ export async function sugerirPreguntas(
     nombre: 'sugerencias',
     sistema: `Eres consultor senior de ${ajustes.marca.nombre} y estás en plena reunión con un cliente. Propón las siguientes preguntas que el consultor debe hacer AHORA para descubrir dolores ocultos, cuantificar el impacto y detectar oportunidades de automatizar con IA. Preguntas cortas, conversacionales, en ${idioma === 'en' ? 'inglés' : 'español'}. No repitas lo ya respondido.`,
     usuario: `Cliente: ${levantamiento.clientes.nombre} (${levantamiento.clientes.industria || 'industria sin definir'})
+
+Enfoque del sistema:
+${enfoqueComoTexto(levantamiento)}
+Orienta las preguntas a esas áreas (sobre todo la principal); si está por definir, pregunta para descubrir dónde está el mayor dolor.
 
 Respuestas hasta ahora:
 ${entrevistaComoTexto(levantamiento, '(ninguna)')}

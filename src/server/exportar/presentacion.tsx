@@ -656,7 +656,12 @@ export async function generarPresentacion(doc: Documento): Promise<Buffer> {
       <Portada
         {...props}
         titulo={t.propuesta}
-        subtitulo={`${t.preparado_para}: ${doc.cliente.nombre}`}
+        subtitulo={`${t.preparado_para}: ${doc.cliente.nombre}${
+          doc.enfoques.length
+            ? `
+${t.enfoque}: ${doc.enfoques.join(' · ')}`
+            : ''
+        }`}
         pie={`${t.numero} ${doc.propuesta.numero} · ${x.version} ${doc.propuesta.version} · ${doc.fecha}`}
       />
       {diapositivas}

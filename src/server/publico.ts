@@ -25,6 +25,7 @@ export function documentoPublico(doc: Documento) {
       condiciones: doc.propuesta.datos.condiciones,
     },
     analisis: doc.analisis,
+    enfoques: doc.enfoques,
     paquetes: doc.paquetes.map((p) => ({
       nivel: p.definicion.nivel,
       nombre: p.definicion.nombre,

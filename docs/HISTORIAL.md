@@ -27,4 +27,7 @@
 
 1. **Análisis de Código F. en error**: nombres de modelo mal escritos en Ajustes desde el 06/10. Corregidos a `claude-sonnet-5-5` / `gpt-4.1-mini`, análisis re-ejecutado (v2, 64 s, propuesta AIU-2026-0129) y validación de modelos al guardar Ajustes.
 
+2. **Modelos por tarea**: Opus 5.5 para el análisis (155 s medidos), Sonnet 5.5 como modelo rápido, gpt-4.1 de respaldo.
+3. **Enfoque del sistema**: 8 áreas elegibles (hasta 3) en Nueva reunión, en la entrevista y en el formulario del cliente; preguntas, copiloto, análisis, portadas y brief se adaptan (migración `0008`, 4 pruebas nuevas).
+
 Pendientes: ver `docs/ESTADO.md`.

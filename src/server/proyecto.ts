@@ -51,6 +51,10 @@ export function briefProyecto(doc: Documento, ctx: ContextoProyecto): string {
     ]),
   )
 
+  if (doc.enfoques.length) {
+    L.push('', `**Enfoque del sistema:** ${doc.enfoques.join(' · ')} (el primero es el principal).`)
+  }
+
   L.push('', '## Cliente', '')
   L.push(
     ...lista([

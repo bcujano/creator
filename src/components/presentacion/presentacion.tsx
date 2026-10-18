@@ -82,6 +82,11 @@ function construir(doc: DocumentoPublico): Diapositiva[] {
           <p className="mt-6 text-2xl md:text-3xl">
             {t.preparado_para} <strong>{doc.cliente.nombre}</strong>
           </p>
+          {doc.enfoques.length ? (
+            <p className="mt-2 text-lg opacity-85">
+              {t.enfoque}: {doc.enfoques.join(' · ')}
+            </p>
+          ) : null}
         </div>
         <p className="text-sm opacity-70">
           {t.numero} {doc.propuesta.numero} · {doc.fecha}

@@ -11,6 +11,7 @@ CREATOR está **en producción y en uso** en https://creator.emprendimientum.com
 | Área | Estado | Dónde |
 |---|---|---|
 | Nueva reunión (solo nombre obligatorio) | ✅ | `app/(app)/nuevo` |
+| **Enfoque del sistema**: hasta 3 áreas (ventas, atención, operación, inventario y logística, finanzas, equipo, dirección, marketing). Se elige al crear la reunión, en la entrevista o lo marca el cliente en su formulario; cambia las preguntas, el copiloto, el diagnóstico, los paquetes, las portadas y el brief | ✅ | `lib/enfoques.ts`, `comun/selector-enfoque.tsx` |
 | Entrevista guiada (5 secciones, opciones para tocar, preguntas de sondeo) + copiloto IA | ✅ | `components/levantamiento/entrevista.tsx`, `lib/preguntas.ts` |
 | Formulario del cliente en el celular (QR/WhatsApp), por pasos, bilingüe, con sus datos legales | ✅ | `app/f/[token]`, `components/cliente/` |
 | Panel en vivo: lo que responde el cliente aparece en ~5 s y sale de la lista de pendientes | ✅ | `usePulsoCliente` en `levantamiento/espacio.tsx`, `api/levantamientos/[id]/pulso` |
@@ -30,11 +31,11 @@ CREATOR está **en producción y en uso** en https://creator.emprendimientum.com
 | Catálogo editable (21 productos) con historial de precios; Ajustes (marca, precios, legal, IA, CRM); Rentabilidad | ✅ | `app/(app)/admin/*` |
 | Historial/bitácora, respaldo JSON por cliente, versiones inmutables | ✅ | tabla `eventos` |
 
-Verificación: `pnpm check` → **50 pruebas** en verde (precios, cifras, pagos, a medida, acuerdo, exportaciones, no-fuga de datos internos). CI en GitHub Actions.
+Verificación: `pnpm check` → **54 pruebas** en verde (precios, cifras, pagos, a medida, acuerdo, exportaciones, no-fuga de datos internos). CI en GitHub Actions.
 
 ## Pendientes (en orden)
 
-1. **⭐ IMPORTANTE (en espera de decisión de Byron) — Valorar bien los módulos a medida grandes.** Hoy un sistema como el de rutas de la distribuidora (6 entregables, 6 semanas) sale a $900 por el tope. Propuestas presentadas el 23/09/2026:
+1. **⭐ IMPORTANTE (en espera de decisión de Byron; más urgente desde que existen enfoques fuera de ventas: inventario, finanzas, operación y equipo casi no tienen productos en el catálogo y se resuelven con módulos a medida topados en $900) — Valorar bien los módulos a medida grandes.** Hoy un sistema como el de rutas de la distribuidora (6 entregables, 6 semanas) sale a $900 por el tope. Propuestas presentadas el 23/09/2026:
    - **A · $900 + mensualidad** de operación ($120/mes en complejos): rutas = $1.620 al plazo mínimo, $2.340 el primer año.
    - **B · Nivel "proyecto" por entregables (recomendado):** simple/media/compleja se mantienen; si hay ≥3 piezas nuevas o >4 semanas, la IA da talla a cada entregable (S 8 h, M 16 h, L 32 h) y el código multiplica por $30/h (tarifa implícita de la tabla actual); tope $6.000, sobre eso se cotiza aparte. Rutas = 112 h → $3.360 + IVA.
    - **C · Partir en varios módulos de tabla:** rutas = $900 + $900 + $600 = $2.400.
@@ -51,7 +52,7 @@ Verificación: `pnpm check` → **50 pruebas** en verde (precios, cifras, pagos,
 - App: https://creator.emprendimientum.com (también `creator-three-kappa.vercel.app`)
 - Vercel: equipo `bcujanos-projects`, proyecto `creator`, conectado a GitHub → cada push a `main` despliega.
 - GitHub: `bcujano/creator` (privado). crm-321 en `bcujano/crm-321`.
-- Supabase: proyecto `fpzbzjfmemxkgiapxlnh` (São Paulo), 7 migraciones aplicadas (0001–0007).
+- Supabase: proyecto `fpzbzjfmemxkgiapxlnh` (São Paulo), 8 migraciones aplicadas (0001–0008).
 - IA: análisis con Claude `claude-opus-5-5` (esfuerzo `medium`, ~155 s, ~$0,37), modelo rápido `claude-sonnet-5-5` (copiloto y lectura de material), respaldo OpenAI `gpt-4.1`, audio `gpt-4o-transcribe`. Ajustes verifica que cada modelo exista antes de guardarlo y `gpt-4o-transcribe` (audio).
 - CRM: `https://crm.321archlab.com/api/webhook` con `CREATOR_WEBHOOK_SECRET` (en crm-321) = `CRM_WEBHOOK_SECRET` (en CREATOR).
 - Admin: `brncjn@gmail.com`. Logo en `public/brand/logo.png`.

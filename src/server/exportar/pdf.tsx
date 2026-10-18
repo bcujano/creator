@@ -161,6 +161,11 @@ function Portada({ doc, e, logo }: { doc: Documento; e: E; logo: Logo }) {
           <Text style={e.portadaCliente}>
             {t.preparado_para}: {doc.cliente.nombre}
           </Text>
+          {doc.enfoques.length ? (
+            <Text style={e.portadaMeta}>
+              {t.enfoque}: {doc.enfoques.join(' · ')}
+            </Text>
+          ) : null}
           {doc.cliente.contacto_nombre ? (
             <Text style={e.portadaMeta}>{doc.cliente.contacto_nombre}</Text>
           ) : null}

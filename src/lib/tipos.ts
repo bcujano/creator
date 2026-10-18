@@ -145,6 +145,8 @@ export type Levantamiento = {
   respuestas: Record<string, string>
   /** Lo que el cliente respondió desde su celular (mismas claves de pregunta). */
   respuestas_cliente: Record<string, string>
+  /** Áreas en las que se enfoca el sistema (ver lib/enfoques.ts). Vacío = por definir. */
+  enfoques: string[]
   cliente_respondio_en: string | null
   cliente_termino: boolean
   token_cliente: string

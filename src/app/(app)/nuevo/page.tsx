@@ -2,7 +2,9 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { SelectorEnfoque } from '@/components/comun/selector-enfoque'
 import { Aviso, api, Boton, Campo, Etiqueta, Selector } from '@/components/ui/primitivos'
+import type { IdEnfoque } from '@/lib/enfoques'
 
 const CAMPOS: { clave: string; etiqueta: string; tipo?: string; placeholder?: string }[] = [
   {
@@ -24,6 +26,7 @@ export default function Nuevo() {
   const router = useRouter()
   const [cliente, setCliente] = useState<Record<string, string>>({ nombre: '' })
   const [idioma, setIdioma] = useState<'es' | 'en'>('es')
+  const [enfoques, setEnfoques] = useState<IdEnfoque[]>([])
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
 
@@ -34,7 +37,7 @@ export default function Nuevo() {
     try {
       const { id } = await api<{ id: string }>('/api/levantamientos', {
         method: 'POST',
-        json: { cliente, idioma },
+        json: { cliente, idioma, enfoques },
       })
       router.push(`/l/${id}`)
     } catch (err) {
@@ -87,6 +90,15 @@ export default function Nuevo() {
             </Selector>
           </div>
         </div>
+      </div>
+      <div className="rounded-2xl border border-borde bg-superficie p-6">
+        <p className="font-titulo text-lg font-semibold">¿En qué se enfoca el sistema?</p>
+        <p className="mb-4 mt-1 text-sm text-tenue">
+          Elige hasta 3 áreas; la primera es la principal. De aquí salen las preguntas, el
+          diagnóstico y los paquetes. Si aún no lo sabes, déjalo vacío: el cliente lo marcará en su
+          formulario y lo puedes cambiar durante la reunión.
+        </p>
+        <SelectorEnfoque valor={enfoques} onChange={setEnfoques} />
       </div>
       {error ? <Aviso>{error}</Aviso> : null}
       <div className="flex justify-end">
