@@ -72,6 +72,14 @@ export function Simulador({
   const margenSetup = resultados.reduce((s, r) => s + r.calc.margen.setup * r.f.clientes, 0)
   const clientes = filas.reduce((s, f) => s + f.clientes, 0)
 
+  // Punto de equilibrio: lo que deja cada cliente al mes frente a los costos fijos de la empresa.
+  const fijos = precios.costos_fijos_mes
+  const margenMes = totales[0]?.margen ?? 0
+  const porCliente = clientes > 0 ? margenMes / clientes : 0
+  const clientesEquilibrio = porCliente > 0 ? Math.ceil(fijos / porCliente) : null
+  const gananciaMes = redondear(margenMes - fijos)
+  const gananciaAnio = redondear(margenSetup + gananciaMes * 12)
+
   const NOMBRES = {
     modulos: 'Módulos + volumen (híbrido)',
     usuario: 'Solo por usuario',
@@ -120,6 +128,49 @@ export function Simulador({
             )}
           </div>
         ))}
+      </div>
+
+      <div
+        className={cx(
+          'rounded-2xl border p-5',
+          gananciaMes >= 0 ? 'border-ok/50 bg-ok/5' : 'border-aviso/50 bg-aviso/5',
+        )}
+      >
+        <p className="text-sm font-semibold">Punto de equilibrio (modelo híbrido)</p>
+        <div className="mt-3 grid gap-4 sm:grid-cols-4">
+          <div>
+            <p className="font-titulo text-2xl font-bold tabular-nums">{formatoUSD(fijos)}</p>
+            <p className="text-xs text-tenue">Costos fijos al mes (Ajustes)</p>
+          </div>
+          <div>
+            <p className="font-titulo text-2xl font-bold tabular-nums">
+              {clientesEquilibrio ?? '—'}
+            </p>
+            <p className="text-xs text-tenue">
+              Clientes recurrentes para cubrirlos
+              {porCliente > 0 ? ` (${formatoUSD(redondear(porCliente))} de margen c/u)` : ''}
+            </p>
+          </div>
+          <div>
+            <p
+              className={cx(
+                'font-titulo text-2xl font-bold tabular-nums',
+                gananciaMes >= 0 ? 'text-ok' : 'text-peligro',
+              )}
+            >
+              {formatoUSD(gananciaMes)}
+            </p>
+            <p className="text-xs text-tenue">
+              {gananciaMes >= 0 ? 'Ganancia pura al mes' : 'Faltan al mes para el equilibrio'}
+            </p>
+          </div>
+          <div>
+            <p className="font-titulo text-2xl font-bold tabular-nums">
+              {formatoUSD(gananciaAnio)}
+            </p>
+            <p className="text-xs text-tenue">Ganancia del primer año (con implementaciones)</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">

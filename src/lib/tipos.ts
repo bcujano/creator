@@ -58,6 +58,8 @@ export type ParametrosPrecio = {
   modelo_por_usuario: number
   /** Cuota base si se cobrara solo por volumen (simulador). */
   modelo_volumen_base: number
+  /** Costos fijos operativos de la empresa al mes (para el punto de equilibrio). */
+  costos_fijos_mes: number
   /** Meses del valor mensual demostrado que se cobran por un módulo a medida (se paga solo en ese plazo). */
   a_medida_meses_valor: number
   /** Costo propio de una semana de trabajo del equipo en un desarrollo a medida. */

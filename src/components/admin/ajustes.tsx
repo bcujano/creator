@@ -253,6 +253,13 @@ export function EditorAjustes({ inicial, estado }: { inicial: Ajustes; estado: E
           <Campo type="number" {...campo('precios', 'modelo_volumen_base', 'numero')} />
         </div>
         <div>
+          <Etiqueta>Costos fijos operativos al mes</Etiqueta>
+          <Campo type="number" {...campo('precios', 'costos_fijos_mes', 'numero')} />
+          <p className="mt-1 text-xs text-tenue">
+            Para el punto de equilibrio en Rentabilidad. Lo que pasa de aquí es ganancia.
+          </p>
+        </div>
+        <div>
           <Etiqueta>A medida: meses de valor que se cobran</Etiqueta>
           <Campo type="number" {...campo('precios', 'a_medida_meses_valor', 'numero')} />
           <p className="mt-1 text-xs text-tenue">

@@ -33,5 +33,6 @@
 ## 18 de octubre de 2026
 
 1. **Precio por valor de los módulos a medida** (elimina el tope de $900 y la tabla por complejidad): valor × 6 meses, referencia por facturación, piso de rentabilidad, justificación en el editor y retorno visible para el cliente. Recuperación en meses del paquete recomendado destacada. 9 pruebas nuevas. Validado con un análisis real (distribuidora de prueba: rutas $2.520).
+2. **Punto de equilibrio** en Rentabilidad: costos fijos $900/mes (parámetro nuevo), clientes para cubrirlos y ganancia pura.
 
 Pendientes: ver `docs/ESTADO.md`.
