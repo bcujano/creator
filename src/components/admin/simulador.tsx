@@ -73,7 +73,7 @@ export function Simulador({
   const clientes = filas.reduce((s, f) => s + f.clientes, 0)
 
   // Punto de equilibrio: lo que deja cada cliente al mes frente a los costos fijos de la empresa.
-  const fijos = precios.costos_fijos_mes
+  const fijos = precios.costos_fijos_mes + precios.costos_digitales_mes
   const margenMes = totales[0]?.margen ?? 0
   const porCliente = clientes > 0 ? margenMes / clientes : 0
   const clientesEquilibrio = porCliente > 0 ? Math.ceil(fijos / porCliente) : null
@@ -140,7 +140,7 @@ export function Simulador({
         <div className="mt-3 grid gap-4 sm:grid-cols-4">
           <div>
             <p className="font-titulo text-2xl font-bold tabular-nums">{formatoUSD(fijos)}</p>
-            <p className="text-xs text-tenue">Costos fijos al mes (Ajustes)</p>
+            <p className="text-xs text-tenue">Costos fijos + digitales al mes (Ajustes)</p>
           </div>
           <div>
             <p className="font-titulo text-2xl font-bold tabular-nums">

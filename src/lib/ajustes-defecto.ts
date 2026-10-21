@@ -25,6 +25,7 @@ export const AJUSTES_DEFECTO: Ajustes = {
     modelo_por_usuario: 45,
     modelo_volumen_base: 120,
     costos_fijos_mes: 900,
+    costos_digitales_mes: 200,
     a_medida_meses_valor: 6,
     a_medida_costo_semana: 165,
     a_medida_piso_veces: 2,

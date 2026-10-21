@@ -260,6 +260,13 @@ export function EditorAjustes({ inicial, estado }: { inicial: Ajustes; estado: E
           </p>
         </div>
         <div>
+          <Etiqueta>Costos digitales al mes</Etiqueta>
+          <Campo type="number" {...campo('precios', 'costos_digitales_mes', 'numero')} />
+          <p className="mt-1 text-xs text-tenue">
+            Herramientas y servidores; se suman a los fijos.
+          </p>
+        </div>
+        <div>
           <Etiqueta>A medida: meses de valor que se cobran</Etiqueta>
           <Campo type="number" {...campo('precios', 'a_medida_meses_valor', 'numero')} />
           <p className="mt-1 text-xs text-tenue">

@@ -34,6 +34,7 @@ const Ajustes = z.object({
       modelo_por_usuario: z.number().min(0),
       modelo_volumen_base: z.number().min(0),
       costos_fijos_mes: z.number().min(0),
+      costos_digitales_mes: z.number().min(0),
       a_medida_meses_valor: z.number().min(0).max(60),
       a_medida_costo_semana: z.number().min(0),
       a_medida_piso_veces: z.number().min(1).max(20),

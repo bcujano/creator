@@ -36,7 +36,7 @@ Verificación: `pnpm check` → **63 pruebas** en verde (precios, cifras, pagos,
 
 ## Pendientes (en orden)
 
-1. **Calibrar el precio por valor con los primeros cierres.** Ya implementado (ver DECISIONES 22). Parámetros en Ajustes → Precios: meses de valor (6), costo semanal ($165), piso (2× costo) y referencia sin valor demostrado (1,5 % de la facturación mensual). Revisar si 6 meses y 1,5 % se sostienen en la negociación real. Rentabilidad ya muestra el punto de equilibrio con costos fijos de $900/mes (Ajustes → Precios): clientes necesarios, ganancia pura al mes y ganancia del primer año.
+1. **Calibrar el precio por valor con los primeros cierres.** Ya implementado (ver DECISIONES 22). Parámetros en Ajustes → Precios: meses de valor (6), costo semanal ($165), piso (2× costo) y referencia sin valor demostrado (1,5 % de la facturación mensual). Revisar si 6 meses y 1,5 % se sostienen en la negociación real. Rentabilidad ya muestra el punto de equilibrio con costos fijos $900 + digitales $200 al mes = $1.100 (Ajustes → Precios): clientes necesarios, ganancia pura al mes y ganancia del primer año.
 2. **Probar el primer "Enviar al CRM" real** y confirmar que el lead y la actividad aparecen bien en crm-321 (ver `docs/OPERACION.md` → CRM).
 3. **Revisión legal del acuerdo** por el abogado de Byron antes del primer cliente real (`server/acuerdo/contenido.ts`). Aplicar sus cambios ahí; valen para todos.
 4. **Costos mensuales del catálogo** son estimados (sobre todo voz Retell/Twilio y WhatsApp). Ajustar con facturas reales en Catálogo.
