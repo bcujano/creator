@@ -73,3 +73,12 @@ Cómo se calcula (`lib/valor.ts`, nada lo inventa la IA):
 2. **Sin valor demostrado**: referencia = 1,5 % de la facturación mensual del cliente (nueva cifra `facturacion_mensual` = clientes × ticket, con las mismas reglas de fuentes). Se marca "sin valor demostrado" y el editor dice qué preguntar para poder subir el precio.
 3. **Piso de rentabilidad**: nunca menos de 2× el costo directo (semanas × $165). Solo lo ve el consultor.
 El cliente ve el retorno (no el piso). Costos informados por Byron (18/10/2026): desarrollo de un proyecto ~$1.000 (semana de equipo $130–200), digital $200/mes, costos fijos operativos $900/mes; sobre eso todo es ganancia salvo casos específicos. Parámetros editables en Ajustes → Precios. Primer caso real: la distribuidora de prueba pasó de $900 a $2.520 (referencia sobre $168.000/mes de facturación). Medición previa con 5 clientes: solo 14 de 39 dolores tenían cifra, así que la calidad del precio depende de cuantificar en la reunión.
+
+### 23. Los cambios se registran y se propagan; lo firmado no se mueve
+26/10/2026, Byron: "que los cambios realizados en CREATOR se registren, apliquen y actualicen en todo lugar donde corresponda".
+- **Registro:** toda mutación ya queda en `eventos` (ajustes con antes/después, catálogo con historial de precios, cierre, estado, acuerdo, enfoque…).
+- **CRM:** crm-321 solo recibía el alta. Ahora `avisarCrm` deja en la línea de tiempo del lead (con los montos vigentes) cada nueva versión, cierre, cambio de estado y acuerdo generado. CREATOR solo tiene permiso para `new_lead` y `log_activity` en crm-321, así que el CRM ve actividades, no puede recibir cambios de campos; si se quiere actualizar la ficha del lead, hay que ampliar la clave en crm-321. Solo actúa si el cliente ya tiene lead (botón "Enviar al CRM") y la integración está activa; nunca demora ni rompe la operación.
+- **Aplicar:** Ajustes, marca y catálogo se leen en vivo en pantallas y archivos. Las propuestas son versiones inmutables: un cambio de precios afecta a las propuestas nuevas, no a las ya hechas.
+- **Lo firmado no se mueve:** una propuesta **aceptada** se renderiza con sus cifras congeladas (`totales`), no recalculadas con el catálogo de hoy. Antes un cambio de precio en el catálogo habría alterado el acuerdo de un cliente que ya firmó.
+- **Corregido:** al guardar una versión desde el editor se perdía la justificación del precio de los módulos a medida (el esquema de la ruta descartaba el campo `valor`).
+

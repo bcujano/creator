@@ -1,11 +1,15 @@
 import 'server-only'
 import { env } from '@/lib/env'
+import { cierreEfectivo, montosPagos } from '@/lib/pagos'
 import { formatoUSD } from '@/lib/precios'
 import type { Ajustes, Cliente } from '@/lib/tipos'
 import {
   actualizarCliente,
   actualizarPropuesta,
   type FilaPropuesta,
+  leerAjustes,
+  leerLevantamiento,
+  leerPropuesta,
   registrarEnvioCrm,
 } from './datos'
 
@@ -41,6 +45,63 @@ async function llamar(propuestaId: string | null, accion: string, data: Record<s
 
 export function crmConfigurado() {
   return Boolean(env.crmUrl && env.crmSecret)
+}
+
+/**
+ * Mantiene al CRM al día después del alta: cada cambio importante de una propuesta
+ * (nueva versión, cierre, aceptada o rechazada, acuerdo) queda en la línea de tiempo
+ * del lead con los montos vigentes. El CRM no recibe cambios por otra vía (CREATOR
+ * solo tiene permiso para dar de alta leads y registrar actividades).
+ *
+ * Solo actúa si el cliente ya tiene lead (se crea con "Enviar al CRM") y la
+ * integración está activa. Nunca falla ni demora la operación que lo origina.
+ */
+export async function avisarCrm(
+  propuestaId: string,
+  titulo: string,
+  extra: Record<string, unknown> = {},
+) {
+  try {
+    if (!crmConfigurado()) return
+    const propuesta = await leerPropuesta(propuestaId)
+    if (!propuesta) return
+    const [ajustes, levantamiento] = await Promise.all([
+      leerAjustes(),
+      leerLevantamiento(propuesta.levantamiento_id),
+    ])
+    const leadId = levantamiento?.clientes.crm_lead_id
+    if (!ajustes.crm.activo || !leadId) return
+
+    const cierre = cierreEfectivo(propuesta.cierre, propuesta.datos, ajustes.precios.anticipo_pct)
+    const totales = propuesta.totales as Record<
+      string,
+      { setup?: { total: number }; mensual?: { total: number } }
+    >
+    const setup = totales[cierre.paquete]?.setup?.total ?? 0
+    const mensual = totales[cierre.paquete]?.mensual?.total ?? 0
+    const pagos = propuesta.cierre ? montosPagos(cierre.pagos, setup) : null
+    await llamar(propuesta.id, 'log_activity', {
+      lead_id: leadId,
+      type: 'cotizacion',
+      description: `${titulo} · propuesta ${propuesta.numero} v${propuesta.version} (${cierre.paquete}): setup ${formatoUSD(setup)} + ${formatoUSD(mensual)}/mes, IVA incluido`,
+      metadata: {
+        origen: 'creator',
+        evento: titulo,
+        propuesta_id: propuesta.id,
+        numero: propuesta.numero,
+        version: propuesta.version,
+        estado: propuesta.estado,
+        paquete: cierre.paquete,
+        setup_total: setup,
+        mensual_total: mensual,
+        pagos: pagos?.map((p) => ({ concepto: p.concepto, monto: p.monto })) ?? null,
+        url: `${env.appUrl}/p/${propuesta.token_publico}`,
+        ...extra,
+      },
+    })
+  } catch (error) {
+    console.error('[crm:avisar]', error instanceof Error ? error.message : error)
+  }
 }
 
 export async function enviarAlCrm(

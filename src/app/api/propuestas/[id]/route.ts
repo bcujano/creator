@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { MAX_DESEMBOLSOS, validarPagos } from '@/lib/pagos'
+import { avisarCrm } from '@/server/crm'
 import {
   actualizarLevantamiento,
   actualizarPropuesta,
@@ -26,6 +27,14 @@ const Cambio = z.object({
   estado: z.enum(['borrador', 'presentada', 'enviada', 'aceptada', 'rechazada']).optional(),
   cierre: Cierre.optional(),
 })
+
+const TEXTO_ESTADO: Record<string, string> = {
+  borrador: 'en borrador',
+  presentada: 'presentada al cliente',
+  enviada: 'enviada al cliente',
+  aceptada: 'ACEPTADA',
+  rechazada: 'rechazada',
+}
 
 // Estado del levantamiento que corresponde a cada estado de la propuesta.
 const ESTADO_LEVANTAMIENTO = {
@@ -57,6 +66,7 @@ export const PATCH = privada(async (req: Request, { params }: Ctx<{ id: string }
       antes: propuesta.cierre,
       despues: cierre,
     })
+    after(() => avisarCrm(id, 'Condiciones de cierre acordadas'))
   }
   if (!estado) return NextResponse.json({ ok: true })
 
@@ -68,5 +78,6 @@ export const PATCH = privada(async (req: Request, { params }: Ctx<{ id: string }
     de: propuesta.estado,
     a: estado,
   })
+  after(() => avisarCrm(id, `Propuesta ${TEXTO_ESTADO[estado] ?? estado}`))
   return NextResponse.json({ ok: true })
 })

@@ -28,7 +28,7 @@ CREATOR está **en producción y en uso** en https://creator.emprendimientum.com
 | **Arranque del proyecto (.md)**: con el cierre guardado, un brief para darle a Claude (alcance contratado y lo que quedó fuera, condiciones con IVA y pagos, diagnóstico, arquitectura, plan, riesgos, preguntas abiertas, entrevista textual y material) | ✅ | `server/proyecto.ts`, `api/propuestas/[id]/proyecto` |
 | Cierre: paquete que eligió el cliente + 1 a 12 desembolsos que suman 100% (cuotas iguales al centavo) | ✅ | `levantamiento/cierre.tsx`, `lib/pagos.ts` |
 | Acuerdo para firmar (PDF/Word), 321 S.A.S. (AiUDA) ↔ cliente, montos en letras | ✅ | `server/acuerdo/` |
-| Integración CRM (crm-321) con clave propia de permisos mínimos | ✅ configurada, ⚠️ sin probar el alta real | `server/crm.ts` |
+| Integración CRM (crm-321) con clave propia de permisos mínimos. **Después del alta, cada cambio de la propuesta queda en la línea de tiempo del lead**: nueva versión, cierre acordado (paquete, montos con IVA, pagos), aceptada/rechazada/enviada y acuerdo generado | ✅ configurada, ⚠️ sin probar en vivo | `server/crm.ts` (`avisarCrm`) |
 | Catálogo editable (21 productos) con historial de precios; Ajustes (marca, precios, legal, IA, CRM); Rentabilidad | ✅ | `app/(app)/admin/*` |
 | Historial/bitácora, respaldo JSON por cliente, versiones inmutables | ✅ | tabla `eventos` |
 

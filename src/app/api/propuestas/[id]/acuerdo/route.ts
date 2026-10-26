@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 import { construirAcuerdo } from '@/server/acuerdo/contenido'
+import { avisarCrm } from '@/server/crm'
 import { leerAjustes, registrarEvento } from '@/server/datos'
 import { documentoPorId } from '@/server/documento'
 import { type Ctx, Invalido, NoEncontrado, privada } from '@/server/http'
@@ -28,6 +29,7 @@ export const GET = privada(async (req: Request, { params }: Ctx<{ id: string }>)
     faltantes: acuerdo.faltantes,
   })
 
+  after(() => avisarCrm(id, `Acuerdo para firmar generado (${formato})`))
   const cliente = (doc.cliente.razon_social || doc.cliente.nombre).replace(/[^a-zA-Z0-9]+/g, '-')
   return new NextResponse(new Uint8Array(cuerpo), {
     headers: {

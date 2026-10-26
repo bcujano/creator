@@ -98,7 +98,14 @@ async function armar(propuesta: FilaPropuesta, idiomaForzado?: Idioma): Promise<
     .filter((p) => p.lineas.length > 0)
     .map((definicion) => ({
       definicion,
-      calculo: calcularPaquete(definicion, catalogo, ajustes.precios, idioma),
+      // Una propuesta aceptada es un compromiso: sus cifras quedan como se firmaron, aunque después
+      // cambien el catálogo o los precios. (En otro idioma se recalcula solo para traducir nombres.)
+      calculo:
+        propuesta.estado === 'aceptada' &&
+        idioma === propuesta.idioma &&
+        propuesta.totales?.[definicion.nivel]
+          ? (propuesta.totales[definicion.nivel] as PaqueteCalculado)
+          : calcularPaquete(definicion, catalogo, ajustes.precios, idioma),
       items: definicion.lineas.flatMap((l) => {
         const item = resolverItem(l, catalogo, ajustes.precios)
         if (!item) return []
