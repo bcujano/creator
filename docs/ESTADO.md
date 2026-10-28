@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-_Última actualización: 23 de septiembre de 2026._
+_Última actualización: 28 de octubre de 2026._
 
 ## En una línea
 
@@ -31,6 +31,7 @@ CREATOR está **en producción y en uso** en https://creator.emprendimientum.com
 | Integración CRM (crm-321) con clave propia de permisos mínimos. **Después del alta, cada cambio de la propuesta queda en la línea de tiempo del lead**: nueva versión, cierre acordado (paquete, montos con IVA, pagos), aceptada/rechazada/enviada y acuerdo generado | ✅ configurada, ⚠️ sin probar en vivo | `server/crm.ts` (`avisarCrm`) |
 | Catálogo editable (21 productos) con historial de precios; Ajustes (marca, precios, legal, IA, CRM); Rentabilidad | ✅ | `app/(app)/admin/*` |
 | Historial/bitácora, respaldo JSON por cliente, versiones inmutables | ✅ | tabla `eventos` |
+| **Autodiagnóstico desde la página personal** (crm-321): formulario del cliente sin reunión, análisis automático al terminar, aviso al CRM con paquetes y perfil; botón «Siguiente paso» en la propuesta | ✅ | `server/autoservicio.ts`, `api/publico/autoservicio` |
 
 Verificación: `pnpm check` → **63 pruebas** en verde (precios, cifras, pagos, a medida, acuerdo, exportaciones, no-fuga de datos internos). CI en GitHub Actions.
 
