@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { analizarAutoservicio } from '@/server/autoservicio'
 import {
   actualizarCliente,
   actualizarLevantamiento,
@@ -7,6 +8,9 @@ import {
   registrarEvento,
 } from '@/server/datos'
 import { type Ctx, NoEncontrado, publica } from '@/server/http'
+
+// Un autodiagnóstico corre su análisis al terminar el formulario (varios minutos, en segundo plano).
+export const maxDuration = 300
 
 const texto = (max: number) => z.string().trim().max(max)
 
@@ -56,5 +60,7 @@ export const PUT = publica(async (req: Request, { params }: Ctx<{ token: string 
     respuestas: limpias,
     datos: cambios,
   })
+  // Autodiagnóstico (pedido desde la página personal): el análisis arranca solo, una vez.
+  if (terminado) after(() => analizarAutoservicio(l.id))
   return NextResponse.json({ ok: true })
 })

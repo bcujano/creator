@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { EstiloMarca } from '@/components/comun/marca-estilo'
 import { PropuestaCliente } from '@/components/presentacion/presentacion'
+import { autoservicioDe } from '@/server/autoservicio'
 import { registrarEvento } from '@/server/datos'
 import { documentoPorToken } from '@/server/documento'
 import { documentoPublico } from '@/server/publico'
@@ -39,12 +40,17 @@ export default async function PropuestaPublica({
   await registrarEvento('propuesta', doc.propuesta.id, 'vista_cliente', {
     levantamiento_id: doc.propuesta.levantamiento_id,
   })
+  // Autodiagnóstico: el siguiente paso (pagar la sesión o el paquete) está en la página personal.
+  const auto = await autoservicioDe(doc.propuesta.levantamiento_id)
+  const siguiente = auto
+    ? `${auto.retorno}${auto.retorno.includes('?') ? '&' : '?'}diagnostico=${encodeURIComponent(auto.ref)}`
+    : null
 
   return (
     <>
       <EstiloMarca marca={doc.marca} />
       <Suspense>
-        <PropuestaCliente doc={documentoPublico(doc)} />
+        <PropuestaCliente doc={documentoPublico(doc)} siguiente={siguiente} />
       </Suspense>
     </>
   )

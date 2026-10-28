@@ -559,7 +559,14 @@ export function Presentacion({ doc, volver }: { doc: DocumentoPublico; volver: s
 }
 
 /** Modo documento: para el celular del cliente, todo en scroll. */
-export function PropuestaCliente({ doc }: { doc: DocumentoPublico }) {
+export function PropuestaCliente({
+  doc,
+  siguiente,
+}: {
+  doc: DocumentoPublico
+  /** Autodiagnóstico: enlace a la página personal para pagar la sesión con Byron o el paquete. */
+  siguiente?: string | null
+}) {
   const diapositivas = construir(doc)
   const router = useRouter()
   const base = `/api/publico/p/${doc.propuesta.token_publico}/exportar`
@@ -579,6 +586,16 @@ export function PropuestaCliente({ doc }: { doc: DocumentoPublico }) {
           </button>
         </div>
       </div>
+      {siguiente ? (
+        <a
+          href={siguiente}
+          className="no-imprimir fixed inset-x-4 bottom-4 z-30 mx-auto flex min-h-14 max-w-md items-center justify-center rounded-2xl bg-marca px-5 text-center text-base font-semibold text-white shadow-lg"
+        >
+          {doc.idioma === 'es'
+            ? 'Siguiente paso: contratar o revisarlo con Byron'
+            : 'Next step: hire it or review it with Byron'}
+        </a>
+      ) : null}
       {diapositivas.map((d) => (
         <section
           key={d.id}
