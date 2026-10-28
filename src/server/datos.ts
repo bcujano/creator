@@ -36,6 +36,21 @@ export async function registrarEvento(
   if (error) console.error('[eventos]', error.message)
 }
 
+/** Los datos del primer evento de una entidad con esa acción (por ejemplo, la marca de autoservicio). */
+export async function leerEvento(entidad: string, entidadId: string, accion: string) {
+  const { data, error } = await db()
+    .from('eventos')
+    .select('datos')
+    .eq('entidad', entidad)
+    .eq('entidad_id', entidadId)
+    .eq('accion', accion)
+    .order('id', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+  if (error) falla('leerEvento', error)
+  return (data?.datos as Record<string, unknown> | undefined) ?? null
+}
+
 // ------------------------------- Ajustes -----------------------------------
 
 export async function leerAjustes(): Promise<Ajustes> {

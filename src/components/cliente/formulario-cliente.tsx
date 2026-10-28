@@ -9,6 +9,7 @@ import { api, cx } from '@/components/ui/primitivos'
 import { enfoquesDe } from '@/lib/enfoques'
 import { seccionesCliente } from '@/lib/preguntas'
 import type { Idioma } from '@/lib/tipos'
+import { EsperaDiagnostico } from './espera-diagnostico'
 
 type Datos = Record<
   | 'contacto_nombre'
@@ -113,6 +114,7 @@ export function FormularioCliente({
   datosIniciales,
   terminado: terminadoInicial,
   enfoques: enfoquesElegidos,
+  autoservicio = false,
 }: {
   token: string
   empresa: string
@@ -122,9 +124,12 @@ export function FormularioCliente({
   datosIniciales: Datos
   terminado: boolean
   enfoques: string[]
+  /** Autodiagnóstico desde la página personal: al terminar se espera el análisis y se ve la propuesta. */
+  autoservicio?: boolean
 }) {
   const [idioma, setIdioma] = useState<Idioma>(idiomaInicial)
-  const [paso, setPaso] = useState(-1) // -1 = bienvenida
+  // -1 = bienvenida, -2 = enviado. Un autodiagnóstico ya enviado vuelve directo a la espera de su propuesta.
+  const [paso, setPaso] = useState(autoservicio && terminadoInicial ? -2 : -1)
   const [respuestas, setRespuestas] = useState(respuestasIniciales)
   // Si el consultor no eligió el enfoque, lo que marque el cliente agrega las preguntas de esa área.
   const secciones = seccionesCliente(
@@ -285,7 +290,9 @@ export function FormularioCliente({
         </section>
       ) : null}
 
-      {paso === -2 ? (
+      {paso === -2 && autoservicio ? <EsperaDiagnostico token={token} idioma={idioma} /> : null}
+
+      {paso === -2 && !autoservicio ? (
         <section className="aparecer flex flex-1 flex-col justify-center py-10 text-center">
           <CheckCircle2 className="mx-auto size-14 text-ok" />
           <h1 className="mt-4 font-titulo text-3xl font-bold">{t.gracias_titulo}</h1>

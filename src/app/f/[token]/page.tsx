@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { FormularioCliente } from '@/components/cliente/formulario-cliente'
 import { EstiloMarca } from '@/components/comun/marca-estilo'
+import { autoservicioDe } from '@/server/autoservicio'
 import { leerAjustes, leerLevantamientoPorToken } from '@/server/datos'
 
 export const dynamic = 'force-dynamic'
@@ -12,7 +13,10 @@ export default async function Formulario({ params }: { params: Promise<{ token: 
   const { token } = await params
   const levantamiento = await leerLevantamientoPorToken(token)
   if (!levantamiento?.formulario_activo) notFound()
-  const ajustes = await leerAjustes()
+  const [ajustes, autoservicio] = await Promise.all([
+    leerAjustes(),
+    autoservicioDe(levantamiento.id),
+  ])
   const c = levantamiento.clientes
 
   return (
@@ -26,6 +30,7 @@ export default async function Formulario({ params }: { params: Promise<{ token: 
         respuestasIniciales={levantamiento.respuestas_cliente ?? {}}
         terminado={levantamiento.cliente_termino}
         enfoques={levantamiento.enfoques ?? []}
+        autoservicio={autoservicio !== null}
         datosIniciales={{
           contacto_nombre: c.contacto_nombre,
           contacto_cargo: c.contacto_cargo,

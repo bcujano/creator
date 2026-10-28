@@ -40,3 +40,19 @@
 1. **Propagación de cambios**: el CRM recibe cada novedad de la propuesta (nueva versión, cierre, estado, acuerdo); las propuestas aceptadas quedan congeladas ante cambios del catálogo; se corrigió la pérdida de la justificación de precio al guardar versiones.
 
 Pendientes: ver `docs/ESTADO.md`.
+
+## 28 de octubre de 2026 — autodiagnóstico desde la página personal
+
+Byron: «el diagnóstico es gratis y debería ser automático en línea usando creator, se genera su diagnóstico real, se entrega todo lo
+que entrega creator; ahí paga lo que lanza el creator o agenda una cita conmigo para conversar al respecto, pero le cuesta».
+
+- **`POST /api/publico/autoservicio`** (clave compartida con crm-321, `x-webhook-secret` = `CRM_WEBHOOK_SECRET`): crm-321 crea el
+  cliente y el levantamiento «Autodiagnóstico …» y recibe el enlace del formulario. La marca de autoservicio (referencia de la compra
+  en el CRM y a dónde volver) va en `eventos` (acción `autoservicio`), sin cambiar el esquema (`server/autoservicio.ts`).
+- Al **terminar el formulario** (`PUT /api/publico/f/[token]` con `terminado`), el análisis corre solo en segundo plano (`after`,
+  una sola vez) y la pantalla final espera la propuesta (`/api/publico/f/[token]/estado`, `components/cliente/espera-diagnostico.tsx`).
+- Con la propuesta lista se avisa a crm-321 (`POST /api/webhook/creator`, `diagnostico_listo`): enlace, paquetes con implementación y
+  mensualidad con IVA (los del motor de precios), anticipo de Ajustes y el perfil (equipo e inversión) para el precio de la sesión.
+  Cada aviso queda en `eventos` (`autoservicio_aviso_crm`).
+- En `/p/[token]` de un autodiagnóstico, botón fijo «Siguiente paso» que vuelve a la página personal (`?diagnostico=…`), donde se
+  paga el anticipo del paquete o la sesión con Byron.
