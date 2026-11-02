@@ -7,7 +7,7 @@ import { type FilaPrecioCrm, mapaPreciosCrm, type PrecioCrm } from '@/lib/precio
 const VIGENCIA_MS = 5 * 60 * 1000
 let cache: { mapa: Map<string, PrecioCrm>; hasta: number } | null = null
 
-/** Origen del CRM: CRM_URL o, si no está, el de CRM_WEBHOOK_URL (https://crm.321archlab.com/api/webhook). */
+/** Origen del CRM: CRM_URL o, si no está, el de CRM_WEBHOOK_URL. */
 export function origenCrm(): string {
   const directo = process.env.CRM_URL
   if (directo) return directo.replace(/\/$/, '')

@@ -6,7 +6,7 @@ import type { ItemCatalogo } from '../src/lib/tipos'
 const filas = [
   { codigo: 'IAGENTE_WA', marca: 'AiUDA', modalidad: 'fijo', valor: 2500, mensual: 190 },
   { codigo: 'SOPORTE', marca: 'AiUDA', modalidad: 'mensual', valor: 80, mensual: null },
-  { codigo: 'CARGO_M30_SUITE', marca: '321', modalidad: 'fijo', valor: 22450.84, mensual: null },
+  { codigo: 'CURSO_X', marca: 'Academy', modalidad: 'fijo', valor: 49, mensual: null },
 ]
 const item = {
   codigo: 'IAGENTE_WA',
@@ -20,7 +20,7 @@ describe('precios desde el CRM', () => {
     const m = mapaPreciosCrm(filas)
     expect(m.get('IAGENTE_WA')).toEqual({ setup: 2500, mensual: 190 })
     expect(m.get('SOPORTE')).toEqual({ setup: 0, mensual: 80 })
-    expect(m.has('CARGO_M30_SUITE')).toBe(false)
+    expect(m.has('CURSO_X')).toBe(false)
   })
   it('el precio del CRM manda; los costos siguen siendo de Creator', () => {
     const r = conPrecioCrm(item, mapaPreciosCrm(filas))

@@ -1,4 +1,4 @@
-// Precios de AiUDA: la única fuente es el Catálogo de AiUDA del CRM (crm-321, tabla catalogo_aiuda), que lee la página personal,
+// Precios de AiUDA: la única fuente es el Catálogo de AiUDA del CRM (tabla catalogo_aiuda), que lee la página personal,
 // el sitio y la Lista de precios. Creator no edita precios: los lee de ahí en vivo (Byron, 2026-11-02: «un precio se edita en un
 // solo lugar»). Su tabla `catalogo` sigue guardando lo propio de Creator (costos, módulos, volumen) y queda de respaldo si el CRM no
 // responde. Puro e isomórfico: la lectura HTTP vive en server/precios-crm.ts.
