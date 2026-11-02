@@ -1,5 +1,6 @@
 import 'server-only'
 import { AJUSTES_DEFECTO } from '@/lib/ajustes-defecto'
+import { conPrecioCrm } from '@/lib/precios-crm'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import type {
   Ajustes,
@@ -9,6 +10,7 @@ import type {
   ItemCatalogo,
   Levantamiento,
 } from '@/lib/tipos'
+import { preciosCrm } from '@/server/precios-crm'
 
 /**
  * Acceso a datos. Todo pasa por aquí con service_role; las rutas ya
@@ -104,21 +106,29 @@ export async function leerCatalogo(
 ): Promise<ItemCatalogo[]> {
   let consulta = db().from('catalogo').select('*').is('eliminado_en', null).order('orden')
   if (opciones.soloActivos) consulta = consulta.eq('activo', true)
-  const { data, error } = await consulta
+  const [{ data, error }, precios] = await Promise.all([consulta, preciosCrm()])
   if (error) falla('leerCatalogo', error)
-  return (data ?? []).map(normalizarItem)
+  return (data ?? []).map(normalizarItem).map((i) => conPrecioCrm(i, precios))
 }
 
 export async function mapaCatalogo(): Promise<Map<string, ItemCatalogo>> {
   // Incluye inactivos: una propuesta vieja debe seguir calculándose.
-  const { data, error } = await db().from('catalogo').select('*')
+  const [{ data, error }, precios] = await Promise.all([
+    db().from('catalogo').select('*'),
+    preciosCrm(),
+  ])
   if (error) falla('mapaCatalogo', error)
-  const items = (data ?? []).map(normalizarItem)
+  const items = (data ?? []).map(normalizarItem).map((i) => conPrecioCrm(i, precios))
   return new Map(items.map((i) => [i.codigo, i]))
 }
 
 export async function guardarItemCatalogo(item: Partial<ItemCatalogo> & { codigo: string }) {
-  const { id, ...resto } = item
+  const { id, precio_del_crm: _crm, ...resto } = item
+  // El precio de un ítem que existe en el CRM se edita solo allá (Catálogo de AiUDA): aquí no se guarda.
+  if ((await preciosCrm()).has(item.codigo)) {
+    delete resto.precio_setup
+    delete resto.precio_mensual
+  }
   const consulta = id
     ? db().from('catalogo').update(resto).eq('id', id).select().single()
     : db().from('catalogo').insert(resto).select().single()

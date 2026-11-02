@@ -212,14 +212,32 @@ function Formulario({
       <p className="mb-2 mt-6 text-xs font-semibold uppercase tracking-wide text-tenue">
         Precio y costo (USD, sin IVA)
       </p>
+      {b.precio_del_crm ? (
+        <p className="mb-3 text-xs text-tenue">
+          El precio viene del Catálogo de AiUDA del CRM (Marketing → Mi página → Precios) y solo se
+          cambia allá. Aquí se editan los costos.
+        </p>
+      ) : null}
       <div className="grid gap-4 md:grid-cols-6">
         <div>
           <Etiqueta>Setup</Etiqueta>
-          <Campo type="number" min={0} value={b.precio_setup} onChange={num('precio_setup')} />
+          <Campo
+            type="number"
+            min={0}
+            value={b.precio_setup}
+            onChange={num('precio_setup')}
+            disabled={b.precio_del_crm}
+          />
         </div>
         <div>
           <Etiqueta>Mensual</Etiqueta>
-          <Campo type="number" min={0} value={b.precio_mensual} onChange={num('precio_mensual')} />
+          <Campo
+            type="number"
+            min={0}
+            value={b.precio_mensual}
+            onChange={num('precio_mensual')}
+            disabled={b.precio_del_crm}
+          />
         </div>
         <div>
           <Etiqueta>Costo setup</Etiqueta>

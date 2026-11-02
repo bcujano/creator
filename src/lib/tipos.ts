@@ -31,6 +31,8 @@ export type ItemCatalogo = {
   estado: 'listo' | 'beta' | 'proximamente'
   activo: boolean
   orden: number
+  /** true si el precio viene del Catálogo de AiUDA del CRM (no se edita en Creator). */
+  precio_del_crm?: boolean
 }
 
 export type Marca = {
