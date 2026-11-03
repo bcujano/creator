@@ -1,6 +1,6 @@
 import 'server-only'
 import { AJUSTES_DEFECTO } from '@/lib/ajustes-defecto'
-import { conPrecioCrm } from '@/lib/precios-crm'
+import { conPrecioCrm, soloDeAiuda } from '@/lib/precios-crm'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import type {
   Ajustes,
@@ -108,7 +108,8 @@ export async function leerCatalogo(
   if (opciones.soloActivos) consulta = consulta.eq('activo', true)
   const [{ data, error }, precios] = await Promise.all([consulta, preciosCrm()])
   if (error) falla('leerCatalogo', error)
-  return (data ?? []).map(normalizarItem).map((i) => conPrecioCrm(i, precios))
+  // Lo que AiUDA ya no vende (p. ej. lo inmobiliario, que no es de AiUDA) no se propone; las propuestas viejas siguen con mapaCatalogo.
+  return soloDeAiuda((data ?? []).map(normalizarItem), precios).map((i) => conPrecioCrm(i, precios))
 }
 
 export async function mapaCatalogo(): Promise<Map<string, ItemCatalogo>> {

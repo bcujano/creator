@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { conPrecioCrm, mapaPreciosCrm } from '../src/lib/precios-crm'
+import { conPrecioCrm, mapaPreciosCrm, soloDeAiuda } from '../src/lib/precios-crm'
 import type { ItemCatalogo } from '../src/lib/tipos'
 
 // Creator lee los precios de AiUDA del CRM (un precio, un lugar). Su tabla propia queda de respaldo.
@@ -33,5 +33,12 @@ describe('precios desde el CRM', () => {
   })
   it('sin el CRM, queda el precio de la tabla propia', () => {
     expect(conPrecioCrm(item, new Map())).toBe(item)
+  })
+  it('solo se ofrece lo que está en el catálogo de AiUDA; sin respuesta del CRM, todo', () => {
+    const otro = { ...item, codigo: 'INMO_MERCADO' }
+    expect(soloDeAiuda([item, otro], mapaPreciosCrm(filas)).map((i) => i.codigo)).toEqual([
+      'IAGENTE_WA',
+    ])
+    expect(soloDeAiuda([item, otro], new Map())).toHaveLength(2)
   })
 })

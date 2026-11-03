@@ -37,3 +37,11 @@ export function conPrecioCrm(item: ItemCatalogo, precios: Map<string, PrecioCrm>
     ? { ...item, precio_setup: p.setup, precio_mensual: p.mensual, precio_del_crm: true }
     : item
 }
+
+/** Solo lo que AiUDA vende hoy según su catálogo del CRM. Sin respuesta del CRM (mapa vacío) se muestra todo lo de la tabla propia. */
+export function soloDeAiuda(
+  items: ItemCatalogo[],
+  precios: Map<string, PrecioCrm>,
+): ItemCatalogo[] {
+  return precios.size ? items.filter((i) => precios.has(i.codigo)) : items
+}
