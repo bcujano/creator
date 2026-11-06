@@ -41,7 +41,7 @@
 
 ## 6 de noviembre de 2026
 
-1. **Revisión completa de crm-321** (4 frentes en paralelo) y alta de 13 herramientas nuevas al catálogo con precio por valor.
+1. **Revisión completa de crm-321** (4 frentes en paralelo) y alta de 10 herramientas nuevas de AiUDA al catálogo (más precios cargados en el CRM) con precio por valor.
 2. **Habilidades** de cada herramienta existente (17 ítems), destacadas sin costo y fuera del alcance del acuerdo; diapositiva "Lo que trae cada herramienta".
 
 Pendientes: ver `docs/ESTADO.md`.

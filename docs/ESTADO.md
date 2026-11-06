@@ -29,7 +29,7 @@ CREATOR está **en producción y en uso** en https://creator.emprendimientum.com
 | Cierre: paquete que eligió el cliente + 1 a 12 desembolsos que suman 100% (cuotas iguales al centavo) | ✅ | `levantamiento/cierre.tsx`, `lib/pagos.ts` |
 | Acuerdo para firmar (PDF/Word), 321 S.A.S. (AiUDA) ↔ cliente, montos en letras | ✅ | `server/acuerdo/` |
 | Integración CRM (crm-321) con clave propia de permisos mínimos. **Después del alta, cada cambio de la propuesta queda en la línea de tiempo del lead**: nueva versión, cierre acordado (paquete, montos con IVA, pagos), aceptada/rechazada/enviada y acuerdo generado | ✅ configurada, ⚠️ sin probar en vivo | `server/crm.ts` (`avisarCrm`) |
-| Catálogo editable (**34 productos**: se sumaron las herramientas nuevas de crm-321 y las **habilidades** de cada herramienta existente, que se destacan sin costo y no entran al alcance del acuerdo) con historial de precios; Ajustes (marca, precios, legal, IA, CRM); Rentabilidad | ✅ | `app/(app)/admin/*` |
+| Catálogo editable (**31 productos**: se sumaron las herramientas nuevas de crm-321 y las **habilidades** de cada herramienta existente, que se destacan sin costo y no entran al alcance del acuerdo) con historial de precios; Ajustes (marca, precios, legal, IA, CRM); Rentabilidad | ✅ | `app/(app)/admin/*` |
 | Historial/bitácora, respaldo JSON por cliente, versiones inmutables | ✅ | tabla `eventos` |
 | **Autodiagnóstico desde la página personal** (crm-321): formulario del cliente sin reunión, análisis automático al terminar, aviso al CRM con paquetes y perfil; botón «Siguiente paso» en la propuesta | ✅ | `server/autoservicio.ts`, `api/publico/autoservicio` |
 
@@ -50,7 +50,7 @@ Verificación: `pnpm check` → **65 pruebas** en verde (precios, cifras, pagos,
 - App: https://creator.emprendimientum.com (también `creator-three-kappa.vercel.app`)
 - Vercel: equipo `bcujanos-projects`, proyecto `creator`, conectado a GitHub → cada push a `main` despliega.
 - GitHub: `bcujano/creator` (privado). crm-321 en `bcujano/crm-321`.
-- Supabase: proyecto `fpzbzjfmemxkgiapxlnh` (São Paulo), 9 migraciones aplicadas (0001–0009).
+- Supabase: proyecto `fpzbzjfmemxkgiapxlnh` (São Paulo), 10 migraciones aplicadas (0001–0010).
 - IA: análisis con Claude `claude-opus-5-5` (esfuerzo `medium`, ~155 s, ~$0,37), modelo rápido `claude-sonnet-5-5` (copiloto y lectura de material), respaldo OpenAI `gpt-4.1`, audio `gpt-4o-transcribe`. Ajustes verifica que cada modelo exista antes de guardarlo y `gpt-4o-transcribe` (audio).
 - CRM: `https://crm.321archlab.com/api/webhook` con `CREATOR_WEBHOOK_SECRET` (en crm-321) = `CRM_WEBHOOK_SECRET` (en CREATOR).
 - Admin: `brncjn@gmail.com`. Logo en `public/brand/logo.png`.
