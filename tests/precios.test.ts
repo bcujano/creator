@@ -30,6 +30,8 @@ function item(parcial: Partial<ItemCatalogo> & Pick<ItemCatalogo, 'codigo'>): It
     descripcion_en: '',
     caracteristicas_es: [],
     caracteristicas_en: [],
+    habilidades_es: [],
+    habilidades_en: [],
     resuelve: [],
     incluye: [],
     precio_setup: 0,

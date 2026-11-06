@@ -35,10 +35,12 @@ function catalogoComoTexto(catalogo: ItemCatalogo[], idioma: Idioma) {
       const nombre = idioma === 'en' ? i.nombre_en : i.nombre_es
       const desc = idioma === 'en' ? i.descripcion_en : i.descripcion_es
       const carac = (idioma === 'en' ? i.caracteristicas_en : i.caracteristicas_es).join('; ')
+      const hab = ((idioma === 'en' ? i.habilidades_en : i.habilidades_es) ?? []).join('; ')
       const partes = [
         `${i.codigo} [${i.tipo}] ${nombre}`,
         `  ${desc}`,
         carac && `  Incluye: ${carac}`,
+        hab && `  Habilidades adicionales (sin costo): ${hab}`,
         i.incluye.length > 0 && `  Contiene los módulos: ${i.incluye.join(', ')}`,
         i.resuelve.length > 0 && `  Señales de que aplica: ${i.resuelve.join(', ')}`,
         `  Precio: setup $${i.precio_setup}${i.precio_mensual ? ` + $${i.precio_mensual}/mes` : ' (pago único)'}${i.usuarios_incluidos ? `, ${i.usuarios_incluidos} usuarios incluidos` : ''}`,

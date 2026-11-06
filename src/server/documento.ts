@@ -34,6 +34,8 @@ export type ItemVisible = {
   nombre: string
   descripcion: string
   caracteristicas: string[]
+  /** Mejoras y capacidades extra, sin costo y fuera del alcance del acuerdo. */
+  habilidades: string[]
   a_medida: boolean
   /** Solo módulos a medida con valor demostrado: lo que recupera el cliente con el precio final. */
   retorno?: RetornoModulo
@@ -80,6 +82,7 @@ function itemVisible(item: ItemCatalogo, idioma: Idioma): ItemVisible {
     nombre: idioma === 'en' ? item.nombre_en : item.nombre_es,
     descripcion: idioma === 'en' ? item.descripcion_en : item.descripcion_es,
     caracteristicas: idioma === 'en' ? item.caracteristicas_en : item.caracteristicas_es,
+    habilidades: (idioma === 'en' ? item.habilidades_en : item.habilidades_es) ?? [],
     a_medida: item.categoria === 'a_medida',
   }
 }

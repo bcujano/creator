@@ -150,6 +150,12 @@ function tablaPaquete(doc: Documento, indice: number) {
         ? [p(fraseRetorno(item.retorno, doc.idioma), { color: '12805C', tamano: 18 })]
         : []),
       ...item.caracteristicas.map(vineta),
+      ...(item.habilidades.length
+        ? [
+            p(t.ademas_incluye, { color: '12805C', tamano: 18, negrita: true }),
+            ...item.habilidades.map(vineta),
+          ]
+        : []),
     ]),
   ]
 }

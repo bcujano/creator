@@ -19,6 +19,8 @@ function item(
     descripcion_en: `Description of ${p.nombre_es}`,
     caracteristicas_es: ['Primera ventaja', 'Segunda ventaja'],
     caracteristicas_en: ['First benefit', 'Second benefit'],
+    habilidades_es: ['Habilidad extra sin costo'],
+    habilidades_en: ['Extra capability at no cost'],
     resuelve: [],
     incluye: [],
     precio_setup: 0,
@@ -482,6 +484,7 @@ export function documentoDePrueba(idioma: 'es' | 'en' = 'es'): Documento {
           nombre: i.nombre_es,
           descripcion: i.descripcion_es,
           caracteristicas: i.caracteristicas_es,
+          habilidades: i.habilidades_es,
           a_medida: i.categoria === 'a_medida',
         }
       }),

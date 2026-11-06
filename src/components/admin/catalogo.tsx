@@ -29,6 +29,8 @@ const NUEVO: Borrador = {
   descripcion_en: '',
   caracteristicas_es: [],
   caracteristicas_en: [],
+  habilidades_es: [],
+  habilidades_en: [],
   resuelve: [],
   incluye: [],
   precio_setup: 0,
@@ -68,6 +70,8 @@ function Formulario({
   const [texto, setTexto] = useState({
     caracteristicas_es: inicial.caracteristicas_es.join('\n'),
     caracteristicas_en: inicial.caracteristicas_en.join('\n'),
+    habilidades_es: (inicial.habilidades_es ?? []).join('\n'),
+    habilidades_en: (inicial.habilidades_en ?? []).join('\n'),
     resuelve: inicial.resuelve.join(', '),
     incluye: inicial.incluye.join(', '),
   })
@@ -87,6 +91,8 @@ function Formulario({
           ...b,
           caracteristicas_es: lineas(texto.caracteristicas_es),
           caracteristicas_en: lineas(texto.caracteristicas_en),
+          habilidades_es: lineas(texto.habilidades_es),
+          habilidades_en: lineas(texto.habilidades_en),
           resuelve: comas(texto.resuelve),
           incluye: comas(texto.incluye).map((c) => c.toUpperCase()),
         },
@@ -184,6 +190,23 @@ function Formulario({
           <Area
             value={texto.caracteristicas_en}
             onChange={(e) => setTexto({ ...texto, caracteristicas_en: e.target.value })}
+          />
+        </div>
+        <div className="md:col-span-2">
+          <Etiqueta>Habilidades y mejoras (una por línea, español)</Etiqueta>
+          <Area
+            value={texto.habilidades_es}
+            onChange={(e) => setTexto({ ...texto, habilidades_es: e.target.value })}
+          />
+          <p className="mt-1 text-xs text-tenue">
+            Se destacan ante el cliente sin costo adicional y NO entran al alcance del acuerdo.
+          </p>
+        </div>
+        <div className="md:col-span-2">
+          <Etiqueta>Habilidades y mejoras (una por línea, inglés)</Etiqueta>
+          <Area
+            value={texto.habilidades_en}
+            onChange={(e) => setTexto({ ...texto, habilidades_en: e.target.value })}
           />
         </div>
         <div className="md:col-span-2">

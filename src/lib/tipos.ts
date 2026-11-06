@@ -19,6 +19,12 @@ export type ItemCatalogo = {
   descripcion_en: string
   caracteristicas_es: string[]
   caracteristicas_en: string[]
+  /**
+   * Mejoras y capacidades extra que se destacan ante el cliente sin costo adicional. Van aparte de
+   * las características porque estas no entran al alcance del acuerdo: lo contratado no cambia.
+   */
+  habilidades_es: string[]
+  habilidades_en: string[]
   resuelve: string[]
   incluye: string[]
   precio_setup: number

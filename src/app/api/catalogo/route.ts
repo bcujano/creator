@@ -26,6 +26,8 @@ const Item = z.object({
   descripcion_en: z.string().default(''),
   caracteristicas_es: z.array(z.string()).default([]),
   caracteristicas_en: z.array(z.string()).default([]),
+  habilidades_es: z.array(z.string()).default([]),
+  habilidades_en: z.array(z.string()).default([]),
   resuelve: z.array(z.string()).default([]),
   incluye: z.array(z.string()).default([]),
   precio_setup: z.number().min(0),

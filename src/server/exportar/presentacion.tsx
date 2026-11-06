@@ -498,6 +498,33 @@ export async function generarPresentacion(doc: Documento): Promise<Buffer> {
     )
   }
 
+  const destacado = doc.paquetes.find((p) => p.recomendado) ?? doc.paquetes[0]
+  const conHabilidades = (destacado?.items ?? []).filter((i) => i.habilidades.length > 0)
+  for (let n = 0; n < conHabilidades.length; n += 3) {
+    diapositivas.push(
+      <Diapositiva key={`herramientas-${n}`} {...props} titulo={t.herramientas}>
+        <Text style={{ fontSize: 10, color: TENUE, marginBottom: 8 }}>{t.ademas_incluye}</Text>
+        <View style={{ flexDirection: 'row', gap: 14 }}>
+          {conHabilidades.slice(n, n + 3).map((it) => (
+            <Tarjeta key={it.codigo} style={{ flex: 1 }}>
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontFamily: 'Helvetica-Bold',
+                  color: c.primario,
+                  marginBottom: 6,
+                }}
+              >
+                {it.nombre}
+              </Text>
+              <Vinetas c={c} tamano={9.5} items={it.habilidades} />
+            </Tarjeta>
+          ))}
+        </View>
+      </Diapositiva>,
+    )
+  }
+
   diapositivas.push(
     <Diapositiva key="paquetes" {...props} titulo={t.paquetes}>
       <View style={{ flexDirection: 'row', gap: 16, flex: 1 }}>

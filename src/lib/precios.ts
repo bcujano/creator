@@ -93,6 +93,8 @@ export function itemAMedida(
     descripcion_en: m.descripcion,
     caracteristicas_es: m.entregables,
     caracteristicas_en: m.entregables,
+    habilidades_es: [],
+    habilidades_en: [],
     resuelve: [],
     incluye: [],
     precio_setup: setup,

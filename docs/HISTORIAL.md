@@ -39,6 +39,11 @@
 
 1. **Propagación de cambios**: el CRM recibe cada novedad de la propuesta (nueva versión, cierre, estado, acuerdo); las propuestas aceptadas quedan congeladas ante cambios del catálogo; se corrigió la pérdida de la justificación de precio al guardar versiones.
 
+## 6 de noviembre de 2026
+
+1. **Revisión completa de crm-321** (4 frentes en paralelo) y alta de 13 herramientas nuevas al catálogo con precio por valor.
+2. **Habilidades** de cada herramienta existente (17 ítems), destacadas sin costo y fuera del alcance del acuerdo; diapositiva "Lo que trae cada herramienta".
+
 Pendientes: ver `docs/ESTADO.md`.
 
 ## 28 de octubre de 2026 — autodiagnóstico desde la página personal

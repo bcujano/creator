@@ -294,6 +294,35 @@ function construir(doc: DocumentoPublico): Diapositiva[] {
     })
   }
 
+  // Las habilidades de cada herramienta del paquete recomendado, de tres en tres por diapositiva.
+  const destacado = doc.paquetes.find((p) => p.recomendado) ?? doc.paquetes[0]
+  const conHabilidades = (destacado?.items ?? []).filter((i) => i.habilidades.length > 0)
+  for (let n = 0; n < conHabilidades.length; n += 3) {
+    d.push({
+      id: `herramientas-${n}`,
+      contenido: (
+        <div className="grid h-full content-center">
+          <Encabezado sub={t.ademas_incluye}>{t.herramientas}</Encabezado>
+          <div className="grid gap-4 lg:grid-cols-3">
+            {conHabilidades.slice(n, n + 3).map((it) => (
+              <div key={it.codigo} className="rounded-3xl bg-superficie-2 p-5">
+                <p className="text-lg font-semibold text-marca">{it.nombre}</p>
+                <ul className="mt-3 space-y-1.5 text-sm leading-snug">
+                  {it.habilidades.map((h) => (
+                    <li key={h} className="flex gap-2">
+                      <span className="text-acento">✓</span>
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    })
+  }
+
   d.push({
     id: 'paquetes',
     contenido: (

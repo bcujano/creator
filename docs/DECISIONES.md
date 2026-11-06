@@ -82,3 +82,11 @@ El cliente ve el retorno (no el piso). Costos informados por Byron (18/10/2026):
 - **Lo firmado no se mueve:** una propuesta **aceptada** se renderiza con sus cifras congeladas (`totales`), no recalculadas con el catálogo de hoy. Antes un cambio de precio en el catálogo habría alterado el acuerdo de un cliente que ya firmó.
 - **Corregido:** al guardar una versión desde el editor se perdía la justificación del precio de los módulos a medida (el esquema de la ruta descartaba el campo `valor`).
 
+### 24. Herramientas nuevas de crm-321 y habilidades sin costo (06/11/2026)
+Se revisó crm-321 completo (ventas y voz, operaciones, marketing y su motor de contenido, plataforma). Resultado: 13 ítems nuevos al catálogo con precio por valor y las mejoras de las herramientas viejas como **habilidades**.
+- **Nuevos** (setup + mensual): Fábrica de reels $2.200 + $390, Fábrica de carruseles e historias $1.200 + $190, Captación en redes $3.500 + $240, Landings $1.400 + $60, Ebooks y regalos $900 + $40, Sitio web editable $1.800 + $60, Gerente por WhatsApp $1.200 + $60, Inteligencia de suelo Quito $3.800 + $160, Cobros PayPhone $900 + $40 (beta), Seguimiento de obra $2.400 + $100 (beta), Rentas cortas $1.800 + $90 (beta), Academia de cursos $3.200 + $150 (beta), Licencia en infraestructura propia $3.500 + $250 (próximamente).
+- **Sin cupos:** los módulos de IA y mensajería (reels, carruseles, captación) usan las cuentas de API del cliente; no se limitan por cupo y el consumo lo paga el cliente directo. Por eso su costo propio mensual es solo hosting y soporte.
+- **Criterio de precio:** valor mensual conservador de una pyme de referencia ($30.000 de ventas al mes) y setup de 2 a 3 meses de ese valor; son hipótesis de Byron por validar, no cifras medidas de un cliente.
+- **Habilidades aparte de las características:** `catalogo.habilidades_es/en` (migración 0009). Se muestran al cliente (diapositivas "Lo que trae cada herramienta" en pantalla y PDF, Word, y el prompt de la IA) pero **no entran al acuerdo ni al alcance del proyecto**: así las mejoras gratuitas no se vuelven compromisos y el contrato de un cliente que ya firmó (DKB) no cambia al enriquecer el catálogo.
+- Se declaró como funcionando (Byron): llamadas, gerentes y Super Agente; solo falta saldo en la cuenta de voz. Cobros, Obras, Rentas y Academia quedan en beta por su poco uso real.
+
