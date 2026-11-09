@@ -10,6 +10,7 @@ import {
   leerAjustes,
   leerLevantamiento,
   leerPropuesta,
+  mapaCatalogo,
   registrarEnvioCrm,
 } from './datos'
 
@@ -20,6 +21,27 @@ import {
  *   2. log_activity tipo "cotizacion": deja la propuesta en el timeline.
  * Cada llamada queda en crm_envios, con lo enviado y lo respondido.
  */
+
+/**
+ * Componentes del paquete, como los verá el cliente en su bienvenida de AiUDA: el nombre de catálogo de cada línea y, en un módulo a
+ * medida, sus entregables (o su nombre si no tiene). El CRM los limpia (mayúsculas, tildes) y se pueden corregir en la ficha.
+ */
+async function componentesDelPaquete(
+  propuesta: NonNullable<Awaited<ReturnType<typeof leerPropuesta>>>,
+  nivel: string,
+) {
+  const paquete = propuesta.datos.paquetes.find((p) => p.nivel === nivel)
+  if (!paquete) return []
+  const catalogo = await mapaCatalogo()
+  return paquete.lineas
+    .flatMap((l) => {
+      if (l.a_medida)
+        return l.a_medida.entregables?.length ? l.a_medida.entregables : [l.a_medida.nombre]
+      const item = catalogo.get(l.codigo)
+      return item?.nombre_es ? [item.nombre_es] : []
+    })
+    .filter((x) => x?.trim())
+}
 
 type Resultado = { ok: true; lead_id: string } | { ok: false; error: string }
 
@@ -80,6 +102,11 @@ export async function avisarCrm(
     const setup = totales[cierre.paquete]?.setup?.total ?? 0
     const mensual = totales[cierre.paquete]?.mensual?.total ?? 0
     const pagos = propuesta.cierre ? montosPagos(cierre.pagos, setup) : null
+    // Al aceptarse, el CRM prepara la bienvenida de AiUDA con estos componentes.
+    const componentes =
+      propuesta.estado === 'aceptada'
+        ? await componentesDelPaquete(propuesta, cierre.paquete).catch(() => [])
+        : undefined
     await llamar(propuesta.id, 'log_activity', {
       lead_id: leadId,
       type: 'cotizacion',
@@ -96,6 +123,7 @@ export async function avisarCrm(
         mensual_total: mensual,
         pagos: pagos?.map((p) => ({ concepto: p.concepto, monto: p.monto })) ?? null,
         url: `${env.appUrl}/p/${propuesta.token_publico}`,
+        ...(componentes ? { componentes } : {}),
         ...extra,
       },
     })
