@@ -10,7 +10,7 @@ import type {
   ItemCatalogo,
   Levantamiento,
 } from '@/lib/tipos'
-import { preciosCrm } from '@/server/precios-crm'
+import { pautaMinimaCrm, preciosCrm } from '@/server/precios-crm'
 
 /**
  * Acceso a datos. Todo pasa por aquí con service_role; las rutas ya
@@ -51,6 +51,26 @@ export async function leerEvento(entidad: string, entidadId: string, accion: str
     .maybeSingle()
   if (error) falla('leerEvento', error)
   return (data?.datos as Record<string, unknown> | undefined) ?? null
+}
+
+/**
+ * Congela la pauta mínima vigente del CRM en la bitácora (evento `pauta_minima`, inmutable) al aceptar la propuesta.
+ * Solo la primera vez: si se vuelve a aceptar, manda la primera fecha. A diferencia de registrarEvento, si falla corta la
+ * aceptación, para no dejar una propuesta aceptada sin la condición que vio el cliente.
+ */
+export async function congelarPautaMinima(propuestaId: string) {
+  if (await leerEvento('propuesta', propuestaId, 'pauta_minima')) return
+  const monto = await pautaMinimaCrm()
+  if (!monto) return
+  const { error } = await db()
+    .from('eventos')
+    .insert({
+      entidad: 'propuesta',
+      entidad_id: propuestaId,
+      accion: 'pauta_minima',
+      datos: { monto, fecha: new Date().toISOString() },
+    })
+  if (error) falla('congelarPautaMinima', error)
 }
 
 // ------------------------------- Ajustes -----------------------------------

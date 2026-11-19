@@ -5,6 +5,7 @@ import { avisarCrm } from '@/server/crm'
 import {
   actualizarLevantamiento,
   actualizarPropuesta,
+  congelarPautaMinima,
   leerPropuesta,
   registrarEvento,
 } from '@/server/datos'
@@ -70,6 +71,8 @@ export const PATCH = privada(async (req: Request, { params }: Ctx<{ id: string }
   }
   if (!estado) return NextResponse.json({ ok: true })
 
+  // Al aceptarse, la pauta mínima vigente queda congelada con su fecha: si después cambia en el CRM, esta propuesta no cambia.
+  if (estado === 'aceptada' && propuesta.estado !== 'aceptada') await congelarPautaMinima(id)
   await actualizarPropuesta(id, { estado })
   const nuevo = ESTADO_LEVANTAMIENTO[estado as keyof typeof ESTADO_LEVANTAMIENTO]
   if (nuevo) await actualizarLevantamiento(propuesta.levantamiento_id, { estado: nuevo })

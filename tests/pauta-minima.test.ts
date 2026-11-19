@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { AJUSTES_DEFECTO } from '../src/lib/ajustes-defecto'
-import { pautaMinima, textosPautaMinima } from '../src/lib/precios-crm'
+import { pautaMinima, pautaQueAplica, textosPautaMinima } from '../src/lib/precios-crm'
 import { construirAcuerdo } from '../src/server/acuerdo/contenido'
 import { montoEnLetras } from '../src/server/acuerdo/letras'
 import { generarMarkdown } from '../src/server/exportar/markdown'
@@ -65,5 +65,18 @@ describe('inversión mínima en anuncios (PAUTA_MINIMA del CRM)', () => {
     const texto = JSON.stringify(construirAcuerdo(doc, AJUSTES_DEFECTO.legal).bloques)
     expect(texto).not.toContain('INVERSIÓN MÍNIMA')
     expect(generarMarkdown(doc)).not.toContain('anuncios:')
+  })
+
+  // Dirección general (2026-11-19): una propuesta aceptada o firmada no cambia sus condiciones al regenerarse.
+  it('una propuesta aceptada no cambia: sin pauta congelada no la lleva; con ella, queda su monto y su fecha', () => {
+    const congelada = { monto: 150, fecha: '2026-11-19T20:00:00.000Z' }
+    // Aceptada antes de la regla (Tech Montes, AIU-2026-0130): aunque el CRM diga 175 hoy, no se le agrega.
+    expect(pautaQueAplica('aceptada', null, 175)).toBeNull()
+    // Aceptada con la pauta: queda la de ese día aunque el CRM la suba después.
+    expect(pautaQueAplica('aceptada', congelada, 175)).toEqual(congelada)
+    // Nuevas o no aceptadas: el monto vigente del CRM.
+    for (const estado of ['borrador', 'presentada', 'enviada', 'rechazada'])
+      expect(pautaQueAplica(estado, congelada, 175)).toEqual({ monto: 175, fecha: null })
+    expect(pautaQueAplica('borrador', null, null)).toBeNull()
   })
 })

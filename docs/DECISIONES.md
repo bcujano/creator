@@ -92,3 +92,9 @@ Se revisó crm-321 completo (ventas y voz, operaciones, marketing y su motor de 
 - **Habilidades aparte de las características:** `catalogo.habilidades_es/en` (migración 0009). Se muestran al cliente (diapositivas "Lo que trae cada herramienta" en pantalla y PDF, Word, y el prompt de la IA) pero **no entran al acuerdo ni al alcance del proyecto**: así las mejoras gratuitas no se vuelven compromisos y el contrato de un cliente que ya firmó (DKB) no cambia al enriquecer el catálogo.
 - Se declaró como funcionando (Byron): llamadas, gerentes y Super Agente; solo falta saldo en la cuenta de voz. Cobros y Academia quedan en beta por su poco uso real.
 
+
+### 25. Inversión mínima mensual en anuncios (19/11/2026)
+
+- **Regla de dirección general, aprobada por Byron:** sin anuncios no se instala. VIP Laundry tenía el sistema funcionando, pero sin anuncios no le llegaban pedidos y creía que no servía.
+- **El monto solo vive en el CRM** (`condiciones` → `PAUTA_MINIMA` de `/api/publico/precios`). Creator lo lee con la misma caché de 5 min que los precios. Va en el resumen, en las condiciones comerciales y como cláusula del acuerdo.
+- **Lo aceptado no se mueve (como la 23):** al aceptar una propuesta, el monto vigente queda congelado con su fecha en el evento `pauta_minima` (bitácora inmutable; si falla, la aceptación no se guarda). Una propuesta aceptada usa solo ese monto; si se aceptó antes de la regla (p. ej. Tech Montes, AIU-2026-0130), no lleva la cláusula. Lógica en `pautaQueAplica` (`lib/precios-crm.ts`), con prueba.

@@ -496,6 +496,6 @@ export function documentoDePrueba(idioma: 'es' | 'en' = 'es'): Documento {
     recuperacion_meses: 4,
     enfoques: ['Ventas y comercial', 'Atención al cliente y servicio'],
     // Como llega del CRM (fila PAUTA_MINIMA). 175 a propósito: distinto del valor de hoy, para probar que se usa el del CRM.
-    pauta_minima: { monto: 175, ...textosPautaMinima(175, idioma) },
+    pauta_minima: { monto: 175, congelada_en: null, ...textosPautaMinima(175, idioma) },
   }
 }

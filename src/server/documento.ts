@@ -3,7 +3,7 @@ import { normalizarAnalisis } from '@/lib/analisis'
 import { enfoquesDe, nombreEnfoque } from '@/lib/enfoques'
 import { fechaLarga, textos } from '@/lib/i18n'
 import { calcularPaquete, type PaqueteCalculado, resolverItem } from '@/lib/precios'
-import { textosPautaMinima } from '@/lib/precios-crm'
+import { type PautaCongelada, pautaQueAplica, textosPautaMinima } from '@/lib/precios-crm'
 import type {
   Ajustes,
   Cliente,
@@ -17,6 +17,7 @@ import {
   type FilaPropuesta,
   leerAjustes,
   leerAnalisis,
+  leerEvento,
   leerLevantamiento,
   leerPropuesta,
   leerPropuestaPorToken,
@@ -66,9 +67,16 @@ export type Documento = {
   enfoques: string[]
   /**
    * Inversión mínima mensual en anuncios que paga el cliente en su propia cuenta (fila PAUTA_MINIMA del CRM, en vivo),
-   * con sus textos. null solo si el CRM nunca respondió: mejor sin cláusula que con una cifra inventada.
+   * con sus textos. En una propuesta aceptada, el monto congelado ese día o nada (ver pautaQueAplica). null también si el CRM
+   * nunca respondió: mejor sin cláusula que con una cifra inventada.
    */
-  pauta_minima: (ReturnType<typeof textosPautaMinima> & { monto: number }) | null
+  pauta_minima:
+    | (ReturnType<typeof textosPautaMinima> & {
+        monto: number
+        /** Fecha en que se congeló al aceptar la propuesta; null mientras siga el monto vigente del CRM. */
+        congelada_en: string | null
+      })
+    | null
 }
 
 export function calcularTodos(
@@ -95,13 +103,17 @@ function itemVisible(item: ItemCatalogo, idioma: Idioma): ItemVisible {
 }
 
 async function armar(propuesta: FilaPropuesta, idiomaForzado?: Idioma): Promise<Documento | null> {
-  const [ajustes, catalogo, levantamiento, analisis, pauta] = await Promise.all([
+  const [ajustes, catalogo, levantamiento, analisis, vigente, congelada] = await Promise.all([
     leerAjustes(),
     mapaCatalogo(),
     leerLevantamiento(propuesta.levantamiento_id),
     propuesta.analisis_id ? leerAnalisis(propuesta.analisis_id) : Promise.resolve(null),
     pautaMinimaCrm(),
+    propuesta.estado === 'aceptada'
+      ? (leerEvento('propuesta', propuesta.id, 'pauta_minima') as Promise<PautaCongelada | null>)
+      : Promise.resolve(null),
   ])
+  const pauta = pautaQueAplica(propuesta.estado, congelada, vigente)
   if (!levantamiento) return null
   const idioma = idiomaForzado ?? propuesta.idioma
 
@@ -162,7 +174,9 @@ async function armar(propuesta: FilaPropuesta, idiomaForzado?: Idioma): Promise<
     valida_hasta: fechaLarga(vence, idioma),
     recuperacion_meses: recuperacion,
     enfoques: enfoquesDe(levantamiento).map((id) => nombreEnfoque(id, idioma)),
-    pauta_minima: pauta ? { monto: pauta, ...textosPautaMinima(pauta, idioma) } : null,
+    pauta_minima: pauta
+      ? { monto: pauta.monto, congelada_en: pauta.fecha, ...textosPautaMinima(pauta.monto, idioma) }
+      : null,
   }
 }
 

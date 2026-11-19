@@ -67,6 +67,23 @@ export function pautaMinima(condiciones: CondicionCrm[] | undefined): number | n
   return monto > 0 ? monto : null
 }
 
+/** Pauta mínima congelada al aceptar la propuesta: el monto que regía ese día y la fecha (evento `pauta_minima`). */
+export type PautaCongelada = { monto: number; fecha: string }
+
+/**
+ * Qué pauta mínima lleva una propuesta. Dirección general (2026-11-19): una propuesta aceptada no cambia sus condiciones al
+ * regenerarse. Si se aceptó con la pauta, queda el monto congelado ese día; si se aceptó antes de que existiera (p. ej. Tech
+ * Montes, AIU-2026-0130), no la lleva. Las nuevas o no aceptadas usan el monto vigente del CRM.
+ */
+export function pautaQueAplica(
+  estado: string,
+  congelada: PautaCongelada | null,
+  vigente: number | null,
+): PautaCongelada | { monto: number; fecha: null } | null {
+  if (estado === 'aceptada') return congelada && congelada.monto > 0 ? congelada : null
+  return vigente ? { monto: vigente, fecha: null } : null
+}
+
 /**
  * Cómo se le cuenta al cliente la inversión mínima en anuncios: una línea para el resumen de la propuesta y el texto
  * completo para las condiciones. Escrito para el cliente, sin jerga («pauta» se dice «anuncios»).
