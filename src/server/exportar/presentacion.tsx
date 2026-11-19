@@ -285,7 +285,17 @@ export async function generarPresentacion(doc: Documento): Promise<Buffer> {
     diapositivas.push(
       <Diapositiva key="resumen" {...props} titulo={t.resumen}>
         <View style={{ flexDirection: 'row', gap: 24, flex: 1 }}>
-          <Text style={{ flex: 1.7, fontSize: 16, lineHeight: 1.45 }}>{a.resumen_ejecutivo}</Text>
+          <View style={{ flex: 1.7 }}>
+            <Text style={{ fontSize: 16, lineHeight: 1.45 }}>{a.resumen_ejecutivo}</Text>
+            {doc.pauta_minima ? (
+              <Text style={{ fontSize: 11, lineHeight: 1.4, marginTop: 12 }}>
+                <Text style={{ fontFamily: 'Helvetica-Bold', color: c.primario }}>
+                  {doc.pauta_minima.titulo}:{' '}
+                </Text>
+                {doc.pauta_minima.resumen}
+              </Text>
+            ) : null}
+          </View>
           <Tarjeta style={{ flex: 1 }}>
             <Text style={{ fontFamily: 'Helvetica-Bold', color: c.primario, marginBottom: 6 }}>
               {t.lo_que_entendimos}
@@ -606,6 +616,7 @@ export async function generarPresentacion(doc: Documento): Promise<Buffer> {
       <Text style={{ fontSize: 8.5, color: TENUE, marginTop: 8 }}>
         {t.precios_iva} {doc.precios.iva_pct}% {doc.idioma === 'en' ? 'included' : 'incluido'}.{' '}
         {cierre ? '' : `${t.valida_hasta}: ${doc.valida_hasta}.`}
+        {doc.pauta_minima ? ` ${doc.pauta_minima.corto}.` : ''}
       </Text>
     </Diapositiva>,
   )

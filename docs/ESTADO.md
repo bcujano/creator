@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-_Última actualización: 28 de octubre de 2026._
+_Última actualización: 19 de noviembre de 2026._
 
 ## En una línea
 
@@ -31,9 +31,10 @@ CREATOR está **en producción y en uso** en https://creator.emprendimientum.com
 | Integración CRM (crm-321) con clave propia de permisos mínimos. **Después del alta, cada cambio de la propuesta queda en la línea de tiempo del lead**: nueva versión, cierre acordado (paquete, montos con IVA, pagos), aceptada/rechazada/enviada y acuerdo generado | ✅ configurada, ⚠️ sin probar en vivo | `server/crm.ts` (`avisarCrm`) |
 | Catálogo editable (**31 productos**: se sumaron las herramientas nuevas de crm-321 y las **habilidades** de cada herramienta existente, que se destacan sin costo y no entran al alcance del acuerdo) con historial de precios; Ajustes (marca, precios, legal, IA, CRM); Rentabilidad | ✅ | `app/(app)/admin/*` |
 | Historial/bitácora, respaldo JSON por cliente, versiones inmutables | ✅ | tabla `eventos` |
+| **Inversión mínima mensual en anuncios** (regla de dirección general, 19-nov-2026: sin anuncios no se instala). El monto se lee en vivo del CRM (`condiciones` → `PAUTA_MINIMA` de `/api/publico/precios`, misma lectura y caché de 5 min que los precios); nunca está en el código. Aparece en el resumen de la propuesta, en las condiciones comerciales (todas las salidas) y como cláusula del acuerdo. Si el CRM nunca respondió, no sale (mejor eso que una cifra inventada) | ✅ | `lib/precios-crm.ts` (`pautaMinima`, `textosPautaMinima`), `Documento.pauta_minima` |
 | **Autodiagnóstico desde la página personal** (crm-321): formulario del cliente sin reunión, análisis automático al terminar, aviso al CRM con paquetes y perfil; botón «Siguiente paso» en la propuesta | ✅ | `server/autoservicio.ts`, `api/publico/autoservicio` |
 
-Verificación: `pnpm check` → **65 pruebas** en verde (precios, cifras, pagos, a medida, acuerdo, exportaciones, no-fuga de datos internos). CI en GitHub Actions.
+Verificación: `pnpm check` → **74 pruebas** en verde (precios, cifras, pagos, a medida, acuerdo, exportaciones, no-fuga de datos internos). CI en GitHub Actions.
 
 ## Pendientes (en orden)
 

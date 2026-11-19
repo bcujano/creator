@@ -194,6 +194,24 @@ export async function generarPptx(doc: Documento): Promise<Buffer> {
       fontFace: FUENTE,
       valign: 'top',
     })
+    if (doc.pauta_minima) {
+      r.addText(
+        [
+          { text: `${doc.pauta_minima.titulo}: `, options: { bold: true } },
+          { text: doc.pauta_minima.resumen },
+        ],
+        {
+          x: 0.6,
+          y: 4.8,
+          w: 7.4,
+          h: 1.6,
+          fontSize: 13,
+          color: TINTA,
+          fontFace: FUENTE,
+          valign: 'top',
+        },
+      )
+    }
     tarjeta(r, 8.4, 1.3, 4.3, 5.3)
     r.addText(t.lo_que_entendimos, {
       x: 8.6,
@@ -664,7 +682,7 @@ export async function generarPptx(doc: Documento): Promise<Buffer> {
   })
   const conIva = doc.idioma === 'en' ? 'included' : 'incluido'
   pq.addText(
-    `${t.precios_iva} ${doc.precios.iva_pct}% ${conIva}. ${t.valida_hasta}: ${doc.valida_hasta}.`,
+    `${t.precios_iva} ${doc.precios.iva_pct}% ${conIva}. ${t.valida_hasta}: ${doc.valida_hasta}.${doc.pauta_minima ? ` ${doc.pauta_minima.corto}.` : ''}`,
     {
       x: 0.6,
       y: 6.9,

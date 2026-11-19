@@ -244,8 +244,24 @@ export function construirAcuerdo(doc: Documento, legal: DatosLegales, hoy = new 
     {
       tipo: 'parrafo',
       texto:
-        'Son de cargo de EL CLIENTE, salvo pacto expreso en contrario, las tarifas que cobren terceros por conversaciones o plantillas de WhatsApp (Meta), la inversión en pauta publicitaria, los números telefónicos o de WhatsApp dedicados, los dominios y las licencias de software de terceros que EL CLIENTE decida contratar.',
+        'Son de cargo de EL CLIENTE, salvo pacto expreso en contrario, las tarifas que cobren terceros por conversaciones o plantillas de WhatsApp (Meta), la inversión en anuncios, los números telefónicos o de WhatsApp dedicados, los dominios y las licencias de software de terceros que EL CLIENTE decida contratar.',
     },
+
+    // Sin anuncios el sistema no recibe pedidos y el cliente cree que no sirve (VIP Laundry). El monto viene del CRM.
+    ...(doc.pauta_minima
+      ? ([
+          clausula('INVERSIÓN MÍNIMA MENSUAL EN ANUNCIOS'),
+          {
+            tipo: 'parrafo',
+            texto: `Para que la solución atraiga clientes nuevos, las personas tienen que conocerla. Por ello, EL CLIENTE se compromete a invertir en anuncios al menos ${usd(doc.pauta_minima.monto)} (${montoEnLetras(doc.pauta_minima.monto)}) cada mes, a partir de la puesta en marcha${hayMensual ? ' y mientras esté vigente el servicio mensual' : ''}. EL CLIENTE paga esa inversión directamente en su propia cuenta de anuncios (por ejemplo, Meta o Google): no se paga a EL PROVEEDOR ni forma parte de los precios de este acuerdo.`,
+          },
+          {
+            tipo: 'parrafo',
+            texto:
+              'EL CLIENTE reconoce que los resultados de la solución dependen de esa inversión: sin anuncios llegan pocos o ningún cliente nuevo. Cada mes, el panel de EL CLIENTE le muestra cuánto invirtió en anuncios frente a lo que esa inversión le trajo.',
+          },
+        ] as Bloque[])
+      : []),
 
     clausula('OBLIGACIONES DE EL CLIENTE'),
     {
@@ -255,6 +271,9 @@ export function construirAcuerdo(doc: Documento, legal: DatosLegales, hoy = new 
         'Designar una persona de contacto con capacidad de decisión para validar avances.',
         'Revisar y aprobar los entregables dentro de los cinco (5) días hábiles siguientes a su presentación; transcurrido este plazo sin observaciones, se entenderán aprobados.',
         'Pagar los valores acordados en los plazos establecidos.',
+        ...(doc.pauta_minima
+          ? ['Mantener la inversión mínima mensual en anuncios acordada en este documento.']
+          : []),
         'Usar la solución conforme a la ley y a las políticas de los servicios de terceros integrados.',
       ],
     },

@@ -192,6 +192,7 @@ export async function generarDocx(doc: Documento): Promise<Buffer> {
     ? [
         h(t.resumen, 1, primario),
         p(a.resumen_ejecutivo),
+        ...(doc.pauta_minima ? [p(`${doc.pauta_minima.titulo}: ${doc.pauta_minima.resumen}`)] : []),
         h(t.lo_que_entendimos, 2, primario),
         p(a.negocio.descripcion),
         p(`${a.negocio.industria} · ${a.negocio.modelo_de_negocio} · ${a.negocio.tamano}`, {
@@ -255,6 +256,7 @@ export async function generarDocx(doc: Documento): Promise<Buffer> {
     ...lineasPago(doc).map(vineta),
     vineta(t.mensualidad_nota),
     vineta(`${t.precios_iva} ${doc.precios.iva_pct}%.`),
+    ...(doc.pauta_minima ? [vineta(doc.pauta_minima.condicion)] : []),
     vineta(`${t.valida_hasta}: ${doc.valida_hasta}.`),
     ...(doc.propuesta.datos.condiciones ? [vineta(doc.propuesta.datos.condiciones)] : []),
   ]

@@ -22,6 +22,7 @@ export function generarMarkdown(doc: Documento): string {
 
   if (a) {
     l.push(`\n## ${t.resumen}\n\n${a.resumen_ejecutivo}`)
+    if (doc.pauta_minima) l.push(`\n**${doc.pauta_minima.titulo}:** ${doc.pauta_minima.resumen}`)
     l.push(`\n## ${t.lo_que_entendimos}\n\n${a.negocio.descripcion}`)
     l.push(`\n## ${t.madurez}: ${Math.round(a.madurez_digital.puntaje)}/100\n`)
     for (const area of a.madurez_digital.areas) {
@@ -73,6 +74,7 @@ export function generarMarkdown(doc: Documento): string {
     )
     for (const linea of lineasRetornoModulos(doc, i)) l.push(`\n- ${linea}`)
   })
+  if (doc.pauta_minima) l.push(`\n> ${doc.pauta_minima.condicion}`)
 
   if (a) {
     l.push(`\n## ${t.plan}\n`)

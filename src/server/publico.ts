@@ -61,5 +61,6 @@ export function documentoPublico(doc: Documento) {
     fecha: doc.fecha,
     valida_hasta: doc.valida_hasta,
     recuperacion_meses: doc.recuperacion_meses,
+    pauta_minima: doc.pauta_minima,
   }
 }

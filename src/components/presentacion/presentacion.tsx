@@ -104,6 +104,12 @@ function construir(doc: DocumentoPublico): Diapositiva[] {
           <div>
             <Encabezado sub={t.resumen}>{t.lo_que_entendimos}</Encabezado>
             <p className="text-xl leading-relaxed md:text-2xl">{a.resumen_ejecutivo}</p>
+            {doc.pauta_minima ? (
+              <p className="mt-5 rounded-2xl bg-marca/8 px-5 py-4 text-base leading-relaxed">
+                <strong className="text-marca">{doc.pauta_minima.titulo}:</strong>{' '}
+                {doc.pauta_minima.resumen}
+              </p>
+            ) : null}
           </div>
           <div className="self-center rounded-3xl bg-superficie-2 p-6">
             <p className="text-sm text-tenue">{a.negocio.industria}</p>
@@ -391,6 +397,9 @@ function construir(doc: DocumentoPublico): Diapositiva[] {
             </div>
           ))}
         </div>
+        {doc.pauta_minima ? (
+          <p className="mt-4 text-sm text-tenue">{doc.pauta_minima.corto}.</p>
+        ) : null}
       </div>
     ),
   })
@@ -691,6 +700,7 @@ export function PropuestaCliente({
             <p>
               {doc.pagos.join(' · ')}. {doc.t.mensualidad_nota}
             </p>
+            {doc.pauta_minima ? <p className="mt-1">{doc.pauta_minima.condicion}</p> : null}
             {doc.propuesta.condiciones ? <p className="mt-1">{doc.propuesta.condiciones}</p> : null}
             <p className="mt-1">
               {doc.t.valida_hasta}: {doc.valida_hasta}

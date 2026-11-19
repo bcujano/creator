@@ -2,6 +2,7 @@ import { AJUSTES_DEFECTO } from '@/lib/ajustes-defecto'
 import { normalizarAnalisis } from '@/lib/analisis'
 import { textos } from '@/lib/i18n'
 import { calcularPaquete, resolverItem } from '@/lib/precios'
+import { textosPautaMinima } from '@/lib/precios-crm'
 import type { DatosPropuesta, ItemCatalogo } from '@/lib/tipos'
 import type { Documento } from '@/server/documento'
 import type { ResultadoIA } from '@/server/ia/esquema'
@@ -494,5 +495,7 @@ export function documentoDePrueba(idioma: 'es' | 'en' = 'es'): Documento {
     valida_hasta: '8 de octubre de 2026',
     recuperacion_meses: 4,
     enfoques: ['Ventas y comercial', 'Atención al cliente y servicio'],
+    // Como llega del CRM (fila PAUTA_MINIMA). 175 a propósito: distinto del valor de hoy, para probar que se usa el del CRM.
+    pauta_minima: { monto: 175, ...textosPautaMinima(175, idioma) },
   }
 }

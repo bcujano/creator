@@ -197,6 +197,12 @@ function Diagnostico({ doc, e }: { doc: Documento; e: E }) {
       <Seccion doc={doc} e={e}>
         <Text style={e.h1}>{t.resumen}</Text>
         <Text style={e.parrafo}>{a.resumen_ejecutivo}</Text>
+        {doc.pauta_minima ? (
+          <Text style={e.parrafo}>
+            <Text style={{ fontFamily: 'Helvetica-Bold' }}>{doc.pauta_minima.titulo}: </Text>
+            {doc.pauta_minima.resumen}
+          </Text>
+        ) : null}
         <Text style={e.h2}>{t.lo_que_entendimos}</Text>
         <Text style={e.parrafo}>{a.negocio.descripcion}</Text>
         <Text style={[e.parrafo, e.tenue]}>
@@ -396,6 +402,7 @@ function Inversion({ doc, e }: { doc: Documento; e: E }) {
           ...lineasPago(doc),
           t.mensualidad_nota,
           `${t.precios_iva} ${doc.precios.iva_pct}%.`,
+          ...(doc.pauta_minima ? [doc.pauta_minima.condicion] : []),
           `${t.valida_hasta}: ${doc.valida_hasta}.`,
           ...(doc.propuesta.datos.condiciones ? [doc.propuesta.datos.condiciones] : []),
         ]}

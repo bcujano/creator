@@ -3,6 +3,7 @@ import { normalizarAnalisis } from '@/lib/analisis'
 import { enfoquesDe, nombreEnfoque } from '@/lib/enfoques'
 import { fechaLarga, textos } from '@/lib/i18n'
 import { calcularPaquete, type PaqueteCalculado, resolverItem } from '@/lib/precios'
+import { textosPautaMinima } from '@/lib/precios-crm'
 import type {
   Ajustes,
   Cliente,
@@ -22,6 +23,7 @@ import {
   mapaCatalogo,
 } from './datos'
 import type { ResultadoAnalisis } from './ia/esquema'
+import { pautaMinimaCrm } from './precios-crm'
 
 /**
  * Todo lo que necesita cualquier salida de la propuesta (presentación,
@@ -62,6 +64,11 @@ export type Documento = {
   recuperacion_meses: number | null
   /** Áreas en que se enfoca el sistema, con su nombre en el idioma del documento. */
   enfoques: string[]
+  /**
+   * Inversión mínima mensual en anuncios que paga el cliente en su propia cuenta (fila PAUTA_MINIMA del CRM, en vivo),
+   * con sus textos. null solo si el CRM nunca respondió: mejor sin cláusula que con una cifra inventada.
+   */
+  pauta_minima: (ReturnType<typeof textosPautaMinima> & { monto: number }) | null
 }
 
 export function calcularTodos(
@@ -88,11 +95,12 @@ function itemVisible(item: ItemCatalogo, idioma: Idioma): ItemVisible {
 }
 
 async function armar(propuesta: FilaPropuesta, idiomaForzado?: Idioma): Promise<Documento | null> {
-  const [ajustes, catalogo, levantamiento, analisis] = await Promise.all([
+  const [ajustes, catalogo, levantamiento, analisis, pauta] = await Promise.all([
     leerAjustes(),
     mapaCatalogo(),
     leerLevantamiento(propuesta.levantamiento_id),
     propuesta.analisis_id ? leerAnalisis(propuesta.analisis_id) : Promise.resolve(null),
+    pautaMinimaCrm(),
   ])
   if (!levantamiento) return null
   const idioma = idiomaForzado ?? propuesta.idioma
@@ -154,6 +162,7 @@ async function armar(propuesta: FilaPropuesta, idiomaForzado?: Idioma): Promise<
     valida_hasta: fechaLarga(vence, idioma),
     recuperacion_meses: recuperacion,
     enfoques: enfoquesDe(levantamiento).map((id) => nombreEnfoque(id, idioma)),
+    pauta_minima: pauta ? { monto: pauta, ...textosPautaMinima(pauta, idioma) } : null,
   }
 }
 
